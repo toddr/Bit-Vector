@@ -246,9 +246,9 @@ PPCODE:
             SvREADONLY_on(handle);
             PUSHs(reference);
         }
-        else BIT_VECTOR_MEMORY_ERROR("new");
+        else BIT_VECTOR_MEMORY_ERROR("Create");
     }
-    else BIT_VECTOR_SCALAR_ERROR("new");
+    else BIT_VECTOR_SCALAR_ERROR("Create");
 }
 
 

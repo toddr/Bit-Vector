@@ -1684,8 +1684,8 @@ This is to make sure that what you export on one machine using "C<Block_Read()>"
 can always be read in correctly with "C<Block_Store()>" on a different machine.
 
 Note further that whenever bit vectors are converted to and from (binary or
-hexadecimal) strings, the B<rightmost> bit is always the B<least significant> one,
-and the B<leftmost> bit is always the B<most significant> bit.
+hexadecimal) strings, the B<RIGHTMOST> bit is always the B<LEAST SIGNIFICANT> one,
+and the B<LEFTMOST> bit is always the B<MOST SIGNIFICANT> bit.
 
 This is because in our western culture, numbers are always represented in this
 way (least significant to most significant digits go from right to left).
@@ -1821,10 +1821,10 @@ The vectors from the argument list are not changed in any way.
 If the argument list is empty or if all arguments have length zero,
 the resulting bit vector will also have length zero.
 
-Note that the B<rightmost> bit vector from the argument list will
-become the B<least> significant part of the resulting bit vector,
-and the B<leftmost> bit vector from the argument list will
-become the B<most> significant part of the resulting bit vector.
+Note that the B<RIGHTMOST> bit vector from the argument list will
+become the B<LEAST> significant part of the resulting bit vector,
+and the B<LEFTMOST> bit vector from the argument list will
+become the B<MOST> significant part of the resulting bit vector.
 
 =back
 
@@ -1834,7 +1834,21 @@ become the B<most> significant part of the resulting bit vector.
 
 =item *
 
-C<$vec2 = $vec1-E<gt>new();>
+C<$vec2 = $vec1-E<gt>new($bits);>
+
+This is an alternative way of calling the bit vector constructor method.
+
+Vector "C<$vec1>" is not affected by this, it just serves as an anchor
+for the method invocation mechanism.
+
+In fact B<ALL> class methods in this module can be called this way,
+even though this is probably considered to be "politically incorrect"
+by OO ("object-orientation") aficionados. ;-)
+
+So even if you are too lazy to type "C<Bit::Vector-E<gt>>" instead of
+"C<$vec1-E<gt>>" (and even though laziness is a programmer's virtue),
+maybe it is better not to use this feature if you don't want to get
+booed at. ;-)
 
 =item *
 
@@ -1858,9 +1872,30 @@ which is an B<EXACT COPY> of "C<$vec1>".
 
 C<$vector = $vec1-E<gt>Concat($vec2);>
 
+This method returns a new bit vector object which is the result of the
+concatenation of the contents of "C<$vec1>" and "C<$vec2>".
+
+Note that the contents of "C<$vec1>" become the B<MOST> significant part
+of the resulting bit vector, and "C<$vec2>" the B<LEAST> significant part.
+
+If both bit vector arguments have length zero, the resulting bit vector
+will also have length zero.
+
 =item *
 
 C<$vector = $vec1-E<gt>Concat_List($vec2,$vec3,...);>
+
+This is an alternative way of calling this class method as though it
+was an object method.
+
+The method returns a new bit vector object which is the result of
+the concatenation of the contents of C<$vec1 . $vec2 . $vec3 . ...>
+
+See the section "class methods" above for a detailed description of
+this method.
+
+Note that the argument list may be empty and that all arguments
+must be bit vectors if it isn't.
 
 =item *
 
@@ -2109,9 +2144,53 @@ Typical use:
 
 C<$vec2-E<gt>Interval_Copy($vec1,$offset2,$offset1,$length);>
 
+This method allows you to copy a stretch of contiguous bits (starting
+at any position "C<$offset1>" you choose, with a length of "C<$length>"
+bits) from a given source bit vector "C<$vec1>" to another position
+"C<$offset2>" in a target bit vector "C<$vec2>".
+
+Note that the two bit vectors "C<$vec1>" and "C<$vec2>" do B<NOT>
+need to have the same (matching) size!
+
+Consequently, any of the two terms "C<$offset1 + $length>" and
+"C<$offset2 + $length>" (or both) may exceed the actual length
+of its corresponding bit vector ("C<$vec1-E<gt>Size()>" and
+"C<$vec2-E<gt>Size()>", respectively).
+
+In such a case, the "C<$length>" parameter is automatically reduced
+internally so that both terms above are bounded by the number of bits
+of their corresponding bit vector.
+
+This may even result in a length of zero, in which case nothing is
+copied at all.
+
+(Of course the value of the "C<$length>" parameter, supplied by you
+in the initial method call, may also be zero right from the start!)
+
+Note also that "C<$offset1>" and "C<$offset2>" must lie within the
+range "C<0>" and, respectively, "C<$vec1-E<gt>Size()-1>" or
+"C<$vec2-E<gt>Size()-1>", or a fatal "offset out of range" error
+will occur.
+
+Note further that "C<$vec1>" and "C<$vec2>" may be identical, i.e.,
+you may copy a stretch of contiguous bits from one part of a given
+bit vector to another part.
+
+The source and the target interval may even overlap, in which case
+the copying is automatically performed in ascending or descending
+order (depending on the direction of the copy - downwards or upwards
+in the bit vector, respectively) to handle this situation correctly,
+i.e., so that no bits are being overwritten before they have been
+copied themselves.
+
 =item *
 
 C<$vec2-E<gt>Interval_Substitute($vec1,$off2,$len2,$off1,$len1);>
+
+
+
+Note that the two bit vectors "C<$vec1>" and "C<$vec2>" do B<NOT>
+need to have the same (matching) size!
 
 Note that this is the only method - except for "C<Resize()>", of course -
 which changes the size of the given (target) bit vector (when appropriate).
@@ -2123,7 +2202,7 @@ C<if ($vector-E<gt>is_empty())>
 Tests wether the given bit vector is empty, i.e., wether B<ALL> of
 its bits are cleared (in the "off" state).
 
-In "big integer arithmetic", this is equivalent to testing wether
+In "big integer" arithmetic, this is equivalent to testing wether
 the number stored in the bit vector is zero ("C<0>").
 
 Returns "true" ("C<1>") if the bit vector is empty and "false" ("C<0>")
@@ -2136,7 +2215,7 @@ C<if ($vector-E<gt>is_full())>
 Tests wether the given bit vector is full, i.e., wether B<ALL> of
 its bits are set (in the "on" state).
 
-In "big integer arithmetic", this is equivalent to testing wether
+In "big integer" arithmetic, this is equivalent to testing wether
 the number stored in the bit vector is minus one ("-1").
 
 Returns "true" ("C<1>") if the bit vector is full and "false" ("C<0>")
@@ -2549,9 +2628,38 @@ this straightforward approach.
 
 C<$vector-E<gt>Insert($offset,$bits);>
 
+
+
+Note that this method does B<NOT> increase the size of the given bit
+vector, i.e., the bit vector is B<NOT> extended at its upper end to
+"rescue" the "C<$bits>" uppermost (most significant) bits - instead,
+these bits are lost forever.
+
+If you don't want this to happen, you have to increase the size of the
+given bit vector first B<EXPLICITLY> with a statement such as
+
+  $vector->Resize($vector->Size() + $bits);
+
+B<BEFORE> you perform the "Insert" operation.
+
 =item *
 
 C<$vector-E<gt>Delete($offset,$bits);>
+
+
+
+Note that this method does B<NOT> decrease the size of the given bit
+vector, i.e., the bit vector is B<NOT> clipped at its upper end to
+"get rid of" the "C<$bits>" uppermost (most significant) bits which
+are "unused" after the "Delete" operation.
+
+If you don't want this, i.e., if you want the bit vector to shrink
+accordingly, you have to do so B<EXPLICITLY>, B<AFTER> the "Delete"
+operation, with a couple of statements such as these:
+
+  $size = $vector->Size();
+  if ($bits > $size) { $bits = $size; }
+  $vector->Resize($size - $bits);
 
 =item *
 
