@@ -10,7 +10,8 @@ use Bit::Vector;
 # ======================================================================
 
 print "1..1001\n";
-
+open FH, ">output-bitvector";
+select FH;
 $n = 1;
 
 $result0{'FE'}{'FE'} = 'FC'; $carry0{'FE'}{'FE'} = 1;

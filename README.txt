@@ -1,3 +1,53 @@
+Thursday, December 13, 2001
+
+Dear MacPerl Users,
+
+this is the Bit::Vector 6.1 module with a shared library compiled for MacPerl 5.6.1
+(and higher). This was compiled with MPW's MrC (PPC). Passed all tests with the MrC
+build of the MacPerl 5.6.1 MPW tool (after a static build, though) and application. 
+Let me know of any problems you might encounter.
+
+
+*** NOTE:
+This package contains shared libraries, which are loaded dynamically by MacPerl -- 
+well, normally. Currently, dynamic loading of shared libs might NOT work with the MPW 
+MacPerl tool. However, dynamic loading reliable works with the MacPerl application.
+Note also that dynamic loading is NOT supported by the 68K versions of the MacPerl 
+application and tool. And finally, note that this distribution will NOT work with 
+good old MacPerl 5.2.0r4.
+
+
+You can download the Bit-Vector-6.1-bin56Mac.tar.gz tarball via my website at
+
+    http://usemacperl.esmartweb.com/modules.html
+
+or from my CPAN directory
+
+    $CPAN/authors/id/T/TW/TWEGNER/
+
+
+
+INSTALLATION
+============
+The module is best installed using Chris Nandor's installme.plx droplet. Simply 
+drop the packed archive or the unpacked folder on the droplet. Answer the 
+upcoming question "Convert all text and MacBinary files?" with "Yes". This should 
+install the module properly. 
+
+Since MacPerl 5.6.1 beta 1, the installer is part of the MacPerl disribution.
+	
+
+Have fun.
+
+--
+Thomas Wegner
+
+<wegner_thomas@yahoo.com>
+
+
+############################ ORIGINAL FOLLOWS ####################################################################
+
+
                     =====================================
                       Package "Bit::Vector" Version 6.1
                     =====================================
