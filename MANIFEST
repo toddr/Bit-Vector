@@ -12,7 +12,6 @@ Vector.pm
 Vector.xs
 examples/primes.pl
 modify
-patch
 t/00____version.t
 t/01________new.t
 t/02____destroy.t
@@ -33,3 +32,4 @@ t/16___subtract.t
 t/28__chunklist.t
 t/30_overloaded.t
 typemap
+upgrade_BV50

@@ -6,10 +6,11 @@
 ##                                                                           ##
 ##    This piece of software is "Non-Profit-Ware" ("NP-ware").               ##
 ##                                                                           ##
-##    You may use, copy, modify and redistribute it under the terms of the   ##
-##    "Non-Profit-License" (NPL).                                            ##
+##    You may use, copy, modify and redistribute it under                    ##
+##    the terms of the "Non-Profit-License" (NPL).                           ##
 ##                                                                           ##
-##    Please refer to the file "NONPROFIT" in this distribution for details! ##
+##    Please refer to the file "NONPROFIT" in this distribution              ##
+##    for details!                                                           ##
 ##                                                                           ##
 ###############################################################################
 
@@ -36,10 +37,10 @@ $CONFIG[2] = 0;
 #  Configuration:
 #
 #  0 = Scalar Input:        0 = Bit Index  (default)
-#                           1 = from_hex
-#                           2 = from_bin
-#                           3 = from_dec
-#                           4 = from_enum
+#                           1 = from_Hex
+#                           2 = from_Bin
+#                           3 = from_Dec
+#                           4 = from_Enum
 #
 #  1 = Operator Semantics:  0 = Set Ops    (default)
 #                           1 = Arithmetic Ops
@@ -196,7 +197,7 @@ sub Configuration
             else { $ok = 0; last; }
         }
         croak
-'Bit::Vector::Configuration(): syntax error in configuration string'
+'Bit::Vector::Configuration(): configuration string syntax error'
         unless ($ok);
     }
     return($result);
@@ -205,24 +206,22 @@ sub Configuration
 sub _vectorize
 {
     my($vector,$scalar,$name) = @_;
-    my($ok) = 1;
 
-    if    ($CONFIG[0] == 4) { eval { $ok = $vector->from_enum($scalar); }; }
-    elsif ($CONFIG[0] == 3) { eval { $ok = $vector->from_dec ($scalar); }; }
-    elsif ($CONFIG[0] == 2) { eval { $ok = $vector->from_bin ($scalar); }; }
-    elsif ($CONFIG[0] == 1) { eval { $ok = $vector->from_hex ($scalar); }; }
-    else                    { eval {       $vector->Bit_On   ($scalar); }; }
+    if    ($CONFIG[0] == 4) { eval { $vector->from_Enum($scalar); }; }
+    elsif ($CONFIG[0] == 3) { eval { $vector->from_Dec ($scalar); }; }
+    elsif ($CONFIG[0] == 2) { eval { $vector->from_Bin ($scalar); }; }
+    elsif ($CONFIG[0] == 1) { eval { $vector->from_Hex ($scalar); }; }
+    else                    { eval { $vector->Bit_On   ($scalar); }; }
     if ($@)
     {
-        $ok = 0;
         if ($@ =~ m/^[a-zA-Z0-9_:]+\(\):\s+(.+?)\s+at\s/)
         {
             croak "Bit::Vector \"$name\": $1";
         }
-    }
-    unless ($ok)
-    {
-        croak "Bit::Vector \"$name\": scalar operand conversion error";
+        else
+        {
+            croak "Bit::Vector \"$name\": scalar operand conversion error";
+        }
     }
 }
 
@@ -1034,26 +1033,26 @@ module directly instead of their corresponding overloaded operators!)
   to_Hex
       $string = $vector->to_Hex();
 
-  from_hex
-      $ok = $vector->from_hex($string);
+  from_Hex
+      $vector->from_Hex($string);
 
   to_Bin
       $string = $vector->to_Bin();
 
-  from_bin
-      $ok = $vector->from_bin($string);
+  from_Bin
+      $vector->from_Bin($string);
 
   to_Dec
       $string = $vector->to_Dec();
 
-  from_dec
-      $ok = $vector->from_dec($string);
+  from_Dec
+      $vector->from_Dec($string);
 
   to_Enum
       $string = $vector->to_Enum();  #  e.g. "2,3,5-7,11,13-19"
 
-  from_enum
-      $ok = $vector->from_enum($string);
+  from_Enum
+      $vector->from_Enum($string);
 
   Bit_Off
       $vector->Bit_Off($index);
@@ -1421,8 +1420,8 @@ Method names completely in lower case indicate a boolean return value.
 
 Boolean values
 
-Boolean values in this module are always a numeric zero ("0") for
-"false" and a numeric one ("1") for "true".
+Boolean values in this module are always a numeric zero ("C<0>") for
+"false" and a numeric one ("C<1>") for "true".
 
 =item *
 
@@ -1484,7 +1483,7 @@ compatible with previous versions.
 As long as "big integers" (for "big integer" arithmetic) are small enough
 so that Perl doesn't need scientific notation (exponents) to be able to
 represent them internally, you can provide these "big integer" constants
-to the overloaded operators of this module (or to the method "C<from_dec()>")
+to the overloaded operators of this module (or to the method "C<from_Dec()>")
 in numeric form (i.e., either as a numeric constant or expression or as a Perl
 variable containing a numeric value).
 
@@ -1537,10 +1536,10 @@ This is especially true for all unary operators:
                     ~$vector
                     -$vector
                     abs($vector)
-                    $vector++
                     ++$vector
-                    $vector--
+                    $vector++
                     --$vector
+                    $vector--
 
 For obvious reasons the left operand (the "lvalue") of all
 assignment operators is also required to be a bit vector:
@@ -1647,9 +1646,8 @@ bit vector of the given size, a "numeric overflow error" occurs.
 If a bit index is out of range for the given bit vector, an "index
 out of range" error occurs.
 
-If a scalar operand cannot be converted successfully (caused by
-invalid syntax, for instance), a fatal "scalar operand conversion
-error" is issued.
+If a scalar operand cannot be converted successfully due to invalid
+syntax, a fatal "input string syntax error" is issued.
 
 If the two operands of the operator "C<E<lt>E<lt>>", "C<E<gt>E<gt>>"
 or "C<x>" are reversed, a fatal "reversed operands error" occurs.
@@ -2115,6 +2113,9 @@ C<$vec2-E<gt>Interval_Copy($vec1,$offset2,$offset1,$length);>
 
 C<$vec2-E<gt>Interval_Substitute($vec1,$off2,$len2,$off1,$len1);>
 
+Note that this is the only method - except for "C<Resize()>", of course -
+which changes the size of the given (target) bit vector (when appropriate).
+
 =item *
 
 C<if ($vector-E<gt>is_empty())>
@@ -2123,9 +2124,9 @@ Tests wether the given bit vector is empty, i.e., wether B<ALL> of
 its bits are cleared (in the "off" state).
 
 In "big integer arithmetic", this is equivalent to testing wether
-the number stored in the bit vector is zero ("0").
+the number stored in the bit vector is zero ("C<0>").
 
-Returns "true" ("1") if the bit vector is empty and "false" ("0")
+Returns "true" ("C<1>") if the bit vector is empty and "false" ("C<0>")
 otherwise.
 
 =item *
@@ -2138,7 +2139,7 @@ its bits are set (in the "on" state).
 In "big integer arithmetic", this is equivalent to testing wether
 the number stored in the bit vector is minus one ("-1").
 
-Returns "true" ("1") if the bit vector is full and "false" ("0")
+Returns "true" ("C<1>") if the bit vector is full and "false" ("C<0>")
 otherwise.
 
 =item *
@@ -2147,8 +2148,8 @@ C<if ($vec1-E<gt>equal($vec2))>
 
 Tests the two given bit vectors for equality.
 
-Returns "true" ("1") if the two bit vectors are exact
-copies of one another and "false" ("0") otherwise.
+Returns "true" ("C<1>") if the two bit vectors are exact
+copies of one another and "false" ("C<0>") otherwise.
 
 =item *
 
@@ -2157,9 +2158,9 @@ C<$cmp = $vec1-E<gt>Lexicompare($vec2);>
 Compares the two given bit vectors, which are
 regarded as B<UNSIGNED> numbers in binary representation.
 
-The method returns "-1" if the first bit vector is smaller
-than the second bit vector, "0" if the two bit vectors are
-exact copies of one another and "1" if the first bit vector
+The method returns "C<-1>" if the first bit vector is smaller
+than the second bit vector, "C<0>" if the two bit vectors are
+exact copies of one another and "C<1>" if the first bit vector
 is greater than the second bit vector.
 
 =item *
@@ -2169,9 +2170,9 @@ C<$cmp = $vec1-E<gt>Compare($vec2);>
 Compares the two given bit vectors, which are
 regarded as B<SIGNED> numbers in binary representation.
 
-The method returns "-1" if the first bit vector is smaller
-than the second bit vector, "0" if the two bit vectors are
-exact copies of one another and "1" if the first bit vector
+The method returns "C<-1>" if the first bit vector is smaller
+than the second bit vector, "C<0>" if the two bit vectors are
+exact copies of one another and "C<1>" if the first bit vector
 is greater than the second bit vector.
 
 =item *
@@ -2194,7 +2195,7 @@ extra (but innocuous) leading hexadecimal zeros.
 
 =item *
 
-C<$ok = $vector-E<gt>from_hex($string);>
+C<$vector-E<gt>from_Hex($string);>
 
 Allows to read in the contents of a bit vector from a hexadecimal
 string, such as returned by the method "to_Hex()" (see above).
@@ -2224,13 +2225,8 @@ representing one bit vector into another bit vector of different
 size, i.e., as much of it as will fit.
 
 If during the process of reading the given string any character is
-encountered which is not a hexadecimal digit, an error ensues.
-
-In such a case the bit vector is filled up with zeros starting at
-the point of the error (i.e., all remaining uppermost bits) and
-the method returns "false" ("0").
-
-If all goes well the method returns "true" ("1").
+encountered which is not a hexadecimal digit, a fatal syntax error
+ensues.
 
 =item *
 
@@ -2238,7 +2234,7 @@ C<$string = $vector-E<gt>to_Bin();>
 
 =item *
 
-C<$ok = $vector-E<gt>from_bin($string);>
+C<$vector-E<gt>from_Bin($string);>
 
 =item *
 
@@ -2247,7 +2243,7 @@ C<$string = $vector-E<gt>to_Dec();>
 This method returns a string representing the contents of the given bit
 vector converted to decimal (base C<10>).
 
-The resulting string can be fed into "C<from_dec()>" (see below) in order
+The resulting string can be fed into "C<from_Dec()>" (see below) in order
 to copy the contents of this bit vector to another one (or to restore the
 contents of this one). This is not advisable, though, since this would be
 very inefficient (there are much more efficient methods for storing and
@@ -2275,7 +2271,28 @@ instead of converting the bit vector all over again.
 
 =item *
 
-C<$ok = $vector-E<gt>from_dec($string);>
+C<$vector-E<gt>from_Dec($string);>
+
+
+
+If possible program abortion is unwanted or intolerable, use
+"C<eval>", like this:
+
+  eval { $vector->from_Dec("1152921504606846976"); };
+  if ($@)
+  {
+      # an error occurred
+  }
+
+There are four possible error messages:
+
+  if ($@ =~ /item is not a string/)
+
+  if ($@ =~ /input string syntax error/)
+
+  if ($@ =~ /numeric overflow error/)
+
+  if ($@ =~ /unable to allocate memory/)
 
 =item *
 
@@ -2283,7 +2300,7 @@ C<$string = $vector-E<gt>to_Enum();>
 
 Converts the given bit vector or set into an enumeration of single
 indices and ranges of indices (".newsrc" style), representing the
-bits that are set ("1") in the bit vector.
+bits that are set ("C<1>") in the bit vector.
 
 Example:
 
@@ -2312,7 +2329,7 @@ a little handier, as follows:
 
 =item *
 
-C<$ok = $vector-E<gt>from_enum($string);>
+C<$vector-E<gt>from_Enum($string);>
 
 This method first empties the given bit vector and then tries to
 set the bits and ranges of bits specified in the given string.
@@ -2321,7 +2338,8 @@ The string "C<$string>" must only contain unsigned integers
 or ranges of integers (two unsigned integers separated by a
 dash "-"), separated by commas (",").
 
-All other characters are disallowed (including white space).
+All other characters are disallowed (including white space)
+and will lead to a fatal syntax error.
 
 In each range, the first integer must always be less than
 or equal to the second one.
@@ -2330,17 +2348,32 @@ All integers must lie in the permitted range for the given
 bit vector, i.e., they must lie between "C<0>" and
 "C<$vector-E<gt>Size()-1>".
 
-The method returns "false" ("0") if any of the above conditions
-is violated, or "true" ("1") if no error occurred.
+If these conditions are not met, an appropriate error message
+is issued and program execution is aborted.
 
-Example:
+If possible program abortion is unwanted or intolerable, use
+"C<eval>", like this:
 
-  $ok = $vector->from_enum("2,3,5-7,11,13-19");
+  eval { $vector->from_Enum("2,3,5-7,11,13-19"); };
+  if ($@)
+  {
+      # an error occurred
+  }
+
+There are four possible error messages:
+
+  if ($@ =~ /item is not a string/)
+
+  if ($@ =~ /input string syntax error/)
+
+  if ($@ =~ /index out of range/)
+
+  if ($@ =~ /minimum > maximum index/)
 
 Note that the order of the indices and ranges is irrelevant,
 i.e.,
 
-  $ok = $vector->from_enum("11,5-7,3,13-19,2");
+  eval { $vector->from_Enum("11,5-7,3,13-19,2"); };
 
 results in the same vector as in the example above.
 
@@ -2373,23 +2406,23 @@ Flips (i.e., complements) the bit with index "C<$index>"
 in the given vector.
 
 Moreover, this method returns the B<NEW> state of the
-bit in question, i.e., it returns "0" if the bit is
-cleared or "1" if the bit is set (B<AFTER> flipping it).
+bit in question, i.e., it returns "C<0>" if the bit is
+cleared or "C<1>" if the bit is set (B<AFTER> flipping it).
 
 =item *
 
 C<if ($vector-E<gt>bit_test($index))>
 
 Returns the current state of the bit with index "C<$index>"
-in the given vector, i.e., returns "0" if it is cleared
-(in the "off" state) or "1" if it is set (in the "on" state).
+in the given vector, i.e., returns "C<0>" if it is cleared
+(in the "off" state) or "C<1>" if it is set (in the "on" state).
 
 =item *
 
 C<$vector-E<gt>Bit_Copy($index,$bit);>
 
 Sets the bit with index "C<$index>" in the given vector either
-to "0" or "1" depending on the boolean value "C<$bit>".
+to "C<0>" or "C<1>" depending on the boolean value "C<$bit>".
 
 =item *
 
@@ -2536,8 +2569,8 @@ speaking in absolute terms) negative number:
 
 where "C<b>" is the number of bits of the given bit vector.
 
-The method returns "false" ("0") in all cases except when a
-carry-over occurs (in which case it returns "true", i.e., "1"),
+The method returns "false" ("C<0>") in all cases except when a
+carry-over occurs (in which case it returns "true", i.e., "C<1>"),
 which happens when the number "1111...1111" is incremented,
 which gives "0000...0000" plus a carry-over to the next higher
 (binary) digit.
@@ -2562,8 +2595,8 @@ the largest possible positive number:
 
 where "C<b>" is the number of bits of the given bit vector.
 
-The method returns "false" ("0") in all cases except when a
-carry-over occurs (in which case it returns "true", i.e., "1"),
+The method returns "false" ("C<0>") in all cases except when a
+carry-over occurs (in which case it returns "true", i.e., "C<1>"),
 which happens when the number "0000...0000" is decremented,
 which gives "1111...1111" minus a carry-over to the next higher
 (binary) digit.
@@ -2659,8 +2692,8 @@ a given bit vector:
 
   $vector->Chunk_List_Store(3, split(//, reverse $string));
 
-Note however that unlike the conversion methods "C<from_hex()>",
-"C<from_bin()>", "C<from_dec()>" and "C<from_enum()>",
+Note however that unlike the conversion methods "C<from_Hex()>",
+"C<from_Bin()>", "C<from_Dec()>" and "C<from_Enum()>",
 this statement does not include any syntax checking, i.e.,
 it may fail silently, without warning.
 
@@ -2782,11 +2815,11 @@ with "C<$set1>".
 
 C<if ($set1-E<gt>subset($set2))>
 
-Returns "true" ("1") if "C<$set1>" is a subset of "C<$set2>"
-(i.e., completely contained in "C<$set2>") and "false" ("0")
+Returns "true" ("C<1>") if "C<$set1>" is a subset of "C<$set2>"
+(i.e., completely contained in "C<$set2>") and "false" ("C<0>")
 otherwise.
 
-This means that any bit which is set ("1") in "C<$set1>" must
+This means that any bit which is set ("C<1>") in "C<$set1>" must
 also be set in "C<$set2>", but "C<$set2>" may contain set bits
 which are not set in "C<$set1>", in order for the condition
 of subset relationship to be true between these two sets.
@@ -2868,7 +2901,7 @@ are given as a matrix:
 
 If a (directed) edge exists going from vertex "i" to vertex "j",
 then the element in the matrix with coordinates (i,j) is set to
-"1" (otherwise it remains set to "0").
+"C<1>" (otherwise it remains set to "C<0>").
 
 If the edges are undirected, the resulting matrix is symmetric,
 i.e., elements (i,j) and (j,i) always contain the same value.
@@ -3209,7 +3242,8 @@ be able to choose which of these methods should be applied in this
 case.
 
 This can actually be done by changing the configuration of this
-module using the method "C<Configure()>" (see the chapter above).
+module using the method "C<Configure()>" (see the previous chapter,
+immediately above).
 
 The default is conversion to hexadecimal.
 
@@ -3237,13 +3271,14 @@ are cleared, and it is false if the corresponding bit vector contains at
 least one set bit.
 
 Note that this is B<NOT> the same as using the method "C<is_full()>",
-which returns true if all bits of the corresponding bit vector are B<SET>.
+which returns true if B<ALL> bits of the corresponding bit vector are
+B<SET>.
 
 =item *
 
 C<~$vector>
 
-This term returns a new bit vector object which is the (one's) complement
+This term returns a new bit vector object which is the one's complement
 of the given bit vector.
 
 This is equivalent to inverting all bits.
@@ -3252,7 +3287,7 @@ This is equivalent to inverting all bits.
 
 C<-$vector> (unary minus)
 
-This term returns a new bit vector object which is the (two's) complement
+This term returns a new bit vector object which is the two's complement
 of the given bit vector.
 
 This is equivalent to inverting all bits and incrementing the result by one.
@@ -3289,20 +3324,65 @@ the "C<Configuration()>" method), which is then concatenated in the proper
 order (i.e., as indicated by the order of the two operands) with the Perl
 scalar.
 
-In other words, a string is returned in such a case instead of
-a bit vector object!
+In other words, a string is returned in such a case instead of a
+bit vector object!
 
 =item *
 
 C<$vector x $factor>
 
+This term returns a new bit vector object which is the concatenation
+of as many copies of the given bit vector operand (the left operand)
+as the factor (the right operand) specifies.
+
+If the factor is zero, a bit vector object with a length of zero bits
+is returned.
+
+If the factor is one, just a new copy of the given bit vector is
+returned.
+
+Note that a fatal "reversed operands error" occurs if the two operands
+are swapped.
+
 =item *
 
 C<$vector E<lt>E<lt> $bits>
 
+This term returns a new bit vector object which is a copy of the given
+bit vector (the left operand), which is then shifted left (towards the
+most significant bit) by as many places as the right operand, "C<$bits>",
+specifies.
+
+This means that the "C<$bits>" most significant bits are lost, all other
+bits move up by "C<$bits>" positions, and the "C<$bits>" least significant
+bits that have been left unoccupied by this shift are all set to zero.
+
+If "C<$bits>" is greater than the number of bits of the given bit vector,
+this term returns an empty bit vector (i.e., with all bits cleared) of
+the same size as the given bit vector.
+
+Note that a fatal "reversed operands error" occurs if the two operands
+are swapped.
+
 =item *
 
 C<$vector E<gt>E<gt> $bits>
+
+This term returns a new bit vector object which is a copy of the given
+bit vector (the left operand), which is then shifted right (towards the
+least significant bit) by as many places as the right operand, "C<$bits>",
+specifies.
+
+This means that the "C<$bits>" least significant bits are lost, all other
+bits move down by "C<$bits>" positions, and the "C<$bits>" most significant
+bits that have been left unoccupied by this shift are all set to zero.
+
+If "C<$bits>" is greater than the number of bits of the given bit vector,
+this term returns an empty bit vector (i.e., with all bits cleared) of
+the same size as the given bit vector.
+
+Note that a fatal "reversed operands error" occurs if the two operands
+are swapped.
 
 =item *
 
@@ -3327,7 +3407,8 @@ This is the same as calculating the intersection of two sets.
 C<$vector1 ^ $vector2>
 
 This term returns a new bit vector object which is the result of
-a bitwise XOR operation between the two bit vector operands.
+a bitwise XOR (exclusive-or) operation between the two bit vector
+operands.
 
 This is the same as calculating the symmetric difference of two sets.
 
@@ -3385,10 +3466,21 @@ the division of the two numbers stored in the two bit vector operands.
 
 C<$vector1 .= $vector2;>
 
-If the right side operand (the "rvalue") of the assignment variant
-("C<.=>") of the concatenation operator is a Perl scalar, it is converted
-internally to a bit vector of the same size as the left side operand provided
-that the configuration states that scalars are to be regarded as indices,
+This statement "appends" the right bit vector operand (the "rvalue")
+to the left one (the "lvalue").
+
+The former contents of the left operand become the most significant
+part of the resulting bit vector, and the right operand becomes the
+least significant part.
+
+Since bit vectors are stored in "least order bit first" order, this
+actually requires the left operand to be shifted "up" by the length
+of the right operand, which is then copied to the now freed least
+significant part of the left operand.
+
+If the right operand is a Perl scalar, it is first converted to a
+bit vector of the same size as the left operand, provided that the
+configuration states that scalars are to be regarded as indices,
 decimal strings or enumerations.
 
 If the configuration states that scalars are to be regarded as hexadecimal
@@ -3401,112 +3493,282 @@ once the length for binary strings.
 
 C<$vector x= $factor;>
 
+This statement replaces the given bit vector by a concatenation of as many
+copies of the original contents of the given bit vector as the factor (the
+right operand) specifies.
+
+If the factor is zero, the given bit vector is resized to a length of zero
+bits.
+
+If the factor is one, the given bit vector is not changed at all.
+
 =item *
 
 C<$vector E<lt>E<lt>= $bits;>
+
+This statement moves the contents of the given bit vector left by "C<$bits>"
+positions (towards the most significant bit).
+
+This means that the "C<$bits>" most significant bits are lost, all other
+bits move up by "C<$bits>" positions, and the "C<$bits>" least significant
+bits that have been left unoccupied by this shift are all set to zero.
+
+If "C<$bits>" is greater than the number of bits of the given bit vector,
+the given bit vector is erased completely (i.e., all bits are cleared).
 
 =item *
 
 C<$vector E<gt>E<gt>= $bits;>
 
+This statement moves the contents of the given bit vector right by "C<$bits>"
+positions (towards the least significant bit).
+
+This means that the "C<$bits>" least significant bits are lost, all other
+bits move down by "C<$bits>" positions, and the "C<$bits>" most significant
+bits that have been left unoccupied by this shift are all set to zero.
+
+If "C<$bits>" is greater than the number of bits of the given bit vector,
+the given bit vector is erased completely (i.e., all bits are cleared).
+
 =item *
 
 C<$vector1 |= $vector2;>
+
+This statement performs a bitwise OR operation between the two
+bit vector operands and stores the result in the left operand.
+
+This is the same as calculating the union of two sets.
 
 =item *
 
 C<$vector1 &= $vector2;>
 
+This statement performs a bitwise AND operation between the two
+bit vector operands and stores the result in the left operand.
+
+This is the same as calculating the intersection of two sets.
+
 =item *
 
 C<$vector1 ^= $vector2;>
+
+This statement performs a bitwise XOR (exclusive-or) operation
+between the two bit vector operands and stores the result in the
+left operand.
+
+This is the same as calculating the symmetric difference of two sets.
 
 =item *
 
 C<$vector1 += $vector2;>
 
+Depending on the configuration (see the description of the method
+"C<Configuration()>" for more details), this statement either performs
+a bitwise OR operation between the two bit vector operands (this is
+the same as calculating the union of two sets) - which is the default
+behaviour, or it calculates the sum of the two numbers stored in the
+two bit vector operands.
+
+The result of this operation is stored in the left operand.
+
 =item *
 
 C<$vector1 -= $vector2;>
+
+Depending on the configuration (see the description of the method
+"C<Configuration()>" for more details), this statement either calculates
+the set difference of the two sets represented in the two bit vector
+operands - which is the default behaviour, or it calculates the
+difference of the two numbers stored in the two bit vector operands.
+
+The result of this operation is stored in the left operand.
 
 =item *
 
 C<$vector1 *= $vector2;>
 
+Depending on the configuration (see the description of the method
+"C<Configuration()>" for more details), this statement either performs
+a bitwise AND operation between the two bit vector operands (this is
+the same as calculating the intersection of two sets) - which is the
+default behaviour, or it calculates the product of the two numbers
+stored in the two bit vector operands.
+
+The result of this operation is stored in the left operand.
+
 =item *
 
 C<$vector1 /= $vector2;>
+
+This statement puts the result of the division of the two numbers
+stored in the two bit vector operands into the left operand.
 
 =item *
 
 C<$vector1 %= $vector2;>
 
-=item *
-
-C<$vector++>, C<++$vector>
-
-=item *
-
-C<$vector-->, C<--$vector>
+This statement puts the remainder of the division of the two numbers
+stored in the two bit vector operands into the left operand.
 
 =item *
 
-C<$vector1 cmp $vector2>
+C<++$vector>, C<$vector++>
+
+This operator performs pre- and post-incrementation of the
+given bit vector.
+
+The value returned by this term is a reference of the given
+bit vector object (after or before the incrementation,
+respectively).
 
 =item *
 
-C<if ($vector1 eq $vector2)>
+C<--$vector>, C<$vector-->
+
+This operator performs pre- and post-decrementation of the
+given bit vector.
+
+The value returned by this term is a reference of the given
+bit vector object (after or before the decrementation,
+respectively).
 
 =item *
 
-C<if ($vector1 ne $vector2)>
+C<($vector1 cmp $vector2)>
+
+This term returns "C<-1>" if "C<$vector1>" is less than "C<$vector2>",
+"C<0>" if "C<$vector1>" and "C<$vector2>" are the same, and "C<1>"
+if "C<$vector1>" is greater than "C<$vector2>".
+
+This comparison assumes B<UNSIGNED> bit vectors.
 
 =item *
 
-C<if ($vector1 lt $vector2)>
+C<($vector1 eq $vector2)>
+
+This term returns true ("C<1>") if the contents of the two bit vector
+operands are the same and false ("C<0>") otherwise.
 
 =item *
 
-C<if ($vector1 le $vector2)>
+C<($vector1 ne $vector2)>
+
+This term returns true ("C<1>") if the two bit vector operands differ
+and false ("C<0>") otherwise.
 
 =item *
 
-C<if ($vector1 gt $vector2)>
+C<($vector1 lt $vector2)>
+
+This term returns true ("C<1>") if "C<$vector1>" is less than "C<$vector2>",
+and false ("C<0>") otherwise.
+
+This comparison assumes B<UNSIGNED> bit vectors.
 
 =item *
 
-C<if ($vector1 ge $vector2)>
+C<($vector1 le $vector2)>
+
+This term returns true ("C<1>") if "C<$vector1>" is less than or equal to
+"C<$vector2>", and false ("C<0>") otherwise.
+
+This comparison assumes B<UNSIGNED> bit vectors.
 
 =item *
 
-C<$vector1 E<lt>=E<gt> $vector2>
+C<($vector1 gt $vector2)>
+
+This term returns true ("C<1>") if "C<$vector1>" is greater than "C<$vector2>",
+and false ("C<0>") otherwise.
+
+This comparison assumes B<UNSIGNED> bit vectors.
 
 =item *
 
-C<if ($vector1 == $vector2)>
+C<($vector1 ge $vector2)>
+
+This term returns true ("C<1>") if "C<$vector1>" is greater than or equal to
+"C<$vector2>", and false ("C<0>") otherwise.
+
+This comparison assumes B<UNSIGNED> bit vectors.
 
 =item *
 
-C<if ($vector1 != $vector2)>
+C<($vector1 E<lt>=E<gt> $vector2)>
+
+This term returns "C<-1>" if "C<$vector1>" is less than "C<$vector2>",
+"C<0>" if "C<$vector1>" and "C<$vector2>" are the same, and "C<1>"
+if "C<$vector1>" is greater than "C<$vector2>".
+
+This comparison assumes B<SIGNED> bit vectors.
 
 =item *
 
-C<if ($vector1 E<lt> $vector2)>
+C<($vector1 == $vector2)>
+
+This term returns true ("C<1>") if the contents of the two bit vector
+operands are the same and false ("C<0>") otherwise.
 
 =item *
 
-C<if ($vector1 E<lt>= $vector2)>
+C<($vector1 != $vector2)>
+
+This term returns true ("C<1>") if the two bit vector operands differ
+and false ("C<0>") otherwise.
 
 =item *
 
-C<if ($vector1 E<gt> $vector2)>
+C<($vector1 E<lt> $vector2)>
+
+Depending on the configuration (see the description of the method
+"C<Configuration()>" for more details), this term either returns
+true ("C<1>") if "C<$vector1>" is a true subset of "C<$vector2>"
+(and false ("C<0>") otherwise) - which is the default behaviour,
+or it returns true ("C<1>") if "C<$vector1>" is less than
+"C<$vector2>" (and false ("C<0>") otherwise).
+
+The latter comparison assumes B<SIGNED> bit vectors.
 
 =item *
 
-C<if ($vector1 E<gt>= $vector2)>
+C<($vector1 E<lt>= $vector2)>
+
+Depending on the configuration (see the description of the method
+"C<Configuration()>" for more details), this term either returns
+true ("C<1>") if "C<$vector1>" is a subset of "C<$vector2>" (and
+false ("C<0>") otherwise) - which is the default behaviour, or it
+returns true ("C<1>") if "C<$vector1>" is less than or equal to
+"C<$vector2>" (and false ("C<0>") otherwise).
+
+The latter comparison assumes B<SIGNED> bit vectors.
+
+=item *
+
+C<($vector1 E<gt> $vector2)>
+
+Depending on the configuration (see the description of the method
+"C<Configuration()>" for more details), this term either returns
+true ("C<1>") if "C<$vector1>" is a true superset of "C<$vector2>"
+(and false ("C<0>") otherwise) - which is the default behaviour,
+or it returns true ("C<1>") if "C<$vector1>" is greater than
+"C<$vector2>" (and false ("C<0>") otherwise).
+
+The latter comparison assumes B<SIGNED> bit vectors.
+
+=item *
+
+C<($vector1 E<gt>= $vector2)>
+
+Depending on the configuration (see the description of the method
+"C<Configuration()>" for more details), this term either returns
+true ("C<1>") if "C<$vector1>" is a superset of "C<$vector2>" (and
+false ("C<0>") otherwise) - which is the default behaviour, or it
+returns true ("C<1>") if "C<$vector1>" is greater than or equal to
+"C<$vector2>" (and false ("C<0>") otherwise).
+
+The latter comparison assumes B<SIGNED> bit vectors.
 
 =back
-
 
 =head1 SEE ALSO
 

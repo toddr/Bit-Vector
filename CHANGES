@@ -49,13 +49,13 @@ number of new methods:
   -  Interval_Substitute()
   -  Lexicompare()
   -  to_Hex()
-  -  from_hex()
+  -  from_Hex()
   -  to_Bin()
-  -  from_bin()
+  -  from_Bin()
   -  to_Dec()
-  -  from_dec()
+  -  from_Dec()
   -  to_Enum()
-  -  from_enum()
+  -  from_Enum()
   -  Insert()
   -  Delete()
   -  add()
@@ -91,43 +91,110 @@ details about these new methods.
 Migration strategy to version 5.0 from previous versions:
 ---------------------------------------------------------
 
+Step 0:
+-------
+
 If you haven't done so already, first apply the changes recommended in
 section "Migration strategy to version 4.0 from previous versions" in
-this document in case you have applications that use a version of this
-module prior to 4.0.
+this document in case you have applications that use a version of
+"Bit::Vector" prior to 4.0.
 
-Using the tool "modify" (contained in this distribution), apply the following
-patches to your existing applications which use version 4.x of "Bit::Vector":
+Step 1:
+-------
 
-(You will need to adjust the shell bang line at the top of this Perl script,
-which is currently set to "#!perl -w", to reflect the path where your Perl 5
-binary is actually located. Issue "which perl" if in doubt where that is.)
+First of all, install version 5.0 of the "Bit::Vector" package.
 
-    % ./modify 's!lexorder\((.*?)\)!Lexicompare($1) <= 0!g' application.pl
+This will also install an upgrade utility in your Perl "bin"
+directory which you will need in order to upgrade your existing
+application(s).
 
-    % ./modify 's!from_ASCII\((.*?)\)\s*;!from_enum($1) || die;!g'\
-      application.pl
+After doing so, upgrade your existing application(s) using the
+following command:
 
-    % ./modify 's!(\$\w+)\s*=\s*Bit::Vector->new_from_String\((.*?)\)\s*;\
-      !$1 = Bit::Vector->new(length($2)*4); $1->from_hex($2) || die;!g'\
-      application.pl
+    % upgrade_BV50  appl1.pl  appl2.pl  appl3.pl  ...
 
-Beware that these modifications will not work properly if the arguments
-between parentheses use parentheses themselfes (e.g. expressions), if you
-use a syntax different from the one assumed above or if the corresponding
-method call spans across multiple lines. In such cases, apply these
-modifications manually in an analog fashion.
+Note that this utility renames the original file "appli.pl"
+to "appli.pl.bak" before creating a fresh copy of this file
+(again named "appli.pl"), and before applying any changes
+to that copy.
 
-You can also use the little "patch" shell script included in this
-distribution to apply these (and some more) changes to your application:
+Be cautious to keep this backup copy (or better still, another
+copy of the original file) in a safe place!
 
-    % ./patch application.pl
+Beware that this backup file will get overwritten WITHOUT WARNING if
+you run the upgrade utility more than once on the same application!
 
-========================================================================
-WARNING: In any case, keep a copy of your original file in a safe place!
-========================================================================
+Beware also that this utility is far from fool-proof.
 
-BEWARE also that the semantics of the method "Compare()" have changed:
+For instance, method calls may not span over multiple lines, or
+the upgrade utility will not work!
+
+Moreover, the upgrade utility assumes that method calls use the
+arrow ("->") - other forms of method calls that are legal in Perl
+are not supported.
+
+Some examples of things the upgrade utility can't handle properly:
+
+        ('10110110' + $vector1)->lexorder($vector2)
+
+(The bit vector object for which the method is invoked must start
+with a dollar sign. This means that "($vec1 + $vec2)->" instead of
+"('10110110' + $vector1)->" would actually work, but this is not
+recommended, either. You always risk parentheses at the wrong places
+after the upgrade. See below for how to circumvent this problem!)
+
+        $vector[$index]->lexorder($vector[int($index/2)+1])
+
+(Nested parentheses cannot be parsed with regular expressions.
+Therefore, parentheses in the method's arguments cannot be
+resolved properly, leading to parentheses in the wrong places
+after the upgrade.)
+
+You will need to fix these cases manually.
+
+The best method for doing so is to simplify this kind of statement
+BEFORE upgrading your application. A sure way to go is to store such
+intermediate results in a temporary variable which is then used in
+the method call.
+
+For example:
+
+        $temp = '10110110' + $vector1;
+        $temp->lexorder($vector2)
+
+        $temp = int($index/2)+1;
+        $vector[$index]->lexorder($vector[$temp])
+
+Note also that in most cases, the upgrade utility assumes that all
+method calls have parentheses, even though this is not absolutely
+required by Perl syntax.
+
+Spaces before and after the method call arrow ("->") and between
+the method name and the opening parenthesis are optional, though.
+
+The method calls affected by the upgrade utility are the following:
+
+          to_ASCII            ==>                 to_Enum
+
+          from_ASCII          ==>                 from_Enum
+
+          to_String           ==>                 to_Hex
+
+    ... ->from_string( ... )  ==>  ( eval { ... ->from_Hex( ... ); !$@; } )
+
+    ... ->lexorder( ... )     ==>         ( ... ->Lexicompare( ... ) <= 0)
+
+    ... = Bit::Vector->new_from_String( ... );
+
+                              ==>
+
+    ... = Bit::Vector->new(length( ... ) << 2);
+    ... ->from_Hex( ... );
+
+Step 2:
+-------
+
+BEWARE that the semantics of the method "Compare()" have changed:
 
 While previously it assumed its two bit vector arguments to be UNSIGNED,
 it now assumes them to be SIGNED.
@@ -743,9 +810,9 @@ In version 5.0, the following new methods have been added:
   -  Interval_Substitute()
   -  Lexicompare()
   -  to_Bin()
-  -  from_bin()
+  -  from_Bin()
   -  to_Dec()
-  -  from_dec()
+  -  from_Dec()
   -  Insert()
   -  Delete()
   -  add()
@@ -780,7 +847,7 @@ The following methods have been re-implemented in C (instead of Perl):
   -  Shadow()
   -  Clone()
   -  to_Enum()       (previously named "to_ASCII")
-  -  from_enum()     (previously named "from_ASCII")
+  -  from_Enum()     (previously named "from_ASCII")
 
 The following method has changed its behaviour:
 
@@ -789,9 +856,9 @@ The following method has changed its behaviour:
 The following methods have been renamed:
 
   -  to_String()      -->    to_Hex()
-  -  from_string()    -->    from_hex()
+  -  from_string()    -->    from_Hex()
   -  to_ASCII()       -->    to_Enum()
-  -  from_ASCII()     -->    from_enum()
+  -  from_ASCII()     -->    from_Enum()
 
 (Aliases for the old names are still available but deprecated!)
 

@@ -7,10 +7,11 @@
 /*                                                                           */
 /*    This piece of software is "Non-Profit-Ware" ("NP-ware").               */
 /*                                                                           */
-/*    You may use, copy, modify and redistribute it under the terms of the   */
-/*    "Non-Profit-License" (NPL).                                            */
+/*    You may use, copy, modify and redistribute it under                    */
+/*    the terms of the "Non-Profit-License" (NPL).                           */
 /*                                                                           */
-/*    Please refer to the file "NONPROFIT" in this distribution for details! */
+/*    Please refer to the file "NONPROFIT" in this distribution              */
+/*    for details!                                                           */
 /*                                                                           */
 /*****************************************************************************/
 
@@ -95,6 +96,9 @@ typedef     SV *BitVector_Scalar;
 #define BIT_VECTOR_OVERFLOW_ERROR(name) \
     BIT_VECTOR_ERROR(name,"numeric overflow error")
 
+#define BIT_VECTOR_SYNTAX_ERROR(name) \
+    BIT_VECTOR_ERROR(name,"input string syntax error")
+
 #define BIT_VECTOR_ZERO_ERROR(name) \
     BIT_VECTOR_ERROR(name,"division by zero error")
 
@@ -120,6 +124,9 @@ typedef     SV *BitVector_Scalar;
     case ErrCode_Same: BIT_VECTOR_DISTINCT_ERROR(name); break; \
     case ErrCode_Zero: BIT_VECTOR_ZERO_ERROR(name); break; \
     case ErrCode_Ovfl: BIT_VECTOR_OVERFLOW_ERROR(name); break; \
+    case ErrCode_Pars: BIT_VECTOR_SYNTAX_ERROR(name); break; \
+    case ErrCode_Indx: BIT_VECTOR_INDEX_ERROR(name); break; \
+    case ErrCode_Ordr: BIT_VECTOR_ORDER_ERROR(name); break; \
     default: BIT_VECTOR_INTERNAL_ERROR(name); break; } }
 
 
@@ -964,8 +971,8 @@ PPCODE:
 }
 
 
-boolean
-BitVector_from_hex(reference,string)
+void
+BitVector_from_Hex(reference,string)
 BitVector_Object	reference
 BitVector_Scalar	string
 ALIAS:
@@ -975,19 +982,21 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
     charptr pointer;
+    ErrCode code;
 
     if ( BIT_VECTOR_OBJECT(reference,handle,address) )
     {
         if ( BIT_VECTOR_STRING(string,pointer) )
         {
-            RETVAL = BitVector_from_hex(address,pointer);
+            if (code = BitVector_from_Hex(address,pointer))
+            {
+                BIT_VECTOR_EXCEPTION(code,"from_Hex");
+            }
         }
-        else BIT_VECTOR_STRING_ERROR("from_hex");
+        else BIT_VECTOR_STRING_ERROR("from_Hex");
     }
-    else BIT_VECTOR_OBJECT_ERROR("from_hex");
+    else BIT_VECTOR_OBJECT_ERROR("from_Hex");
 }
-OUTPUT:
-RETVAL
 
 
 void
@@ -1014,8 +1023,8 @@ PPCODE:
 }
 
 
-boolean
-BitVector_from_bin(reference,string)
+void
+BitVector_from_Bin(reference,string)
 BitVector_Object	reference
 BitVector_Scalar	string
 CODE:
@@ -1023,19 +1032,21 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
     charptr pointer;
+    ErrCode code;
 
     if ( BIT_VECTOR_OBJECT(reference,handle,address) )
     {
         if ( BIT_VECTOR_STRING(string,pointer) )
         {
-            RETVAL = BitVector_from_bin(address,pointer);
+            if (code = BitVector_from_Bin(address,pointer))
+            {
+                BIT_VECTOR_EXCEPTION(code,"from_Bin");
+            }
         }
-        else BIT_VECTOR_STRING_ERROR("from_bin");
+        else BIT_VECTOR_STRING_ERROR("from_Bin");
     }
-    else BIT_VECTOR_OBJECT_ERROR("from_bin");
+    else BIT_VECTOR_OBJECT_ERROR("from_Bin");
 }
-OUTPUT:
-RETVAL
 
 
 void
@@ -1062,8 +1073,8 @@ PPCODE:
 }
 
 
-boolean
-BitVector_from_dec(reference,string)
+void
+BitVector_from_Dec(reference,string)
 BitVector_Object	reference
 BitVector_Scalar	string
 CODE:
@@ -1077,19 +1088,15 @@ CODE:
     {
         if ( BIT_VECTOR_STRING(string,pointer) )
         {
-            if (code = BitVector_from_dec(address,pointer))
+            if (code = BitVector_from_Dec(address,pointer))
             {
-                if (code == ErrCode_Pars) RETVAL = false;
-                else BIT_VECTOR_EXCEPTION(code,"from_dec");
+                BIT_VECTOR_EXCEPTION(code,"from_Dec");
             }
-            else RETVAL = true;
         }
-        else BIT_VECTOR_STRING_ERROR("from_dec");
+        else BIT_VECTOR_STRING_ERROR("from_Dec");
     }
-    else BIT_VECTOR_OBJECT_ERROR("from_dec");
+    else BIT_VECTOR_OBJECT_ERROR("from_Dec");
 }
-OUTPUT:
-RETVAL
 
 
 void
@@ -1118,8 +1125,8 @@ PPCODE:
 }
 
 
-boolean
-BitVector_from_enum(reference,string)
+void
+BitVector_from_Enum(reference,string)
 BitVector_Object	reference
 BitVector_Scalar	string
 ALIAS:
@@ -1129,19 +1136,21 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
     charptr pointer;
+    ErrCode code;
 
     if ( BIT_VECTOR_OBJECT(reference,handle,address) )
     {
         if ( BIT_VECTOR_STRING(string,pointer) )
         {
-            RETVAL = BitVector_from_enum(address,pointer);
+            if (code = BitVector_from_Enum(address,pointer))
+            {
+                BIT_VECTOR_EXCEPTION(code,"from_Enum");
+            }
         }
-        else BIT_VECTOR_STRING_ERROR("from_enum");
+        else BIT_VECTOR_STRING_ERROR("from_Enum");
     }
-    else BIT_VECTOR_OBJECT_ERROR("from_enum");
+    else BIT_VECTOR_OBJECT_ERROR("from_Enum");
 }
-OUTPUT:
-RETVAL
 
 
 void

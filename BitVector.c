@@ -31,7 +31,9 @@ typedef enum
         ErrCode_Same,     /* operands must be distinct                       */
         ErrCode_Zero,     /* division by zero attempted                      */
         ErrCode_Ovfl,     /* numerical overflow error                        */
-        ErrCode_Pars      /* syntax error in decimal input string            */
+        ErrCode_Pars,     /* syntax error in input string                    */
+        ErrCode_Indx,     /* index out of range error                        */
+        ErrCode_Ordr      /* lower > upper index                             */
     } ErrCode;
 
 /* ===> MISCELLANEOUS: <=== */
@@ -107,16 +109,16 @@ Z_int   BitVector_Compare          (wordptr X, wordptr Y);  /* X <,=,> Y ?   */
 /* ===> bit vector string conversion functions: */
 
 charptr BitVector_to_Hex  (wordptr addr);
-boolean BitVector_from_hex(wordptr addr, charptr string);
+ErrCode BitVector_from_Hex(wordptr addr, charptr string);
 
 charptr BitVector_to_Bin  (wordptr addr);
-boolean BitVector_from_bin(wordptr addr, charptr string);
+ErrCode BitVector_from_Bin(wordptr addr, charptr string);
 
 charptr BitVector_to_Dec  (wordptr addr);
-ErrCode BitVector_from_dec(wordptr addr, charptr string);
+ErrCode BitVector_from_Dec(wordptr addr, charptr string);
 
 charptr BitVector_to_Enum (wordptr addr);
-boolean BitVector_from_enum(wordptr addr, charptr string);
+ErrCode BitVector_from_Enum(wordptr addr, charptr string);
 
 void    BitVector_Dispose (charptr string);
 
@@ -1441,7 +1443,7 @@ charptr BitVector_to_Hex(wordptr addr)
     return(string);
 }
 
-boolean BitVector_from_hex(wordptr addr, charptr string)
+ErrCode BitVector_from_Hex(wordptr addr, charptr string)
 {
     N_word  size = size_(addr);
     N_word  mask = mask_(addr);
@@ -1474,7 +1476,8 @@ boolean BitVector_from_hex(wordptr addr, charptr string)
         }
         *(--addr) &= mask;
     }
-    return(ok);
+    if (ok) return(ErrCode_Ok);
+    else    return(ErrCode_Pars);
 }
 
 charptr BitVector_to_Bin(wordptr addr)
@@ -1511,7 +1514,7 @@ charptr BitVector_to_Bin(wordptr addr)
     return(string);
 }
 
-boolean BitVector_from_bin(wordptr addr, charptr string)
+ErrCode BitVector_from_Bin(wordptr addr, charptr string)
 {
     N_word  size = size_(addr);
     N_word  mask = mask_(addr);
@@ -1547,7 +1550,8 @@ boolean BitVector_from_bin(wordptr addr, charptr string)
         }
         *(--addr) &= mask;
     }
-    return(ok);
+    if (ok) return(ErrCode_Ok);
+    else    return(ErrCode_Pars);
 }
 
 charptr BitVector_to_Dec(wordptr addr)
@@ -1656,7 +1660,7 @@ charptr BitVector_to_Dec(wordptr addr)
     return(result);
 }
 
-ErrCode BitVector_from_dec(wordptr addr, charptr string)
+ErrCode BitVector_from_Dec(wordptr addr, charptr string)
 {
     ErrCode error = ErrCode_Ok;
     N_word  bits = bits_(addr);
@@ -1730,12 +1734,12 @@ ErrCode BitVector_from_dec(wordptr addr, charptr string)
         BitVector_Empty(addr);
         *base = EXP10;
         shift = false;
-        while (not error and (length > 0))
+        while ((not error) and (length > 0))
         {
             accu = 0;
             powr = 1;
             count = LOG10;
-            while (not error and (length > 0) and (count-- > 0))
+            while ((not error) and (length > 0) and (count-- > 0))
             {
                 digit = (int) *(--string); length--;
                 /* separate because isdigit() is likely a macro! */
@@ -1869,9 +1873,9 @@ charptr BitVector_to_Enum(wordptr addr)
     return(string);
 }
 
-boolean BitVector_from_enum(wordptr addr, charptr string)
+ErrCode BitVector_from_Enum(wordptr addr, charptr string)
 {
-    boolean ok = true;
+    ErrCode error = ErrCode_Ok;
     N_word  bits = bits_(addr);
     N_word  state = 1;
     N_word  token;
@@ -1881,7 +1885,7 @@ boolean BitVector_from_enum(wordptr addr, charptr string)
     if (bits > 0)
     {
         BitVector_Empty(addr);
-        while (ok and (state != 0))
+        while ((not error) and (state != 0))
         {
             token = (N_word) *string;
             /* separate because isdigit() is likely a macro! */
@@ -1889,10 +1893,10 @@ boolean BitVector_from_enum(wordptr addr, charptr string)
             {
                 string += BIT_VECTOR_str2int(string,&index);
                 if (index < bits) token = (N_word) '0';
-                else ok = false;
+                else error = ErrCode_Indx;
             }
             else string++;
-            if (ok)
+            if (not error)
             switch (state)
             {
                 case 1:
@@ -1905,7 +1909,7 @@ boolean BitVector_from_enum(wordptr addr, charptr string)
                             state = 0;
                             break;
                         default:
-                            ok = false;
+                            error = ErrCode_Pars;
                             break;
                     }
                     break;
@@ -1925,7 +1929,7 @@ boolean BitVector_from_enum(wordptr addr, charptr string)
                             state = 0;
                             break;
                         default:
-                            ok = false;
+                            error = ErrCode_Pars;
                             break;
                     }
                     break;
@@ -1934,12 +1938,14 @@ boolean BitVector_from_enum(wordptr addr, charptr string)
                     {
                         case (N_word) '0':
                             if (start < index)
-                              BitVector_Interval_Fill(addr,start,index);
-                            else ok = false;
+                                BitVector_Interval_Fill(addr,start,index);
+                            else if (start == index)
+                                BIT_VECTOR_SET_BIT(addr,index)
+                            else error = ErrCode_Ordr;
                             state = 4;
                             break;
                         default:
-                            ok = false;
+                            error = ErrCode_Pars;
                             break;
                     }
                     break;
@@ -1953,7 +1959,7 @@ boolean BitVector_from_enum(wordptr addr, charptr string)
                             state = 0;
                             break;
                         default:
-                            ok = false;
+                            error = ErrCode_Pars;
                             break;
                     }
                     break;
@@ -1964,14 +1970,14 @@ boolean BitVector_from_enum(wordptr addr, charptr string)
                             state = 2;
                             break;
                         default:
-                            ok = false;
+                            error = ErrCode_Pars;
                             break;
                     }
                     break;
             }
         }
     }
-    return(ok);
+    return(error);
 }
 
 void BitVector_Dispose(charptr string)
@@ -3156,37 +3162,43 @@ void Matrix_Transpose(wordptr X, N_int rowsX, N_int colsX,
 }
 
 /*****************************************************************************/
-/*  AUTHOR:  Steffen Beyer                                                   */
-/*****************************************************************************/
 /*  VERSION:  5.0                                                            */
 /*****************************************************************************/
 /*  VERSION HISTORY:                                                         */
 /*****************************************************************************/
-/*    ca. 1989    Created - Turbo Pascal version under CP/M on Apple ][+     */
-/*    01.11.93    First C version (MS C Compiler on PC with DOS)             */
-/*    29.11.95    First C version under UNIX (for Perl module)               */
-/*    14.12.95    Version 1.0                                                */
-/*    08.01.96    Version 1.1                                                */
-/*    14.12.96    Version 2.0                                                */
-/*    12.01.97    Version 3.0                                                */
-/*    21.01.97    Version 3.1                                                */
-/*    04.02.97    Version 3.2                                                */
-/*    14.04.97    Version 4.0                                                */
-/*    30.06.97    Version 4.1  added word-ins/del, move-left/right, inc/dec  */
+/*                                                                           */
+/*    25.02.98    Version 5.0                                                */
 /*    16.07.97    Version 4.2  added is_empty, is_full                       */
-/*    23.02.98    Version 5.0                                                */
+/*    30.06.97    Version 4.1  added word-ins/del, move-left/right, inc/dec  */
+/*    14.04.97    Version 4.0                                                */
+/*    04.02.97    Version 3.2                                                */
+/*    21.01.97    Version 3.1                                                */
+/*    12.01.97    Version 3.0                                                */
+/*    14.12.96    Version 2.0                                                */
+/*    08.01.96    Version 1.1                                                */
+/*    14.12.95    Version 1.0                                                */
+/*    29.11.95    First C version under UNIX (for Perl module)               */
+/*    01.11.93    First C version (MS C Compiler on PC with DOS)             */
+/*    ca. 1989    Created - Turbo Pascal version under CP/M on Apple ][+     */
+/*                                                                           */
 /*****************************************************************************/
 /*  COPYRIGHT:                                                               */
+/*****************************************************************************/
 /*                                                                           */
 /*    Copyright (c) 1995, 1996, 1997, 1998 by Steffen Beyer.                 */
 /*    All rights reserved.                                                   */
 /*                                                                           */
+/*****************************************************************************/
+/*  LICENSE:                                                                 */
+/*****************************************************************************/
+/*                                                                           */
 /*    This piece of software is "Non-Profit-Ware" ("NP-ware").               */
 /*                                                                           */
-/*    You may use, copy, modify and redistribute it under the terms of the   */
-/*    "Non-Profit-License" (NPL).                                            */
+/*    You may use, copy, modify and redistribute it under                    */
+/*    the terms of the "Non-Profit-License" (NPL).                           */
 /*                                                                           */
-/*    Please refer to the file "NONPROFIT" in this distribution for details! */
+/*    Please refer to the file "NONPROFIT" in this distribution              */
+/*    for details!                                                           */
 /*                                                                           */
 /*****************************************************************************/
 #endif

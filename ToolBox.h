@@ -104,30 +104,36 @@ typedef enum { false = FALSE , true = TRUE } boolean;
 /*****************************************************************************/
 
 /*****************************************************************************/
-/*  AUTHOR:  Steffen Beyer                                                   */
-/*****************************************************************************/
 /*  VERSION:  5.0                                                            */
 /*****************************************************************************/
 /*  VERSION HISTORY:                                                         */
 /*****************************************************************************/
-/*    01.11.93    First version (MS C Compiler on PC with DOS)               */
-/*    29.11.95    First version under UNIX (for Perl modules)                */
-/*    ??.??.??    ???                                                        */
-/*    16.02.97    Version 3.0                                                */
+/*                                                                           */
+/*    25.02.98    Version 5.0                                                */
 /*    24.03.97    Version 4.0                                                */
-/*    23.02.98    Version 5.0                                                */
+/*    16.02.97    Version 3.0                                                */
+/*    ??.??.??    ???                                                        */
+/*    29.11.95    First version under UNIX (for Perl modules)                */
+/*    01.11.93    First version (MS C Compiler on PC with DOS)               */
+/*                                                                           */
 /*****************************************************************************/
 /*  COPYRIGHT:                                                               */
+/*****************************************************************************/
 /*                                                                           */
 /*    Copyright (c) 1995, 1996, 1997, 1998 by Steffen Beyer.                 */
 /*    All rights reserved.                                                   */
 /*                                                                           */
+/*****************************************************************************/
+/*  LICENSE:                                                                 */
+/*****************************************************************************/
+/*                                                                           */
 /*    This piece of software is "Non-Profit-Ware" ("NP-ware").               */
 /*                                                                           */
-/*    You may use, copy, modify and redistribute it under the terms of the   */
-/*    "Non-Profit-License" (NPL).                                            */
+/*    You may use, copy, modify and redistribute it under                    */
+/*    the terms of the "Non-Profit-License" (NPL).                           */
 /*                                                                           */
-/*    Please refer to the file "NONPROFIT" in this distribution for details! */
+/*    Please refer to the file "NONPROFIT" in this distribution              */
+/*    for details!                                                           */
 /*                                                                           */
 /*****************************************************************************/
 #endif

@@ -9,9 +9,9 @@ $Bit::Vector::CONFIG[2] = 3;
 
 # ======================================================================
 #   $vector->to_Hex();
-#   $vector->from_hex();
+#   $vector->from_Hex();
 #   $vector->to_Enum();
-#   $vector->from_enum();
+#   $vector->from_Enum();
 # ======================================================================
 
 print "1..62\n";
@@ -23,7 +23,8 @@ $vec2 = Bit::Vector->new($limit+1);
 
 $n = 1;
 
-if ($vec1->from_hex("FEDCBA9876543210"))
+eval { $vec1->from_Hex("FEDCBA9876543210"); };
+unless ($@)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
@@ -32,7 +33,8 @@ if ($str1 =~ /^0*FEDCBA9876543210$/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-if ($vec2->from_hex("fedcba9876543210"))
+eval { $vec2->from_Hex("fedcba9876543210"); };
+unless ($@)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
@@ -41,7 +43,8 @@ if ($str2 =~ /^0*FEDCBA9876543210$/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-if ($vec1->from_hex("deadbeef"))
+eval { $vec1->from_Hex("deadbeef"); };
+unless ($@)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
@@ -50,11 +53,13 @@ if ($str1 =~ /^0*DEADBEEF$/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-unless ($vec1->from_hex("dead beef"))
+eval { $vec1->from_Hex("dead beef"); };
+if ($@ =~ /syntax error/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-if ($vec2->from_hex("beef"))
+eval { $vec2->from_Hex("beef"); };
+unless ($@)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
@@ -72,16 +77,7 @@ if ($str2 eq "0-3,5-7,9-13,15")
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-$vec1->Fill();
-$vec1->Bit_Off(0);
-$vec1->Bit_Off(1);
-
-for ( $j = 4; $j <= $limit; $j += 2 ) { $vec1->Bit_Off($j); }
-
-for ( $i = 3; ($j = $i * $i) <= $limit; $i += 2 )
-{
-    for ( ; $j <= $limit; $j += $i ) { $vec1->Bit_Off($j); }
-}
+$vec1->Primes();
 
 $str1 = $vec1->to_Hex();
 if ($str1 =~ /^0*20208828828208A20A08A28AC$/)
@@ -94,7 +90,8 @@ if ($str2 eq
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-if ($vec2->from_hex("20208828828208A20A08A28AC"))
+eval { $vec2->from_Hex("20208828828208A20A08A28AC"); };
+unless ($@)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
@@ -105,7 +102,8 @@ $n++;
 $vec2->Flip();
 $str1 =
 "2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97";
-if ($vec2->from_enum($str1))
+eval { $vec2->from_Enum($str1); };
+unless ($@)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
@@ -114,7 +112,8 @@ if ($vec1->equal($vec2))
 $n++;
 
 $str2 = "43,4,19,2,12,67,31,11,3,23,29,6-9,79-97,14-16,47,53-59,71,37-41,61";
-if ($vec2->from_enum($str2))
+eval { $vec2->from_Enum($str2); };
+unless ($@)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
@@ -134,7 +133,8 @@ if ($vec2->Norm() == $limit+1)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-if ($vec2->from_hex("0000000000000000"))
+eval { $vec2->from_Hex("0000000000000000"); };
+unless ($@)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
@@ -147,7 +147,8 @@ if ($vec2->Norm() == $limit+1)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-if ($vec2->from_hex("0"))
+eval { $vec2->from_Hex("0"); };
+unless ($@)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
@@ -160,7 +161,8 @@ if ($vec2->Norm() == $limit+1)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-if ($vec2->from_hex(""))
+eval { $vec2->from_Hex(""); };
+unless ($@)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
@@ -169,7 +171,8 @@ if ($vec2->Norm() == 0)
 $n++;
 
 $vec1 = Bit::Vector->new(64);
-if ($vec1->from_hex("FEDCBA9876543210"))
+eval { $vec1->from_Hex("FEDCBA9876543210"); };
+unless ($@)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
@@ -179,7 +182,8 @@ if ($str1 =~ /^0*FEDCBA9876543210$/)
 $n++;
 
 $vec2 = Bit::Vector->new(64);
-if ($vec2->from_hex("fedcba9876543210"))
+eval { $vec2->from_Hex("fedcba9876543210"); };
+unless ($@)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
@@ -189,7 +193,8 @@ if ($str2 =~ /^0*FEDCBA9876543210$/)
 $n++;
 
 $vec1 = Bit::Vector->new(32);
-if ($vec1->from_hex("DEADbeef"))
+eval { $vec1->from_Hex("DEADbeef"); };
+unless ($@)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
@@ -199,7 +204,8 @@ if ($str1 =~ /^0*DEADBEEF$/)
 $n++;
 
 $vec2 = Bit::Vector->new(36);
-if (!$vec2->from_hex("DEAD beef"))
+eval { $vec2->from_Hex("DEAD beef"); };
+if ($@ =~ /syntax error/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
@@ -209,7 +215,8 @@ if ($str2 =~ /^0*00000BEEF$/)
 $n++;
 
 $vec1 = Bit::Vector->new(64);
-if ($vec1->from_hex("0000000000000000"))
+eval { $vec1->from_Hex("0000000000000000"); };
+unless ($@)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
@@ -222,18 +229,21 @@ if ($vec1->Size() == 64)
 $n++;
 
 $vec2 = Bit::Vector->new(64);
-if (!$vec2->from_hex("00000g0000000000"))
+eval { $vec2->from_Hex("00000g0000000000"); };
+if ($@ =~ /syntax error/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-if ($vec2->from_hex(""))
+eval { $vec2->from_Hex(""); };
+unless ($@)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
 $vec1 = Bit::Vector->new($limit+1);
 
 $str1 = 3.1415926 * 2.0E+7;
-if ($vec1->from_hex($str1))
+eval { $vec1->from_Hex($str1); };
+unless ($@)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
@@ -243,7 +253,8 @@ if ($str2 =~ /^0*62831852$/)
 $n++;
 
 $vec2 = Bit::Vector->new($limit+1);
-if ($vec2->from_hex($str1))
+eval { $vec2->from_Hex($str1); };
+unless ($@)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
@@ -253,17 +264,20 @@ if ($str2 =~ /^0*62831852$/)
 $n++;
 
 $str2 = 3.1415926 * 2.0;
-unless ($vec1->from_hex($str2))
+eval { $vec1->from_Hex($str2); };
+if ($@ =~ /syntax error/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-if (!$vec2->from_hex($str2))
+eval { $vec2->from_Hex($str2); };
+if ($@ =~ /syntax error/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
 $str1 = "ERRORFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
 #             _123456789ABCDEF_123456789ABCDEF_123456789ABCDEF_123456789ABCDEF
-if ($vec1->from_hex($str1))
+eval { $vec1->from_Hex($str1); };
+unless ($@)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
@@ -274,7 +288,8 @@ $n++;
 
 $vec2 = $vec1->Shadow();
 
-if ($vec1->from_enum("0-$limit"))
+eval { $vec1->from_Enum("0-$limit"); };
+unless ($@)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
@@ -283,11 +298,13 @@ if ($vec1->equal($vec2))
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-if (!$vec1->from_enum("0..$limit"))
+eval { $vec1->from_Enum("0..$limit"); };
+if ($@ =~ /syntax error/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-if ($vec1->from_enum("0,$limit"))
+eval { $vec1->from_Enum("0,$limit"); };
+unless ($@)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
@@ -298,31 +315,38 @@ if ($vec1->equal($vec2))
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-if (!$vec1->from_enum("0,$limit,"))
+eval { $vec1->from_Enum("0,$limit,"); };
+if ($@ =~ /syntax error/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-if (!$vec1->from_enum("0,\$limit"))
+eval { $vec1->from_Enum("0,\$limit"); };
+if ($@ =~ /syntax error/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-if (!$vec1->from_enum("101-102"))
+eval { $vec1->from_Enum("101-102"); };
+if ($@ =~ /index out of range/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-if (!$vec1->from_enum("100-102"))
+eval { $vec1->from_Enum("100-102"); };
+if ($@ =~ /index out of range/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-if (!$vec1->from_enum("100-99"))
+eval { $vec1->from_Enum("100-99"); };
+if ($@ =~ /minimum > maximum index/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-if (!$vec1->from_enum("100,101"))
+eval { $vec1->from_Enum("100,101"); };
+if ($@ =~ /index out of range/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-if (!$vec1->from_enum("101,100"))
+eval { $vec1->from_Enum("101,100"); };
+if ($@ =~ /index out of range/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 

@@ -19,9 +19,9 @@ Preliminary steps for use with Perl prior to version 5.002:
 
 Edit the file "Makefile.PL" and change the line
 
-    'VERSION_FROM'	=> 'Vector.pm',
+    'VERSION_FROM'      => 'Vector.pm',
 to
-    'VERSION'		=> '5.0',
+    'VERSION'           => '5.0',
 
 Then edit the file "Vector.pm" and change the line
 
@@ -92,11 +92,11 @@ tree!!
 
     then edit the file "Makefile.PL" and change the line
 
-    'INC'	=> '',     # e.g., '-I/opt/pkg/perl5.003/dist'
+    'INC'       => '',     # e.g., '-I/usr/include/other'
 
     in such a way that it points to your Perl 5 distribution tree, e.g.,
 
-    'INC'	=> '-I/usr/ctr/dlt/private/perl/perl5.003',
+    'INC'       => '-I/usr/ctr/dlt/private/perl/perl5.003',
 
     or the like, and start over with the generation of the "Makefile" at 2).
 

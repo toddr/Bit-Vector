@@ -85,9 +85,9 @@ foreach $bits (8, 15, 16, 31, 32, 63, 64, 127, 128, 997)
         foreach $arg2 (sort hexadecimal (keys %{$result0{$arg1}}))
         {
 #           print "add '$arg1' + '$arg2'\n";
-            $vec1->from_hex(convert($arg1));
-            $vec2->from_hex(convert($arg2));
-            $vec3->from_hex(convert($result0{$arg1}{$arg2}));
+            $vec1->from_Hex(convert($arg1));
+            $vec2->from_Hex(convert($arg2));
+            $vec3->from_Hex(convert($result0{$arg1}{$arg2}));
             $carry3 =                   $carry0{$arg1}{$arg2};
             $carry0 = $vec0->add($vec1,$vec2,0);
 #           print "Result:    '", $vec0->to_Hex(), "' $carry0\n";
@@ -106,9 +106,9 @@ foreach $bits (8, 15, 16, 31, 32, 63, 64, 127, 128, 997)
         foreach $arg2 (sort hexadecimal (keys %{$result0{$arg1}}))
         {
 #           print "add '$arg1' + '$arg2' + 1\n";
-            $vec1->from_hex(convert($arg1));
-            $vec2->from_hex(convert($arg2));
-            $vec3->from_hex(convert($result1{$arg1}{$arg2}));
+            $vec1->from_Hex(convert($arg1));
+            $vec2->from_Hex(convert($arg2));
+            $vec3->from_Hex(convert($result1{$arg1}{$arg2}));
             $carry3 =                   $carry1{$arg1}{$arg2};
             $carry0 = $vec0->add($vec1,$vec2,1);
 #           print "Result:    '", $vec0->to_Hex(), "' $carry0\n";

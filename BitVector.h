@@ -31,7 +31,9 @@ typedef enum
         ErrCode_Same,     /* operands must be distinct                       */
         ErrCode_Zero,     /* division by zero attempted                      */
         ErrCode_Ovfl,     /* numerical overflow error                        */
-        ErrCode_Pars      /* syntax error in decimal input string            */
+        ErrCode_Pars,     /* syntax error in input string                    */
+        ErrCode_Indx,     /* index out of range error                        */
+        ErrCode_Ordr      /* lower > upper index                             */
     } ErrCode;
 
 /* ===> MISCELLANEOUS: <=== */
@@ -107,16 +109,16 @@ Z_int   BitVector_Compare          (wordptr X, wordptr Y);  /* X <,=,> Y ?   */
 /* ===> bit vector string conversion functions: */
 
 charptr BitVector_to_Hex  (wordptr addr);
-boolean BitVector_from_hex(wordptr addr, charptr string);
+ErrCode BitVector_from_Hex(wordptr addr, charptr string);
 
 charptr BitVector_to_Bin  (wordptr addr);
-boolean BitVector_from_bin(wordptr addr, charptr string);
+ErrCode BitVector_from_Bin(wordptr addr, charptr string);
 
 charptr BitVector_to_Dec  (wordptr addr);
-ErrCode BitVector_from_dec(wordptr addr, charptr string);
+ErrCode BitVector_from_Dec(wordptr addr, charptr string);
 
 charptr BitVector_to_Enum (wordptr addr);
-boolean BitVector_from_enum(wordptr addr, charptr string);
+ErrCode BitVector_from_Enum(wordptr addr, charptr string);
 
 void    BitVector_Dispose (charptr string);
 
@@ -226,37 +228,43 @@ void    Matrix_Transpose     (wordptr X, N_int rowsX, N_int colsX,
 /*****************************************************************************/
 
 /*****************************************************************************/
-/*  AUTHOR:  Steffen Beyer                                                   */
-/*****************************************************************************/
 /*  VERSION:  5.0                                                            */
 /*****************************************************************************/
 /*  VERSION HISTORY:                                                         */
 /*****************************************************************************/
-/*    ca. 1989    Created - Turbo Pascal version under CP/M on Apple ][+     */
-/*    01.11.93    First C version (MS C Compiler on PC with DOS)             */
-/*    29.11.95    First C version under UNIX (for Perl module)               */
-/*    14.12.95    Version 1.0                                                */
-/*    08.01.96    Version 1.1                                                */
-/*    14.12.96    Version 2.0                                                */
-/*    12.01.97    Version 3.0                                                */
-/*    21.01.97    Version 3.1                                                */
-/*    04.02.97    Version 3.2                                                */
-/*    14.04.97    Version 4.0                                                */
-/*    30.06.97    Version 4.1  added word-ins/del, move-left/right, inc/dec  */
+/*                                                                           */
+/*    25.02.98    Version 5.0                                                */
 /*    16.07.97    Version 4.2  added is_empty, is_full                       */
-/*    23.02.98    Version 5.0                                                */
+/*    30.06.97    Version 4.1  added word-ins/del, move-left/right, inc/dec  */
+/*    14.04.97    Version 4.0                                                */
+/*    04.02.97    Version 3.2                                                */
+/*    21.01.97    Version 3.1                                                */
+/*    12.01.97    Version 3.0                                                */
+/*    14.12.96    Version 2.0                                                */
+/*    08.01.96    Version 1.1                                                */
+/*    14.12.95    Version 1.0                                                */
+/*    29.11.95    First C version under UNIX (for Perl module)               */
+/*    01.11.93    First C version (MS C Compiler on PC with DOS)             */
+/*    ca. 1989    Created - Turbo Pascal version under CP/M on Apple ][+     */
+/*                                                                           */
 /*****************************************************************************/
 /*  COPYRIGHT:                                                               */
+/*****************************************************************************/
 /*                                                                           */
 /*    Copyright (c) 1995, 1996, 1997, 1998 by Steffen Beyer.                 */
 /*    All rights reserved.                                                   */
 /*                                                                           */
+/*****************************************************************************/
+/*  LICENSE:                                                                 */
+/*****************************************************************************/
+/*                                                                           */
 /*    This piece of software is "Non-Profit-Ware" ("NP-ware").               */
 /*                                                                           */
-/*    You may use, copy, modify and redistribute it under the terms of the   */
-/*    "Non-Profit-License" (NPL).                                            */
+/*    You may use, copy, modify and redistribute it under                    */
+/*    the terms of the "Non-Profit-License" (NPL).                           */
 /*                                                                           */
-/*    Please refer to the file "NONPROFIT" in this distribution for details! */
+/*    Please refer to the file "NONPROFIT" in this distribution              */
+/*    for details!                                                           */
 /*                                                                           */
 /*****************************************************************************/
 #endif

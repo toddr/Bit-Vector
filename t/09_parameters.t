@@ -66,13 +66,13 @@ $method_list{'equal'}               = [ 0, 0 ];
 $method_list{'Lexicompare'}         = [ 0, 0 ];
 $method_list{'Compare'}             = [ 0, 0 ];
 $method_list{'to_Hex'}              = [ 0 ];
-$method_list{'from_hex'}            = [ 0, 8 ];
+$method_list{'from_Hex'}            = [ 0, 8 ];
 $method_list{'to_Bin'}              = [ 0 ];
-$method_list{'from_bin'}            = [ 0, 8 ];
+$method_list{'from_Bin'}            = [ 0, 8 ];
 $method_list{'to_Dec'}              = [ 0 ];
-$method_list{'from_dec'}            = [ 0, 8 ];
+$method_list{'from_Dec'}            = [ 0, 8 ];
 $method_list{'to_Enum'}             = [ 0 ];
-$method_list{'from_enum'}           = [ 0, 8 ];
+$method_list{'from_Enum'}           = [ 0, 8 ];
 $method_list{'Bit_Off'}             = [ 0, 2 ];
 $method_list{'Bit_On'}              = [ 0, 2 ];
 $method_list{'bit_flip'}            = [ 0, 2 ];
@@ -325,7 +325,7 @@ sub correct_values
         }
         elsif ($type == 8)
         {
-            $parameter_list[$i] = '10110111';
+            $parameter_list[$i] = '1011';
         }
         elsif ($type == 9)
         {
