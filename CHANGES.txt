@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 5.5
+                      Package "Bit::Vector" Version 5.6
                     =====================================
 
 
@@ -7,21 +7,15 @@
                              All rights reserved.
 
 
-What's new in version 5.5:
+What's new in version 5.6:
 --------------------------
 
-Version 5.5 is a bugfix release.
+The leading zeros in the output of "to_Hex()" have been suppressed.
 
-The same bug (uninitialized return code) as in the method "Divide()"
-(fixed in version 5.4) was fixed in the method "Multiply()".
-
-Moreover, the failure of tests 96-131 of test script "t/01________new.t"
-under HP-UX 10 was fixed; this was due to Perl calling the C function
-"pow()" internally for the "**" operator, which returns non-integers
-for powers of two larger than 2**4 under HP-UX (i.e., 2**5 != 32).
+A warning produced by some compilers on line 2067 of "BitVector.c" has been fixed.
 
 
-Migration strategy to version 5.5:
+Migration strategy to version 5.6:
 ----------------------------------
 
 Step 1:
@@ -88,11 +82,11 @@ Step 2:
 -------
 
 To upgrade your application(s) from "Bit::Vector" version 4.x
-to "Bit::Vector" version 5.5, simply issue the following command:
+to "Bit::Vector" version 5.6, simply issue the following command:
 
-    > perl ./tools/upgrade_BV55.pl  app1.pl  app2.pl  app3.pl  ...
+    > perl ./tools/upgrade_BV56.pl  app1.pl  app2.pl  app3.pl  ...
 or
-    > perl .\tools\upgrade_BV55.pl  app1.pl  app2.pl  app3.pl  ...
+    > perl .\tools\upgrade_BV56.pl  app1.pl  app2.pl  app3.pl  ...
 
 Note that this utility renames the original file "app<i>.pl" to
 "app<i>.pl.bak" before creating a fresh copy of this file (again
@@ -159,7 +153,7 @@ the method name and the opening parenthesis are optional, though.
 
 The substitutions performed by this upgrade utility are the following:
 
-          use Bit::Vector 4.x  ==>                 use Bit::Vector 5.5
+          use Bit::Vector 4.x  ==>                 use Bit::Vector 5.6
           to_ASCII             ==>                 to_Enum
           from_ASCII           ==>                 from_Enum
           to_String            ==>                 to_Hex
@@ -186,6 +180,11 @@ the new method "Lexicompare()" instead!
 
 Version history:
 ----------------
+
+Version 5.6   02.11.98
+
+ +  Removed the leading zeros from the output of "to_Hex()".
+ +  Fixed compiler warning on line 2067 of "BitVector.c".
 
 Version 5.5   21.09.98
 

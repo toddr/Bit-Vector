@@ -14,7 +14,7 @@ $Bit::Vector::CONFIG[2] = 3;
 #   $vector->from_Enum();
 # ======================================================================
 
-print "1..62\n";
+print "1..192\n";
 
 $limit = 100;
 
@@ -349,6 +349,17 @@ eval { $vec1->from_Enum("101,100"); };
 if ($@ =~ /index out of range/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
+
+@first = ('', '1', '3', '7');
+
+for ( $bits = 0; $bits <= 129; $bits++ )
+{
+    $vec = Bit::Vector->new($bits);
+    $vec->Fill();
+    if ($vec->to_Hex() eq $first[$bits & 3] . ('F' x ($bits >> 2)))
+    {print "ok $n\n";} else {print "not ok $n\n";}
+    $n++;
+}
 
 __END__
 

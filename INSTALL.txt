@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 5.5
+                      Package "Bit::Vector" Version 5.6
                     =====================================
 
 
@@ -21,7 +21,7 @@ Edit the file "Makefile.PL" and change the line
 
     'VERSION_FROM'      => 'Vector.pm',
 to
-    'VERSION'           => '5.5',
+    'VERSION'           => '5.6',
 
 Then edit the file "Vector.pm" and change the line
 
@@ -31,7 +31,7 @@ to
 
 Also edit the file "t/00____version.t" and change the line
 
-    use Bit::Vector 5.5;
+    use Bit::Vector 5.6;
 to
     use Bit::Vector;
 
@@ -78,7 +78,7 @@ Detailed installation guide:
 ----------------------------
 
  1) Change directory to the directory that has been created by unpacking this
-    package ("cd Bit-Vector-5.5").
+    package ("cd Bit-Vector-5.6").
 
  2) Type "perl Makefile.PL" (or whatever the name and path of your Perl 5
     binary is).
@@ -162,7 +162,7 @@ Detailed installation guide:
     t/28__chunklist.....ok
     t/30_overloaded.....ok
     All tests successful.
-    Files=19,  Tests=67081, 173 secs (116.80 cusr  5.01 csys = 121.80 cpu)
+    Files=19, Tests=67211, 43 secs (29.09 cusr + 1.38 csys = 30.47 CPU)
 
     (Note that the exact number of tests will depend on the number of bits
      of a machine word/an unsigned long on your system!)

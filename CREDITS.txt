@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 5.5
+                      Package "Bit::Vector" Version 5.6
                     =====================================
 
 
@@ -116,5 +116,15 @@ Many thanks to Rob W. Koeling <koeling@let.rug.nl> for reporting and to
 Paul J. Schinder <schinder@pobox.com> for reporting and helping to investigate
 the error of the failed tests 96-131 of test script "t/01________new.t" under
 HP-UX 10! This was fixed in version 5.5.
+
+Many thanks to the "CPAN testers" (http://www.connect.net/gbarr/cpan-test/)
+in general and to Jarkko Hietaniemi <jhi@iki.fi> in particular for testing
+this module and for reporting the compiler warning which occurred on line
+2067 of "BitVector.c" with the native "cc" compiler under Digital Unix,
+which has been fixed in version 5.6.
+
+Also many thanks to Matt Knecht <hex@voicenet.com> for pushing me hard
+enough ;-) to suppress those annoying leading zeros in the output from
+"to_Hex()" in version 5.6!
 
 

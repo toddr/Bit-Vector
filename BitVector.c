@@ -287,7 +287,8 @@ static wordptr BITMASKTAB;
     ((*(address+(index>>LOGBITS)) AND BITMASKTAB[index AND MODMASK]) != 0)
 
 #define BIT_VECTOR_FLP_BIT(address,index,mask) \
-    (((*(addr+(index>>LOGBITS)) ^= (mask = BITMASKTAB[index AND MODMASK])) AND mask) != 0)
+    (mask = BITMASKTAB[index AND MODMASK]), \
+    (((*(addr+(index>>LOGBITS)) ^= mask) AND mask) != 0)
 
 #define BIT_VECTOR_DIGITIZE(type,value,digit) \
     value = (type) ((digit = value) / 10); \
@@ -502,7 +503,7 @@ N_word BitVector_Mask(N_int bits)           /* bit vector mask (unused bits) */
 
 charptr BitVector_Version(void)
 {
-    return((charptr)"5.5");
+    return((charptr)"5.6");
 }
 
 N_int BitVector_Word_Bits(void)
@@ -1466,6 +1467,7 @@ Z_int BitVector_Compare(wordptr X, wordptr Y)               /* X <,=,> Y ?   */
 
 charptr BitVector_to_Hex(wordptr addr)
 {
+    N_word  bits = bits_(addr);
     N_word  size = size_(addr);
     N_word  value;
     N_word  count;
@@ -1473,25 +1475,26 @@ charptr BitVector_to_Hex(wordptr addr)
     N_word  length;
     charptr string;
 
-    length = (size * (BITS >> 2)) + 1;
-    string = (charptr) malloc((size_t) length);
+    length = bits >> 2;
+    if (bits AND 0x0003) length++;
+    string = (charptr) malloc((size_t) (length+1));
     if (string == NULL) return(NULL);
     string += length;
-    *(--string) = (N_char) '\0';
+    *string = (N_char) '\0';
     if (size > 0)
     {
         *(addr+size-1) &= mask_(addr);
-        while (size-- > 0)
+        while ((size-- > 0) and (length > 0))
         {
             value = *addr++;
             count = BITS >> 2;
-            while (count-- > 0)
+            while ((count-- > 0) and (length > 0))
             {
                 digit = value AND 0x000F;
                 if (digit > 9) digit += (N_word) 'A' - 10;
                 else           digit += (N_word) '0';
-                *(--string) = (N_char) digit;
-                if (count > 0) value >>= 4;
+                *(--string) = (N_char) digit; length--;
+                if ((count > 0) and (length > 0)) value >>= 4;
             }
         }
     }
@@ -3254,11 +3257,12 @@ void Matrix_Transpose(wordptr X, N_int rowsX, N_int colsX,
 }
 
 /*****************************************************************************/
-/*  VERSION:  5.5                                                            */
+/*  VERSION:  5.6                                                            */
 /*****************************************************************************/
 /*  VERSION HISTORY:                                                         */
 /*****************************************************************************/
 /*                                                                           */
+/*    Version 5.6  02.11.98  Leading zeros eliminated in "to_Hex()".         */
 /*    Version 5.5  21.09.98  Fixed bug of uninitialized "error" in Multiply. */
 /*    Version 5.4  07.09.98  Fixed bug of uninitialized "error" in Divide.   */
 /*    Version 5.3  12.05.98  Improved Norm. Completed history.               */

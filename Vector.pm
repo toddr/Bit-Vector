@@ -23,7 +23,7 @@ require DynaLoader;
 
 @EXPORT_OK = qw();
 
-$VERSION = '5.5';
+$VERSION = '5.6';
 
 $CONFIG[0] = 0;
 $CONFIG[1] = 0;
@@ -2834,16 +2834,12 @@ C<$string = $vector-E<gt>to_Hex();>
 Returns a hexadecimal string representing the given bit vector.
 
 Note that this representation is quite compact, in that it only
-needs twice the number of bytes needed to store the bit vector
-itself, internally.
+needs at most twice the number of bytes needed to store the bit
+vector itself, internally.
 
 Note also that since a hexadecimal digit is always worth four bits,
 the length of the resulting string is always a multiple of four bits,
 regardless of the true length (in bits) of the given bit vector.
-
-Moreover, in order to simplify the conversion, the unused bits in
-the bit vector (if any) are also converted, which may produce some
-extra (but innocuous) leading hexadecimal zeros.
 
 Finally, note that the B<LEAST> significant hexadecimal digit is
 located at the B<RIGHT> end of the resulting string, and the B<MOST>
@@ -5287,7 +5283,7 @@ perltoot(1), perlxs(1), perlxstut(1), perlguts(1), overload(3).
 
 =head1 VERSION
 
-This man page documents "Bit::Vector" version 5.5.
+This man page documents "Bit::Vector" version 5.6.
 
 =head1 AUTHOR
 

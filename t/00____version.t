@@ -3,7 +3,7 @@
 use strict;
 no strict "vars";
 
-use Bit::Vector 5.5;
+use Bit::Vector 5.6;
 
 # ======================================================================
 #   $ver = $Bit::Vector::VERSION;
@@ -18,11 +18,11 @@ use Bit::Vector 5.5;
 print "1..10\n";
 
 $n = 1;
-if ($Bit::Vector::VERSION eq "5.5")
+if ($Bit::Vector::VERSION eq "5.6")
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-if (Bit::Vector::Version() eq "5.5")
+if (Bit::Vector::Version() eq "5.6")
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 if (Bit::Vector::Word_Bits() >= 32)
@@ -32,7 +32,7 @@ if (Bit::Vector::Long_Bits() >= 32)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-if (Bit::Vector->Version() eq "5.5")
+if (Bit::Vector->Version() eq "5.6")
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 if (Bit::Vector->Word_Bits() >= 32)
