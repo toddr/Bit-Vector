@@ -163,7 +163,7 @@ Version()
 PPCODE:
 {
     EXTEND(sp,1);
-    PUSHs(sv_2mortal(newSVpv("4.1",0)));
+    PUSHs(sv_2mortal(newSVpv("4.2",0)));
 }
 
 
@@ -551,6 +551,42 @@ CODE:
         else BIT_VECTOR_INDEX_ERROR("bit_test");
     }
     else BIT_VECTOR_TYPE_ERROR("bit_test");
+}
+OUTPUT:
+RETVAL
+
+
+boolean
+BitVector_is_empty(reference)
+BitVector_Object	reference
+CODE:
+{
+    BitVector_Handle  handle;
+    BitVector_Address address;
+
+    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    {
+        RETVAL = BitVector_is_empty(address);
+    }
+    else BIT_VECTOR_TYPE_ERROR("is_empty");
+}
+OUTPUT:
+RETVAL
+
+
+boolean
+BitVector_is_full(reference)
+BitVector_Object	reference
+CODE:
+{
+    BitVector_Handle  handle;
+    BitVector_Address address;
+
+    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    {
+        RETVAL = BitVector_is_full(address);
+    }
+    else BIT_VECTOR_TYPE_ERROR("is_full");
 }
 OUTPUT:
 RETVAL

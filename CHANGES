@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 4.1
+                      Package "Bit::Vector" Version 4.2
                     =====================================
                       for Perl version 5.000 and higher
 
@@ -12,13 +12,24 @@
 Contents of this file:
 ----------------------
 
-  -  New features and changes in version 4.1
+  -  New features in version 4.2
+  -  New features in version 4.1
   -  New features in version 4.0
   -  Migration strategy
   -  Most important differences between versions 3.x and 4.0
   -  Most important differences between versions 2.x and 3.0
   -  Most important differences between versions 1.x and 2.0
   -  Version history in details
+
+
+New features in version 4.2:
+----------------------------
+
+Two new methods are available in the "Bit::Vector" and the
+"Set::IntegerRange" module: "is_empty()" and "is_full".
+
+These methods test wether ALL bits in the given bit vector
+are cleared or set.
 
 
 New features in version 4.1:
@@ -589,6 +600,12 @@ Finally, the two methods "Interval_Scan_inc()" and "Interval_Scan_dec()"
 In order to facilitate the calling of methods of the underlying "Bit::Vector"
 class without violating the module's privacy (i.e., without having to know
 the module's implementation), a method named "BitVector" has been added.
+
+----------------------------------------------------------------------------
+
+In version 4.2, two new methods have been added to the "Bit::Vector" and
+the "Set::IntegerRange" module which test wether ALL bits of a given bit
+vector are cleared or set: "is_empty()" and "is_full()".
 
 ----------------------------------------------------------------------------
 

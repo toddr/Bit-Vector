@@ -17,7 +17,7 @@ require DynaLoader;
 
 @EXPORT_OK = qw();
 
-$VERSION = '4.1';
+$VERSION = '4.2';
 
 bootstrap Bit::Vector $VERSION;
 
@@ -216,7 +216,7 @@ sub _boolean
     my($object,$argument,$flag) = @_;
 #   my($name) = "bool"; #&_trace($name,$object,$argument,$flag);
 
-    return( $object->Min() < $object->Size() );
+    return( ! $object->is_empty() );
 }
 
 sub _not_boolean
@@ -224,7 +224,7 @@ sub _not_boolean
     my($object,$argument,$flag) = @_;
 #   my($name) = "'!'"; #&_trace($name,$object,$argument,$flag);
 
-    return( $object->Min() >= $object->Size() );
+    return( $object->is_empty() );
 }
 
 sub _norm
@@ -855,6 +855,12 @@ distribution directory!
       $bit = $vector->in($index);        # (deprecated)
       if ($vector->in($index))           # (deprecated)
 
+  is_empty
+      if ($vector->is_empty())
+
+  is_full
+      if ($vector->is_full())
+
   equal
       if ($vector1->equal($vector2))
 
@@ -1386,6 +1392,26 @@ to its internal 2's complement binary representation!
 
 An exception is raised if "$index" lies outside the
 permitted range from "C<0>" to "C<$vector-E<gt>Size()-1>".
+
+=item *
+
+C<$vector-E<gt>is_empty()>
+
+Tests wether the given bit vector is empty, i.e., wether ALL of
+its bits are cleared (in the "off" state).
+
+Returns "true" ("1") if the bit vector is empty and "false" ("0")
+otherwise.
+
+=item *
+
+C<$vector-E<gt>is_full()>
+
+Tests wether the given bit vector is full, i.e., wether ALL of
+its bits are set (in the "on" state).
+
+Returns "true" ("1") if the bit vector is full and "false" ("0")
+otherwise.
 
 =item *
 
@@ -2011,8 +2037,6 @@ Note that the method for determining emptyness is quite efficient:
 The method stops searching the given bit vector as soon as it finds
 the first non-zero machine word.
 
-(Actually, it uses the "Min()" method internally.)
-
 =item *
 
 Equality
@@ -2325,7 +2349,7 @@ perltoot(1), perlxs(1), perlxstut(1), perlguts(1), overload(3).
 
 =head1 VERSION
 
-This man page documents "Bit::Vector" version 4.1.
+This man page documents "Bit::Vector" version 4.2.
 
 =head1 AUTHOR
 

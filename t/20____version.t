@@ -12,7 +12,7 @@ use Math::MatrixBool;
 print "1..1\n";
 
 $n = 1;
-if ($Math::MatrixBool::VERSION eq "4.1")
+if ($Math::MatrixBool::VERSION eq "4.2")
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 

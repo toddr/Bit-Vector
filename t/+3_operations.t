@@ -9,8 +9,10 @@ use Bit::Vector;
 #   $set->Flip();
 #   $set->Fill();
 #   $set->Empty();
+#   $set->is_empty();
+#   $set->is_full();
 #   $set1->equal($set2);
-#   $set1->inclusion($set2);
+#   $set1->subset($set2);
 #   $set1->Union($set2,$set3);
 #   $set1->Intersection($set2,$set3);
 #   $set1->Difference($set2,$set3);
@@ -114,54 +116,54 @@ sub test
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
 
-    # inclusion
+    # subset
 
-    if ($set0->inclusion($set0))
+    if ($set0->subset($set0))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if ($set0->inclusion($set1))
+    if ($set0->subset($set1))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if ($set0->inclusion($set2))
+    if ($set0->subset($set2))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if ($set0->inclusion($set3))
+    if ($set0->subset($set3))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if (! $set1->inclusion($set0))
+    if (! $set1->subset($set0))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if ($set1->inclusion($set1))
+    if ($set1->subset($set1))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if (! $set1->inclusion($set2))
+    if (! $set1->subset($set2))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if ($set1->inclusion($set3))
+    if ($set1->subset($set3))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if (! $set2->inclusion($set0))
+    if (! $set2->subset($set0))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if (! $set2->inclusion($set1))
+    if (! $set2->subset($set1))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if ($set2->inclusion($set2))
+    if ($set2->subset($set2))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if ($set2->inclusion($set3))
+    if ($set2->subset($set3))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if (! $set3->inclusion($set0))
+    if (! $set3->subset($set0))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if (! $set3->inclusion($set1))
+    if (! $set3->subset($set1))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if (! $set3->inclusion($set2))
+    if (! $set3->subset($set2))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if ($set3->inclusion($set3))
+    if ($set3->subset($set3))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
 

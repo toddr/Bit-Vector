@@ -16,7 +16,7 @@ require Exporter;
 
 @EXPORT_OK = qw();
 
-$VERSION = '4.1';
+$VERSION = '4.2';
 
 use Carp;
 

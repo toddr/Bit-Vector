@@ -36,6 +36,7 @@ t/+B___shiftreg.t
 t/+C_____string.t
 t/+D__increment.t
 t/+E_overloaded.t
+t/+F______empty.t
 t/00____version.t
 t/01________new.t
 t/02____destroy.t
@@ -54,6 +55,7 @@ t/13_parameters.t
 t/14__intervals.t
 t/15_____string.t
 t/16_____resize.t
+t/17______empty.t
 t/20____version.t
 t/21___external.t
 t/30____version.t

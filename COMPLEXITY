@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 4.1
+                      Package "Bit::Vector" Version 4.2
                     =====================================
                       for Perl version 5.000 and higher
 
@@ -79,6 +79,8 @@ of complexity theory!)
     Difference           n/b          n/b          n/b
     ExclusiveOr          n/b          n/b          n/b
     Complement           n/b          n/b          n/b
+    is_empty             1            <<Sweep>>    n/b         6)
+    is_full              1            <<Sweep>>    n/b         6)
     equal                1            <<Sweep>>    n/b         6)
     subset               1            <<Subset>>   n/b         6)
     lexorder             1            <<Sweep>>    n/b         7)
@@ -145,13 +147,14 @@ Footnotes:
    significant) bit (in the case of "Max") is set. The algorithm has
    complexity n/b for a completely empty bit vector.
 
-6) "equal", "subset": "best case" is when the condition is false at
-   the first word. "worst case" is when the condition is true or if
-   the two bit vectors only differ at the last word.
+6) "is_empty", "is_full", "equal", "subset": "best case" is when the
+   condition is false at the first word. "worst case" is when the
+   condition is true or if the condition is true for all words except
+   for the last one.
 
 7) "lexorder", "Compare": "best case" is when the two bit vectors differ
-   at the first word. "worst case" is when the two bit vectors differ at
-   the last word or not at all.
+   at the first word. "worst case" is when the two bit vectors differ
+   only at the last word or not at all.
 
 8) "increment", "decrement": "best case" is when no carry-over accurs
    from the first to the second word. "worst case" is when a carry-over
@@ -300,10 +303,10 @@ Average case studies:
 
 For values of "n" not too large, the average case complexity of the
 methods Interval_Empty, Interval_Fill, Interval_Flip, Norm, Min, Max,
-equal, lexorder, Compare, increment, decrement, subset, Move_Left
-and Move_Right can be calculated with the following Perl subroutines
-(note the terms "2**$n" and even "2**(2*$n)" below which limit the
-computable complexities!) according to the formula:
+is_empty, is_full, equal, lexorder, Compare, increment, decrement,
+subset, Move_Left and Move_Right can be calculated with the following
+Perl subroutines (note the terms "2**$n" and even "2**(2*$n)" below
+which limit the computable complexities!) according to the formula:
 
     E[X]  =  SUM{ i=1..n } i * p(i)
 
@@ -317,8 +320,9 @@ of set/cleared bits of a given bit vector!
 
 The result is almost constant n/3b for Interval_Empty, Interval_Fill and
 Interval_Flip, more or less close to n for Norm, vaguely in the range n/2b
-to n/b for Min and Max, close to 1 for equal, lexorder, Compare, increment,
-decrement and subset and approximately n/2 for Move_Left and Move_Right.
+to n/b for Min and Max, close to 1 for is_empty, is_full, equal, lexorder,
+Compare, increment, decrement and subset and approximately n/2 for Move_Left
+and Move_Right.
 
     <<Range>> :
 
@@ -400,8 +404,8 @@ decrement and subset and approximately n/2 for Move_Left and Move_Right.
 
     <<Sweep>> :
 
-    sub average_case     # methods "equal", "lexorder", "Compare",
-    {                    #         "increment" and "decrement"
+    sub average_case     # methods "is_empty", "is_full", "equal", "lexorder",
+    {                    #         "Compare", "increment" and "decrement"
         my($n,$b) = @_;
         my($i,$k,$t1,$t2,$sum);
 

@@ -48,6 +48,8 @@ $method_list{'Intersection'}      = 3;
 $method_list{'Difference'}        = 3;
 $method_list{'ExclusiveOr'}       = 3;
 $method_list{'Complement'}        = 2;
+$method_list{'is_empty'}          = 1;
+$method_list{'is_full'}           = 1;
 $method_list{'equal'}             = 2;
 $method_list{'subset'}            = 2;
 $method_list{'inclusion'}         = 2;
@@ -76,7 +78,7 @@ $operator_list{'le'}  = 1;
 $operator_list{'gt'}  = 1;
 $operator_list{'ge'}  = 1;
 
-print "1..1789\n";
+print "1..1795\n";
 
 $n = 1;
 

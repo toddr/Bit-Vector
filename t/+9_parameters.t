@@ -54,6 +54,8 @@ $method_list{'Intersection'}      = 3;
 $method_list{'Difference'}        = 3;
 $method_list{'ExclusiveOr'}       = 3;
 $method_list{'Complement'}        = 2;
+$method_list{'is_empty'}          = 1;
+$method_list{'is_full'}           = 1;
 $method_list{'equal'}             = 2;
 $method_list{'subset'}            = 2;
 $method_list{'inclusion'}         = 2;
@@ -69,7 +71,7 @@ $method_list{'Move_Right'}        = 2 + $numeric;
 $method_list{'to_String'}         = 1;
 $method_list{'from_string'}       = 2 + $numeric;
 
-print "1..1225\n";
+print "1..1243\n";
 
 $n = 1;
 

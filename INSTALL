@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 4.1
+                      Package "Bit::Vector" Version 4.2
                     =====================================
                       for Perl version 5.000 and higher
 
@@ -23,7 +23,7 @@ Edit the file "Makefile.PL" and change the line
 
     'VERSION_FROM'	=> 'Vector.pm',
 to
-    'VERSION'		=> '4.1',
+    'VERSION'		=> '4.2',
 
 Then edit the file "Vector.pm" and change the line
 
@@ -43,7 +43,7 @@ Please unpack and build this package OUTSIDE the Perl source and distribution
 tree!!
 
  1) Change directory to the directory that has been created by unpacking this
-    package ("Bit-Vector-4.1/").
+    package ("Bit-Vector-4.2/").
 
  2) Type "perl Makefile.PL" (or whatever the name and path of your Perl 5
     binary is).
@@ -119,6 +119,7 @@ tree!!
     t/+C_____string.....ok
     t/+D__increment.....ok
     t/+E_overloaded.....ok
+    t/+F______empty.....ok
     t/00____version.....ok
     t/01________new.....ok
     t/02____destroy.....ok
@@ -137,13 +138,14 @@ tree!!
     t/14__intervals.....ok
     t/15_____string.....ok
     t/16_____resize.....ok
+    t/17______empty.....ok
     t/20____version.....ok
     t/21___external.....ok
     t/30____version.....ok
     t/40____version.....ok
     t/50____version.....ok
     All tests successful.
-    Files=38,  Tests=74809, 28 secs (45.42 cusr  2.68 csys = 48.10 cpu)
+    Files=40,  Tests=74937, 28 secs (46.85 cusr  2.50 csys = 49.35 cpu)
 
  5) At last, type "make install".
 

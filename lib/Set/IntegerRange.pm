@@ -16,7 +16,7 @@ require Exporter;
 
 @EXPORT_OK = qw();
 
-$VERSION = '4.1';
+$VERSION = '4.2';
 
 use Carp;
 
@@ -493,6 +493,26 @@ sub Complement
     }
 }
 
+sub is_empty
+{
+    croak "Usage: if (\$set->is_empty())"
+      if (@_ != 1);
+
+    my($object) = @_;
+
+    return( $object->[0]->is_empty() );
+}
+
+sub is_full
+{
+    croak "Usage: if (\$set->is_full())"
+      if (@_ != 1);
+
+    my($object) = @_;
+
+    return( $object->[0]->is_full() );
+}
+
 sub equal
 {
     croak "Usage: if (\$set1->equal(\$set2))"
@@ -787,7 +807,7 @@ sub _boolean
     my($object,$argument,$flag) = @_;
 #   my($name) = "bool"; #&_trace($name,$object,$argument,$flag);
 
-    return( $object->Min() <= $object->[2] );
+    return( ! $object->is_empty() );
 }
 
 sub _not_boolean
@@ -795,7 +815,7 @@ sub _not_boolean
     my($object,$argument,$flag) = @_;
 #   my($name) = "'!'"; #&_trace($name,$object,$argument,$flag);
 
-    return( $object->Min() > $object->[2] );
+    return( $object->is_empty() );
 }
 
 sub _norm
@@ -1341,6 +1361,12 @@ Easy manipulation of sets of integers (arbitrary intervals)
   Complement
       $set1->Complement($set2);            # in-place is possible!
 
+  is_empty
+      if ($set->is_empty())
+
+  is_full
+      if ($set->is_full())
+
   equal
       if ($set1->equal($set2))
 
@@ -1485,7 +1511,7 @@ Graph::Kruskal(3).
 
 =head1 VERSION
 
-This man page documents "Set::IntegerRange" version 4.1.
+This man page documents "Set::IntegerRange" version 4.2.
 
 =head1 AUTHOR
 
