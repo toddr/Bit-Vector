@@ -1,0 +1,162 @@
+                    =====================================
+                      Package "Bit::Vector" Version 4.0
+                    =====================================
+                      for Perl version 5.000 and higher
+
+
+     Copyright (c) 1995, 1996, 1997 by Steffen Beyer. All rights reserved.
+     This package is free software; you can redistribute it and/or modify
+     it under the same terms as Perl itself.
+
+
+Prerequisites:
+--------------
+
+Perl version 5.000 or higher, a C compiler capable of the ANSI C standard (!)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+Preliminary steps for use with Perl prior to version 5.002:
+-----------------------------------------------------------
+
+Edit the file "Makefile.PL" and change the line
+
+    'VERSION_FROM'	=> 'Vector.pm',
+to
+    'VERSION'		=> '4.0',
+
+Then edit the file "Vector.pm" and change the line
+
+    bootstrap Bit::Vector $VERSION;
+to
+    bootstrap Bit::Vector;
+
+Finally, edit the file "Vector.xs" and delete the line
+
+    PROTOTYPES: DISABLE
+
+
+How to install it:
+------------------
+
+Please unpack and build this package OUTSIDE the Perl source and distribution
+tree!!
+
+ 1) Change directory to the directory that has been created by unpacking this
+    package ("Bit-Vector-4.0/").
+
+ 2) Type "perl Makefile.PL" (or whatever the name and path of your Perl 5
+    binary is).
+
+    This will create a "Makefile" with the appropriate parameters for your
+    system (for instance, where the install directories are, and so on).
+
+ 3) Type "make".
+
+    This will create a dynamically linkable library file that will be linked
+    to Perl later, at runtime, provided your system supports dynamic linking.
+
+    Please refer to the MakeMaker documentation for instructions on how
+    to build a new Perl with statically linked libraries (invoke "perldoc
+    ExtUtils::MakeMaker" for this), if your system does NOT support dynamic
+    linking!
+
+    Should you encounter any compiler warnings or errors (like the redefi-
+    nition of certain types already defined by your system), please contact
+    me by mail at <sb@sdm.de>, sending me your compiler output (both STDOUT
+    and STDERR). Thank you!
+
+    ======================================================================
+    Be aware that you need a C compiler which supports ANSI C in order to
+    successfully compile this package!
+    ======================================================================
+
+    Also note that problems may arise with the c89 compiler of HP, although
+    it allegedly supports ANSI C!
+
+    I recommend the GNU gcc compiler, which is available for free on the
+    Internet.
+
+    (HP users are strongly recommended to install the GNU assembler GAS
+    first before installing GNU gcc)
+
+    Should you get the error messages
+
+    Vector.c: 15: Unable to find include file 'EXTERN.h'.
+    Vector.c: 16: Unable to find include file 'perl.h'.
+    Vector.c: 17: Unable to find include file 'XSUB.h'.
+
+    then edit the file "Makefile.PL" and change the line
+
+    'INC'	=> '',     # e.g., '-I/opt/pkg/perl5.003/dist'
+
+    in such a way that it points to your Perl 5 distribution tree, e.g.,
+
+    'INC'	=> '-I/usr/ctr/dlt/private/perl/perl5.003',
+
+    or the like, and start over with the generation of the "Makefile" at 2).
+
+ 4) Now issue "make test".
+
+    The output should look somewhat like this:
+
+    PERL_DL_NONLAZY=1 /usr/bin/perl -I./blib/arch -I./blib/lib
+    -I/e/www/sw/pkg/perl/lib/i386-freebsd/5.003 -I/e/www/sw/pkg/perl/lib
+    -e 'use Test::Harness qw(&runtests $verbose); $verbose=0; runtests @ARGV;'
+    t/*.t
+    t/+0____version.....ok
+    t/+1________new.....ok
+    t/+2____destroy.....ok
+    t/+3_operations.....ok
+    t/+4__functions.....ok
+    t/+5_____primes.....ok
+    t/+6__inclusion.....ok
+    t/+7___lexorder.....ok
+    t/+8_____resize.....ok
+    t/+9_parameters.....ok
+    t/+A__intervals.....ok
+    t/+B___shiftreg.....ok
+    t/+C_conversion.....ok
+    t/+D_overloaded.....ok
+    t/00____version.....ok
+    t/01________new.....ok
+    t/02____destroy.....ok
+    t/03_operations.....ok
+    t/04__functions.....ok
+    t/05_____primes.....ok
+    t/06__inclusion.....ok
+    t/07___lexorder.....ok
+    t/08_____resize.....ok
+    t/09_parameters.....ok
+    t/0A__intervals.....ok
+    t/10____version.....ok
+    t/11________new.....ok
+    t/12_overloaded.....ok
+    t/13_parameters.....ok
+    t/14__intervals.....ok
+    t/15_conversion.....ok
+    t/20____version.....ok
+    t/21___external.....ok
+    t/30____version.....ok
+    t/40____version.....ok
+    t/50____version.....ok
+    All tests successful.
+    Files=36,  Tests=17794, 13 secs (22.18 cusr  2.03 csys = 24.22 cpu)
+
+ 5) At last, type "make install".
+
+ 6) Now you can try to run the "primes.pl" demo program. Start it with
+    "perl primes.pl" (or whatever the name and path of your Perl 5 binary
+    is).
+
+    It will ask you to enter a number which will serve as an upper limit for
+    the calculation of all prime numbers up to that limit, using the algorithm
+    known as "The Seave of Erathostenes".
+
+    On my machine (SUN SPARCstation 20/61), calculating all the prime numbers
+    up to one million takes about 1 minute 30 seconds to 2 minutes, depending
+    on the load.
+
+ 7) Share and enjoy!
+
+
