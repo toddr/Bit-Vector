@@ -104,19 +104,21 @@ typedef enum { false = FALSE , true = TRUE } boolean;
 /*****************************************************************************/
 
 /*****************************************************************************/
-/*  VERSION:  5.2                                                            */
+/*  VERSION:  5.3                                                            */
 /*****************************************************************************/
 /*  VERSION HISTORY:                                                         */
 /*****************************************************************************/
 /*                                                                           */
-/*    31.03.98    Version 5.2  no changes                                    */
-/*    09.03.98    Version 5.1  no changes                                    */
-/*    01.03.98    Version 5.0                                                */
-/*    24.03.97    Version 4.0                                                */
-/*    16.02.97    Version 3.0                                                */
-/*    ??.??.??    ???                                                        */
-/*    29.11.95    First version under UNIX (for Perl modules)                */
-/*    01.11.93    First version (MS C Compiler on PC with DOS)               */
+/*    Version 5.3   12.05.98  Completed history.                             */
+/*    Version 5.0   01.03.98  "Definitions.h" -> "ToolBox.h".                */
+/*    Version 4.0   24.03.97  "lib_defs.h" -> "Definitions.h".               */
+/*    Version 3.0   16.02.97  Changed frames from 40 to 80 columns.          */
+/*    Version 2.0   30.11.96  byte -> base etc.                              */
+/*    Version 1.2a  21.11.95  unchar -> N_char etc. Added MS-DOS specifics.  */
+/*    Version 1.1   18.11.95  uchar -> unchar etc.                           */
+/*    Version 1.01  16.11.95  Removed MS-DOS specifics.                      */
+/*    Version 1.0   12.11.95  First version under UNIX (with Perl modules).  */
+/*    Version 0.9   01.11.93  First version under MS-DOS.                    */
 /*                                                                           */
 /*****************************************************************************/
 /*  AUTHOR:                                                                  */

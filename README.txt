@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 5.2
+                      Package "Bit::Vector" Version 5.3
                     =====================================
 
 
@@ -10,6 +10,7 @@ This package is available for download either from my web site at
 or from any CPAN (= "Comprehensive Perl Archive Network") mirror server:
 
                   http://www.perl.com/CPAN/authors/id/STBEY/
+
 
 The package consists of a C library (designed for maximum efficiency)
 which is the core of a Perl module (designed for maximum ease of use).
@@ -34,29 +35,45 @@ The C library at the core of this Perl module can additionally
 be redistributed and/or modified under the terms of the "GNU
 Library General Public License".
 
-Please refer to the files "Artistic", "GNU_GPL" and "GNU_LGPL"
-in this distribution for details!
+Please refer to the files "Artistic.txt", "GNU_GPL.txt" and
+"GNU_LGPL.txt" in this distribution for details!
 
 
 Prerequisites:
 --------------
 
 Perl version 5.000 or higher, and an ANSI C compiler (!)
-                                     ======
+                                     ^^^^^^
 
 
 Installation:
 -------------
 
-Please see the file "INSTALL" in this distribution for instructions on
-how to install this package.
+Please see the file "INSTALL.txt" in this distribution for instructions
+on how to install this package.
 
 
 Changes over previous versions:
 -------------------------------
 
-Please refer to the file "CHANGES" in this distribution for a detailed
+Please refer to the file "CHANGES.txt" in this distribution for a detailed
 version history and instructions on how to upgrade existing applications.
+
+
+Documentation:
+--------------
+
+The documentation to this package is included in POD format (= "Plain Old
+Documentation") in the file "Vector.pm" in this distribution, the human-
+readable markup-language standard for Perl documentation.
+
+By building this package, this documentation will automatically be converted
+into a man page, which will automatically be installed in your Perl tree for
+further reference in this process, where it can be accessed via the command
+"man Bit::Vector" (UNIX) or "perldoc Bit::Vector" (UNIX and Win32).
+
+If Perl is not available on your system, you can also read this documentation
+directly.
 
 
 What does it do:
@@ -207,8 +224,8 @@ Both tools are written by Ralf S. Engelschall.
 Credits:
 --------
 
-Please refer to the file "CREDITS" in this distribution for a list of
-contributors.
+Please refer to the file "CREDITS.txt" in this distribution for a list
+of contributors.
 
 
 Author's note:
@@ -217,12 +234,9 @@ Author's note:
 If you have any questions, suggestions or need any assistance, please
 let me know!
 
-Also, if there is anything you would like to do with this module which
-the module doesn't allow yet, please let me know! If it fits the module's
-overall concept, I'll implement it as soon as possible. Frequently this is
-only a matter of a few days.
+I would in fact be glad to receive any kind of feedback from you!
 
-I hope you will find this module beneficial!
+I hope you will find this module beneficial.
 
 Yours,
 --

@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 5.2
+                      Package "Bit::Vector" Version 5.3
                     =====================================
 
 
@@ -10,8 +10,8 @@
 Prerequisites:
 --------------
 
-Perl version 5.000 or higher, a C compiler capable of the ANSI C standard (!)
-                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Perl version 5.000 or higher, and an ANSI C compiler (!)
+                                     ^^^^^^
 
 
 Preliminary steps for use with Perl prior to version 5.002:
@@ -21,7 +21,7 @@ Edit the file "Makefile.PL" and change the line
 
     'VERSION_FROM'      => 'Vector.pm',
 to
-    'VERSION'           => '5.2',
+    'VERSION'           => '5.3',
 
 Then edit the file "Vector.pm" and change the line
 
@@ -31,7 +31,7 @@ to
 
 Also edit the file "t/00____version.t" and change the line
 
-    use Bit::Vector 5.2;
+    use Bit::Vector 5.3;
 to
     use Bit::Vector;
 
@@ -40,14 +40,35 @@ Finally, edit the file "Vector.xs" and delete the line
     PROTOTYPES: DISABLE
 
 
-How to install it:
-------------------
+Installation:
+-------------
 
-Please unpack and build this package OUTSIDE the Perl source and distribution
-tree!!
+=============================================================================
+ALWAYS unpack and build Perl modules OUTSIDE the Perl source and installation
+tree! (You might otherwise inadvertently corrupt your Perl installation!)
+=============================================================================
+
+Note that installation under Windows NT/95 is easiest with the "native"
+"Perl for Win32" port by Perl developer Gurusamy Sarathy, available from:
+
+                http://www.perl.com/CPAN/authors/id/GSAR/
+
+Quick installation guide for experienced users:
+-----------------------------------------------
+
+    UNIX:                 Win32/Borland C++:      Win32/MS Visual C++:
+    =====                 ==================      ====================
+
+    > perl Makefile.PL    > perl Makefile.PL      > perl Makefile.PL
+    > make                > dmake                 > nmake
+    > make test           > dmake test            > nmake test
+    > make install        > dmake install         > nmake install
+
+Detailed installation guide:
+----------------------------
 
  1) Change directory to the directory that has been created by unpacking this
-    package ("cd Bit-Vector-5.2/").
+    package ("cd Bit-Vector-5.3").
 
  2) Type "perl Makefile.PL" (or whatever the name and path of your Perl 5
     binary is).
@@ -56,6 +77,9 @@ tree!!
     system (for instance, where the install directories are, and so on).
 
  3) Type "make".
+
+    (For installation under Windows NT/95, use "dmake" (Borland C++) or
+    "nmake" (MS Visual C++) instead!)
 
     This will create a dynamically linkable library file that will be linked
     to Perl later, at runtime, provided your system supports dynamic linking.
@@ -67,7 +91,7 @@ tree!!
 
     Should you encounter any compiler warnings or errors (like the redefi-
     nition of certain types already defined by your system), please contact
-    me via email at <sb@engelschall.com>, sending me your compiler output
+    me via e-mail at <sb@engelschall.com>, sending me your compiler output
     (both STDOUT and STDERR). Thank you!
 
     ======================================================================
@@ -78,11 +102,11 @@ tree!!
     Also note that problems may arise with the c89 compiler of HP, although
     it allegedly supports ANSI C!
 
-    I recommend the GNU gcc compiler, which is freely available on the
-    Internet (see ftp://ftp.gnu.org/pub/gnu/ and mirror sites thereof).
+    I recommend the GNU C compiler ("gcc"), which is freely available on
+    the Internet (see ftp://ftp.gnu.org/pub/gnu/ and mirror sites thereof).
 
-    (HP users are strongly recommended to install the GNU assembler GAS
-    first before installing GNU gcc)
+    (HP users are strongly recommended to install the GNU assembler "gas"
+    first before installing the GNU C compiler "gcc", according to GNU.)
 
     Should you get the error messages
 
@@ -100,7 +124,7 @@ tree!!
 
     or the like, and start over with the generation of the "Makefile" at 2).
 
- 4) Now issue "make test".
+ 4) Now issue "make test" (or "dmake test" or "nmake test", respectively).
 
     The output should look somewhat like this:
 
@@ -133,7 +157,7 @@ tree!!
     (Note that the exact number of tests will depend on the number of bits
      of a machine word/an unsigned long on your system!)
 
- 5) At last, type "make install".
+ 5) At last, type "make install" (or "dmake install", "nmake install").
 
  6) Now you can run the "primes.pl" demo program from the "examples" sub-
     directory, for instance. Start it with "perl examples/primes.pl" (or

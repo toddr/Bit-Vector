@@ -18,7 +18,6 @@ WriteMakefile(
     'LIBS'              => [''],   # e.g., '-lm'
     'DEFINE'            => '',     # e.g., '-DHAVE_SOMETHING'
     'INC'               => '',     # e.g., '-I/usr/include/other'
-#   'EXE_FILES'         => [ qw(modify upgrade_BV52) ],
     'dist'              => { COMPRESS => "gzip -9", SUFFIX => "gz" }
 );
 

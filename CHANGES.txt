@@ -1,0 +1,380 @@
+                    =====================================
+                      Package "Bit::Vector" Version 5.3
+                    =====================================
+
+
+            Copyright (c) 1995, 1996, 1997, 1998 by Steffen Beyer.
+                             All rights reserved.
+
+
+What's new in version 5.3:
+--------------------------
+
+The method "Norm()" has been further improved to become still a bit more
+efficient.
+
+The upgrade utility "upgrade_BV52" (a shell script) was ported to Perl
+(now named "upgrade_BV53.pl"), making it faster, more flexible and easier
+to read and maintain and -- last but not least -- executable under
+Windows NT/95 as well.
+
+Moreover, a similar tool for upgrading from "Set::IntegerFast" version 3.x
+to "Bit::Vector" version 4.2 (called "upgrade_BV42.pl") was added.
+
+Support for Windows NT/95 was also improved by adding the extension ".txt"
+to all text files (where possible) in order to allow opening them with a
+double-click.
+
+Finally, this document, "CHANGES.txt", was completely rewritten because
+it had become a terrible mess.
+
+
+Changes in version 5.2:
+-----------------------
+
+In version 5.2, the method "Norm()" has been improved and should now be
+faster by a factor varying between about 1.13 and 9.09, depending on the
+number of set bits (using a method suggested and according to benchmarks
+performed by Krzysztof Koczyjan <krzysztofk@rocketmail.com>).
+
+Moreover, the implementation of the overloaded operators "<<" and ">>"
+has been changed so that they should also be more efficient now, at least
+on average (the former implementation was faster under certain circumstances
+but not on average).
+
+And finally, four new methods have been added: "new_Hex()", "new_Bin()",
+"new_Dec()" and "new_Enum()", which allow you to create a new bit vector
+and to initialize it in a single statement.
+
+
+Changes in version 5.1:
+-----------------------
+
+In version 5.1, systematic exception handling was added to "Vector.pm" so that
+error conditions arising from method calls in overloaded operators do not show
+error messages anymore pointing to the location in "Vector.pm" where the method
+was called, but rather to the location in your application program where the
+overloaded operator was used.
+
+
+Migration strategy to version 5.3:
+----------------------------------
+
+Step 1:
+-------
+
+If your application(s) still use(s) "Set::IntegerFast" version 3.x,
+or if your application(s) still use(s) method names that are considered
+deprecated since "Bit::Vector" version 4.0, you will have to upgrade to
+"Bit::Vector" version 4.2 first by using the tool "upgrade_BV42.pl" from
+the "tools" subdirectory in this distribution.
+
+To do so, simply invoke this utility as follows:
+
+    > perl ./tools/upgrade_BV42.pl  app1.pl  app2.pl  app3.pl  ...
+or
+    > perl .\tools\upgrade_BV42.pl  app1.pl  app2.pl  app3.pl  ...
+
+Note that this utility renames the original file "app<i>.pl" to
+"app<i>.pl.bak" before creating a fresh copy of this file (again
+named "app<i>.pl"), and before applying any changes to that copy.
+
+Be cautious to keep this backup copy (or better still, another copy
+of the original file) in a safe place!
+
+Beware that (at least under UNIX) this backup file will get overwritten
+WITHOUT WARNING if you don't save it to a different place and if you run
+the upgrade utility MORE THAN ONCE on the same application!
+
+(Note though that running the upgrade utility more than once on the same
+application is harmless as far as the RESULTING file is concerned.)
+
+Beware also that this utility is not fool-proof:
+
+It is theoretically impossible for a patch program such as this one,
+which uses regular expressions to analyze your application(s), to handle
+all possible cases correctly.
+
+It would not only need to know about Perl syntax and how to parse it,
+but it would also need to actually perform some of the Perl statements
+(like "use") in order to know about methods that have been imported.
+
+This is of course unfeasible, which is the reason why this utility can
+only handle the most common cases.
+
+Actually it might convert MORE than you might want; you will have to
+either correct these cases manually after the conversion, or to adapt
+the corresponding regular expressions to your special case beforehand.
+
+The substitutions performed by this upgrade utility are the following:
+
+          Set::IntegerFast     ==>  Bit::Vector
+          use Bit::Vector 3.x  ==>  use Bit::Vector 4.2
+          = new Bit::Vector    ==>  = Bit::Vector->new
+          Empty_Interval       ==>  Interval_Empty
+          Fill_Interval        ==>  Interval_Fill
+          Flip_Interval        ==>  Interval_Flip
+          Delete               ==>  Bit_Off
+          Insert               ==>  Bit_On
+          flip                 ==>  bit_flip
+          ->in                 ==>  ->contains
+          inclusion            ==>  subset
+
+Step 2:
+-------
+
+To upgrade your application(s) from "Bit::Vector" version 4.x
+to "Bit::Vector" version 5.3, simply issue the following command:
+
+    > perl ./tools/upgrade_BV53.pl  app1.pl  app2.pl  app3.pl  ...
+or
+    > perl .\tools\upgrade_BV53.pl  app1.pl  app2.pl  app3.pl  ...
+
+Note that this utility renames the original file "app<i>.pl" to
+"app<i>.pl.bak" before creating a fresh copy of this file (again
+named "app<i>.pl"), and before applying any changes to that copy.
+
+Be cautious to keep this backup copy (or better still, another copy
+of the original file) in a safe place!
+
+Beware that (at least under UNIX) this backup file will get overwritten
+WITHOUT WARNING if you don't save it to a different place and if you run
+the upgrade utility MORE THAN ONCE on the same application!
+
+(Note though that running the upgrade utility more than once on the same
+application is harmless as far as the RESULTING file is concerned.)
+
+Beware also that this utility is far from fool-proof:
+
+For instance, method calls may not span over multiple lines, or
+the upgrade utility will not work!
+
+Moreover, the upgrade utility assumes that method calls use the
+arrow ("->") -- other forms of method calls that are legal in Perl
+are not supported.
+
+Some examples of things this upgrade utility can't handle properly:
+
+        ('10110110' + $vector1)->lexorder($vector2)
+
+(The bit vector object for which the method is invoked (you could call
+it the "lvalue" of the method call) must start with a dollar sign. This
+means that "($vec1 + $vec2)->" instead of "('10110110' + $vector1)->"
+would actually work, but this is not recommended, either. You always
+risk parentheses at the wrong places after the upgrade. See below for
+how to circumvent this problem!)
+
+        $vector[$index]->lexorder($vector[int($index/2)+1])
+
+(Nested parentheses cannot be parsed with regular expressions.
+Therefore, parentheses in the method's arguments cannot be
+resolved properly, leading to parentheses in the wrong places
+after the upgrade.)
+
+You will need to fix these cases manually.
+
+The best method for doing so is to simplify this kind of statement
+BEFORE upgrading your application. A sure way to go is to store such
+intermediate results in a temporary variable which is then used in
+the method call.
+
+For example:
+
+        $temp = '10110110' + $vector1;
+        $temp->lexorder($vector2)
+
+        $temp = int($index/2)+1;
+        $vector[$index]->lexorder($vector[$temp])
+
+Note also that in most cases, the upgrade utility assumes that all
+method calls have parentheses, even though this is not absolutely
+required by Perl syntax.
+
+Spaces before and after the method invocation arrow ("->") and between
+the method name and the opening parenthesis are optional, though.
+
+The substitutions performed by this upgrade utility are the following:
+
+          use Bit::Vector 4.x  ==>                 use Bit::Vector 5.3
+          to_ASCII             ==>                 to_Enum
+          from_ASCII           ==>                 from_Enum
+          to_String            ==>                 to_Hex
+    ... ->from_string( ... )   ==>  ( eval { ... ->from_Hex( ... ); !$@; } )
+          from_string          ==>                 from_Hex
+    ... ->lexorder( ... )      ==>         ( ... ->Lexicompare( ... ) <= 0)
+          lexorder             ==>                 Lexicompare
+    ... = Bit::Vector->new_from_String( ... )
+                               ==>
+    ... = Bit::Vector->new_Hex(length( ... ) << 2, ... )
+          new_from_String      ==>                 new_Hex
+
+Step 3:
+-------
+
+BEWARE that the semantics of the method "Compare()" have changed:
+
+While previously it assumed its two bit vector arguments to be UNSIGNED,
+it now assumes them to be SIGNED.
+
+If you want to perform a comparison assuming UNSIGNED bit vectors, use
+the new method "Lexicompare()" instead!
+
+
+Version history:
+----------------
+
+Version 5.3   12.05.98
+
+    Changed "Norm()" to become still a bit more efficient.
+    Ported the "upgrade_BV52" utility to Perl ("upgrade_BV53.pl"),
+    making it faster, more flexible and easier to read and maintain.
+    Added "upgrade_BV42.pl".
+    Enhanced support for Windows NT/95.
+    Complete rewrite of this "CHANGES.txt" document.
+
+Version 5.2   31.03.98
+
+    Changed "Norm()", "<<" and ">>" to become more efficient.
+    Added "new_Hex()", "new_Bin()", "new_Dec()" and "new_Enum()".
+    Made the exception handling in "Vector.pm" more elegant.
+
+Version 5.1   09.03.98
+
+    Added systematic exception handling to "Vector.pm".
+
+Version 5.0   01.03.98
+
+ +  "Outsourced" all example modules (now available separately).
+ +  Added: Word_Bits(), Long_Bits(), Concat(), Concat_List(), Primes(),
+    Reverse(), Interval_Reverse(), Interval_Copy(), Interval_Substitute(),
+    Lexicompare(), to_Bin(), from_Bin(), to_Dec(), from_Dec(), Bit_Copy(),
+    LSB(), MSB(), lsb(), msb(), Insert(), Delete(), add(), subtract(),
+    Negate(), Absolute(), Sign(), Multiply(), Divide(), GCD(), Block_Store(),
+    Block_Read(), Word_Size(), Word_Store(), Word_Read(), Word_List_Store(),
+    Word_List_Read(), Word_Insert(), Word_Delete(), Chunk_Store(),
+    Chunk_Read(), Chunk_List_Store(), Chunk_List_Read(), Index_List_Remove(),
+    Index_List_Store(), Index_List_Read(), Transpose().
+ +  Ported to C: "Version()", "Shadow()", "Clone()", "to_Enum()",
+    "from_Enum()".
+ +  Changed: "Compare()" (now assumes bit vectors are SIGNED).
+ +  Renamed: "to_String()" ==> "to_Hex()", "from_string()" ==> "from_Hex()",
+    "to_ASCII()" ==> "to_Enum()", "from_ASCII()" ==> "from_Enum()"
+    (aliases are still available but deprecated).
+ +  Dropped: "lexorder()", "new_from_String()".
+ +  Dropped: Module "Set::IntegerFast" (replaced by "Bit::Vector").
+ +  Definitely abandoned the possibility for subclassing because it doesn't
+    make any sense in this module (use embedding instead!).
+ +  Fixed: Module "Set::IntegerRange" version 4.2 broke with "Bit::Vector"
+    version 5.0. Issued quick fix "Set::IntRange" version 5.0. More
+    thorough implementation is under construction.
+
+Version 4.2   16.07.97
+
+    Added "is_empty()" and "is_full()".
+
+Version 4.1   30.06.97
+
+    Added "Move_Left()" and "Move_Right()".
+    Changed "<<" and ">>" to call "Move_Left()" and "Move_Right()" instead.
+    Added "increment()" and "decrement()".
+    Changed "++" and "--" to call "increment()" and "decrement()" instead.
+    Added "Resize()", "Interval_Scan_inc()", "Interval_Scan_dec()" and
+    "BitVector()" to "Set::IntegerRange".
+
+Version 4.0   23.04.97
+
+ +  Complete rewrite of the "Set::IntegerFast" module.
+ +  Renamed "Set::IntegerFast" to "Bit::Vector".
+ +  United the separate C cores and XS files for sets, matrices of booleans
+    and bit shift operations in a single module.
+ +  Abandoned the individual version numbers.
+ +  Dropped the separate "Makefile.PL"s, adopted the solution using
+    a "lib" subdirectory.
+ +  Added: Flip(), Interval_Scan_inc(), Interval_Scan_dec(), rotate_left(),
+    rotate_right(), shift_left(), shift_right(), to_String(), from_string(),
+    Multiplication(), Closure(), Shadow(), Clone(), new_from_String(),
+    to_ASCII(), from_ASCII().
+ +  Added overloaded operators for: emptyness, equality, lexical comparison,
+    shift register, rotate register, string conversion, union, intersection,
+    difference, exclusive-or, complement, subset relationship, true subset
+    relationship, superset relationship, true superset relationship, norm.
+
+Version 3.2   04.02.97
+
+    Added "Empty_Interval()", "Fill_Interval()", "Flip_Interval()" and
+    "Size()" to "Set::IntegerFast" and "Set::IntegerRange".
+    "Set::IntegerFast" and "Set::IntegerRange" both switched to version
+    number 3.0.
+    Improved the "Math::MatrixBool" module (new version number: 2.0) to
+    use C routines for matrix multiplication and closure and fixed some
+    bugs in these methods at the same time.
+    Added "new_from_string()" and "Dim()" to "Math::MatrixBool".
+    Fixed a severe bug in the "kleene()" method of "Math::MatrixReal"
+    (new version number: 1.1).
+
+Version 3.1   21.01.97
+
+    Fixed a bug that caused the initialization routine of the module to fail
+    on 64 bit machines due to a wrong conditional expression (type "int" and
+    "size_t" do not necessarily have the same size!).
+    "Set::IntegerFast" switched to version number 2.2.
+
+Version 3.0   12.01.97
+
+    Added "flip()" to "Set::IntegerFast" and "Set::IntegerRange".
+    Transformed the "kruskal" demo program to a Perl module "Graph::Kruskal".
+    Added new companion modules: "Math::MatrixBool", "Math::MatrixReal" and
+    "DFA::Kleene", all with separate "Makefile.PL"s.
+    Added introductory article about theory behind Kleene's algorithm.
+    Introduced independent version numbers for all modules:
+    "Set::IntegerFast" ==> version 2.1, "Set::IntegerRange" ==> version 2.0.
+    Added overloaded operators to "Set::IntegerRange".
+    Bugfix: Changed "gv_stashpv(class,0)" to "gv_stashpv(class,1)" in the
+    XS file (caused core dumps in previous versions when "new()" was called
+    with a nonexistent class name and subclassing enabled).
+
+Version 2.0   14.12.96
+
+    Changed "Create()" to "new()".
+    Now supports "$set = new Set::IntegerFast($elements);" instead of
+    "$set = Set::IntegerFast::Create($elements);".
+    Changed "Destroy()" to "DESTROY()", which doesn't need to (and
+    shouldn't!) be called explicitly anymore.
+    Fixed the "bad free() ignored" warnings caused by "Destroy()" in
+    version 1.1 (in conjunction with Perl version 5.002) which led some
+    of the tests in "make test" to fail.
+    Complete rewrite of the XS part.
+    Changed "lexorder()" and "Compare()" to become more efficient
+    (complexity n/b instead of n/8).
+    Changed parameters visible externally from "word"/"unit" to "N_int"
+    in the C core.
+    Complete rewrite of the documentation, now in POD format.
+    Added a new (wrapper) module named "Set::IntegerRange".
+
+Version 1.1   08.01.96
+
+    Added "Resize()".
+    Changed "Create()", "Empty()", "Fill()" and "Copy()" to have complexity
+    n/b rather than n/8.
+    Made interfaces in C core more consistent: Pointer to a set object is
+    now always the first parameter.
+    Added new paragraphs to the documentation.
+    Added "ExclusiveOr()" (for symmetric difference X = (Y + Z) \ (Y * Z)).
+
+Version 1.0   14.12.95   First version under UNIX (with Perl module).
+
+    Initial release as a C library and Perl module.
+
+Version 0.9   01.11.93   First version of C library under MS-DOS.
+
+    Ported the Pascal code to C because I thought sets of arbitrary sizes
+    are always useful to have.
+
+Version 0.1   ??.??.89   First version in Turbo Pascal under CP/M.
+
+    I first wrote this library (on my Apple ][+) because I needed more bits
+    in a set than Turbo Pascal would support in order to calculate "first",
+    "follow" and "look-ahead" character sets for a compiler-compiler.
+
+----------------------------------------------------------------------------
+

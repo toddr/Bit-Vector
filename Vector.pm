@@ -23,7 +23,7 @@ require DynaLoader;
 
 @EXPORT_OK = qw();
 
-$VERSION = '5.2';
+$VERSION = '5.3';
 
 $CONFIG[0] = 0;
 $CONFIG[1] = 0;
@@ -2093,8 +2093,8 @@ range from "C<1>" to "C<Bit::Vector-E<gt>Long_Bits();>" bits ("C<0>" is B<NOT>
 allowed!).
 
 In order to make your programs portable, however, you shouldn't use chunk sizes
-larger than 32 bits, since this is the minimum size of an "unsigned long" (C type)
-on all systems, as prescribed by S<ANSI C>.
+larger than 32 bits, since this is the minimum size of an "unsigned long"
+(C type) on all systems, as prescribed by S<ANSI C>.
 
 =item *
 
@@ -5285,7 +5285,7 @@ perltoot(1), perlxs(1), perlxstut(1), perlguts(1), overload(3).
 
 =head1 VERSION
 
-This man page documents "Bit::Vector" version 5.2.
+This man page documents "Bit::Vector" version 5.3.
 
 =head1 AUTHOR
 
@@ -5296,6 +5296,8 @@ This man page documents "Bit::Vector" version 5.2.
 
   mailto:sb@engelschall.com
   http://www.engelschall.com/u/sb/download/
+
+B<Please contact me by e-mail whenever possible!>
 
 =head1 COPYRIGHT
 
@@ -5312,12 +5314,14 @@ The C library at the core of this Perl module can additionally
 be redistributed and/or modified under the terms of the "GNU
 Library General Public License".
 
-Please refer to the files "Artistic", "GNU_GPL" and "GNU_LGPL"
-in this distribution for details!
+Please refer to the files "Artistic.txt", "GNU_GPL.txt" and
+"GNU_LGPL.txt" in this distribution for details!
 
 =head1 DISCLAIMER
 
 This package is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+See the "GNU General Public License" for more details.
 

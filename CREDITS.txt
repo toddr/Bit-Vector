@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 5.2
+                      Package "Bit::Vector" Version 5.3
                     =====================================
 
 
@@ -103,5 +103,9 @@ According to my measurements, this resulted in an 8-fold speed increase.
 Many thanks go to Krzysztof Koczyjan <krzysztofk@rocketmail.com> for
 suggesting and extensively benchmarking a more efficient method for
 bit counting in the method "Norm()", which was adopted in version 5.2.
+
+Many thanks again to Krzysztof Koczyjan <krzysztofk@rocketmail.com> for
+an additional improvement of the method "Norm()", which was adopted in
+version 5.3.
 
 

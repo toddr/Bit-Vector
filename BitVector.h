@@ -230,26 +230,26 @@ void    Matrix_Transpose     (wordptr X, N_int rowsX, N_int colsX,
 /*****************************************************************************/
 
 /*****************************************************************************/
-/*  VERSION:  5.2                                                            */
+/*  VERSION:  5.3                                                            */
 /*****************************************************************************/
 /*  VERSION HISTORY:                                                         */
 /*****************************************************************************/
 /*                                                                           */
-/*    31.03.98    Version 5.2  improved norm                                 */
-/*    09.03.98    Version 5.1  no changes                                    */
-/*    01.03.98    Version 5.0  major additions, new functions, rewrites      */
-/*    16.07.97    Version 4.2  added is_empty, is_full                       */
-/*    30.06.97    Version 4.1  added word-ins/del, move-left/right, inc/dec  */
-/*    14.04.97    Version 4.0                                                */
-/*    04.02.97    Version 3.2                                                */
-/*    21.01.97    Version 3.1                                                */
-/*    12.01.97    Version 3.0                                                */
-/*    14.12.96    Version 2.0                                                */
-/*    08.01.96    Version 1.1                                                */
-/*    14.12.95    Version 1.0                                                */
-/*    29.11.95    First C version under UNIX (for Perl module)               */
-/*    01.11.93    First C version (MS C Compiler on PC with DOS)             */
-/*    ca. 1989    Created - Turbo Pascal version under CP/M on Apple ][+     */
+/*    Version 5.3  12.05.98  Improved Norm. Completed history.               */
+/*    Version 5.2  31.03.98  Improved Norm.                                  */
+/*    Version 5.1  09.03.98  No changes.                                     */
+/*    Version 5.0  01.03.98  Major additions and rewrite.                    */
+/*    Version 4.2  16.07.97  Added is_empty, is_full.                        */
+/*    Version 4.1  30.06.97  Added word-ins/del, move-left/right, inc/dec.   */
+/*    Version 4.0  23.04.97  Rewrite. Added bit shift and bool. matrix ops.  */
+/*    Version 3.2  04.02.97  Added interval methods.                         */
+/*    Version 3.1  21.01.97  Fixed bug on 64 bit machines.                   */
+/*    Version 3.0  12.01.97  Added flip.                                     */
+/*    Version 2.0  14.12.96  Efficiency and consistency improvements.        */
+/*    Version 1.1  08.01.96  Added Resize and ExclusiveOr.                   */
+/*    Version 1.0  14.12.95  First version under UNIX (with Perl module).    */
+/*    Version 0.9  01.11.93  First version of C library under MS-DOS.        */
+/*    Version 0.1  ??.??.89  First version in Turbo Pascal under CP/M.       */
 /*                                                                           */
 /*****************************************************************************/
 /*  AUTHOR:                                                                  */

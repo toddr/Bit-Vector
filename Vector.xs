@@ -219,7 +219,7 @@ BitVector_Create(class,bits)
 BitVector_Object	class
 BitVector_Scalar	bits
 ALIAS:
-  new = 2
+  new = 1
 PPCODE:
 {
     BitVector_Address address;
@@ -734,7 +734,7 @@ BitVector_Object	reference
 BitVector_Scalar	min
 BitVector_Scalar	max
 ALIAS:
-  Empty_Interval = 1
+  Empty_Interval = 2
 CODE:
 {
     BitVector_Handle  handle;
@@ -764,7 +764,7 @@ BitVector_Object	reference
 BitVector_Scalar	min
 BitVector_Scalar	max
 ALIAS:
-  Fill_Interval = 1
+  Fill_Interval = 2
 CODE:
 {
     BitVector_Handle  handle;
@@ -794,7 +794,7 @@ BitVector_Object	reference
 BitVector_Scalar	min
 BitVector_Scalar	max
 ALIAS:
-  Flip_Interval = 1
+  Flip_Interval = 2
 CODE:
 {
     BitVector_Handle  handle;
@@ -823,8 +823,6 @@ BitVector_Interval_Reverse(reference,min,max)
 BitVector_Object	reference
 BitVector_Scalar	min
 BitVector_Scalar	max
-ALIAS:
-  Reverse_Interval = 1
 CODE:
 {
     BitVector_Handle  handle;
@@ -1113,7 +1111,7 @@ void
 BitVector_to_Hex(reference)
 BitVector_Object	reference
 ALIAS:
-  to_String = 1
+  to_String = 2
 PPCODE:
 {
     BitVector_Handle  handle;
@@ -1140,7 +1138,7 @@ BitVector_from_Hex(reference,string)
 BitVector_Object	reference
 BitVector_Scalar	string
 ALIAS:
-  from_string = 1
+  from_string = 2
 CODE:
 {
     BitVector_Handle  handle;
@@ -1267,7 +1265,7 @@ void
 BitVector_to_Enum(reference)
 BitVector_Object	reference
 ALIAS:
-  to_ASCII = 1
+  to_ASCII = 2
 PPCODE:
 {
     BitVector_Handle  handle;
@@ -1294,7 +1292,7 @@ BitVector_from_Enum(reference,string)
 BitVector_Object	reference
 BitVector_Scalar	string
 ALIAS:
-  from_ASCII = 1
+  from_ASCII = 2
 CODE:
 {
     BitVector_Handle  handle;
@@ -1374,7 +1372,7 @@ BitVector_bit_flip(reference,index)
 BitVector_Object	reference
 BitVector_Scalar	index
 ALIAS:
-  flip = 1
+  flip = 2
 CODE:
 {
     BitVector_Handle  handle;
@@ -1404,8 +1402,8 @@ BitVector_bit_test(reference,index)
 BitVector_Object	reference
 BitVector_Scalar	index
 ALIAS:
-  in = 1
-  contains = 2
+  contains = 1
+  in = 2
 CODE:
 {
     BitVector_Handle  handle;
@@ -1838,7 +1836,7 @@ BitVector_Negate(Xref,Yref)
 BitVector_Object	Xref
 BitVector_Object	Yref
 ALIAS:
-  Neg = 2
+  Neg = 1
 CODE:
 {
     BitVector_Handle  Xhdl;
@@ -2607,7 +2605,7 @@ BitVector_Object	Xref
 BitVector_Object	Yref
 BitVector_Object	Zref
 ALIAS:
-  Or = 2
+  Or = 1
 CODE:
 {
     BitVector_Handle  Xhdl;
@@ -2637,7 +2635,7 @@ BitVector_Object	Xref
 BitVector_Object	Yref
 BitVector_Object	Zref
 ALIAS:
-  And = 2
+  And = 1
 CODE:
 {
     BitVector_Handle  Xhdl;
@@ -2667,7 +2665,7 @@ BitVector_Object	Xref
 BitVector_Object	Yref
 BitVector_Object	Zref
 ALIAS:
-  AndNot = 2
+  AndNot = 1
 CODE:
 {
     BitVector_Handle  Xhdl;
@@ -2697,7 +2695,7 @@ BitVector_Object	Xref
 BitVector_Object	Yref
 BitVector_Object	Zref
 ALIAS:
-  Xor = 2
+  Xor = 1
 CODE:
 {
     BitVector_Handle  Xhdl;
@@ -2726,7 +2724,7 @@ Set_Complement(Xref,Yref)
 BitVector_Object	Xref
 BitVector_Object	Yref
 ALIAS:
-  Not = 2
+  Not = 1
 CODE:
 {
     BitVector_Handle  Xhdl;
@@ -2752,7 +2750,7 @@ Set_subset(Xref,Yref)
 BitVector_Object	Xref
 BitVector_Object	Yref
 ALIAS:
-  inclusion = 1
+  inclusion = 2
 CODE:
 {
     BitVector_Handle  Xhdl;
