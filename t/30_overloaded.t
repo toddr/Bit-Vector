@@ -965,22 +965,22 @@ foreach $bits (0,1,2,3,4,16,32,61,97,256,257,499,512)
 }
 
 eval { $shift = (0 << $primes); };
-if ($@ =~ /^Bit::Vector '<<': reversed arguments error/)
+if ($@ =~ /^Bit::Vector \"<<\": reversed arguments error/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
 eval { $shift = (1 << $primes); };
-if ($@ =~ /^Bit::Vector '<<': reversed arguments error/)
+if ($@ =~ /^Bit::Vector \"<<\": reversed arguments error/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
 eval { $shift = (0 >> $primes); };
-if ($@ =~ /^Bit::Vector '>>': reversed arguments error/)
+if ($@ =~ /^Bit::Vector \">>\": reversed arguments error/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
 eval { $shift = (1 >> $primes); };
-if ($@ =~ /^Bit::Vector '>>': reversed arguments error/)
+if ($@ =~ /^Bit::Vector \">>\": reversed arguments error/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
@@ -996,8 +996,7 @@ sub test_fake
 
     if ($parms == 1)
     {
-        $op =~ s/=$//;
-        $message = quotemeta("$prefix '$op': argument type error");
+        $message = quotemeta("$prefix \"$op\": argument type error");
         $action = "\$set $operator \$fake";
         eval "$action";
         if ($@ =~ /$message/)
@@ -1006,7 +1005,7 @@ sub test_fake
     }
     elsif ($parms == 2)
     {
-        $message = quotemeta("$prefix '$op': argument type error");
+        $message = quotemeta("$prefix \"$op\": argument type error");
         $action = "\$temp = \$set $operator \$fake";
         eval "$action";
         if ($@ =~ /$message/)

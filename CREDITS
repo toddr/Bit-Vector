@@ -81,11 +81,15 @@ questions and the code of his "Bit::File" module with me, which inspired
 me to write the routines to access arbitrary chunks of bits.
 
 Many thanks to Hau-Yung Chen <hchen@oda-tech.com> for suggesting the
-string conversion routines to convert to/from binary representation.
+string conversion routines to convert to/from binary representation
+and the possibility to concatenate bit vectors.
 
 Many thanks to Jarkko Hietaniemi <Jarkko.Hietaniemi@hut.fi> for suggesting
 the implementation of the transpose of a matrix in C for better performance.
 The transpose can be used in finding the strongly connected components of
 a graph.
+
+Many thanks go to Daniel Koch <dkoch@amcity.com> for suggesting the
+"Index_List_Store()" and "Index_List_Read()" methods!
 
 

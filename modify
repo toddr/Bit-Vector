@@ -1,8 +1,9 @@
 #!/usr/local/bin/perl
 
-#
 #  Copyright (c) 1995, 1996, 1997 by Steffen Beyer. All rights reserved.
 #
+#  Please refer to the file "LICENSE" in this distribution for the exact
+#  terms under which this package may be used and distributed!
 
 # Usage: modify perlexpr [files]
 

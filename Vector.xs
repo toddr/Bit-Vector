@@ -2,6 +2,9 @@
 
 /*  Copyright (c) 1995, 1996, 1997 by Steffen Beyer. All rights reserved.  */
 
+/*  Please refer to the file "LICENSE" in this distribution for the exact  */
+/*  terms under which this package may be used and distributed!            */
+
 
 #include "EXTERN.h"
 #include "perl.h"
@@ -12,62 +15,20 @@
 #include "BitVector.h"
 
 
-typedef     SV *Class_Type;
+static    char *BitVector_Class = "Bit::Vector";
+
 typedef     SV *BitVector_Object;
 typedef     SV *BitVector_Handle;
 typedef N_word *BitVector_Address;
 typedef     SV *BitVector_Buffer;
 
 
-static  N_char *Class_Name = "Bit::Vector";
-
-
-#ifdef  DEBUG_BIT_VECTOR
-
-#define DEBUG_CONSTRUCTOR(elem,ref,hdl,adr) fprintf(stderr, \
-"Bit::Vector::new(%u): ref=0x%.8X hdl=0x%.8X adr=0x%.8X\n", elem, \
-(N_long) ref, (N_long) hdl, (N_long) adr);
-
-#define DEBUG_DESTRUCTOR(ref,hdl,adr) fprintf(stderr, \
-"Bit::Vector::DESTROY(): ref=0x%.8X hdl=0x%.8X adr=0x%.8X\n", \
-(N_long) ref, (N_long) hdl, (N_long) adr);
-
-#else
-
-#define DEBUG_CONSTRUCTOR(elem,ref,hdl,adr) ;
-#define DEBUG_DESTRUCTOR(ref,hdl,adr) ;
-
-#endif
-
-
-#ifdef  ENABLE_SUBCLASSING
-
-#define OVERRIDE_CLASS(class,type,name) ;
-
-#define BIT_VECTOR_CHECK(ref,hdl,adr,nam)  \
-    ( ref &&                               \
-    SvROK(ref) &&                          \
+#define BIT_VECTOR_CHECK(ref,hdl,adr) \
+    ( ref && SvROK(ref) && \
     (hdl = (BitVector_Handle)SvRV(ref)) && \
-    SvOBJECT(hdl) &&                       \
-    (SvTYPE(hdl) == SVt_PVMG) &&           \
-    SvREADONLY(hdl) &&                     \
-    (adr = (BitVector_Address)SvIV(hdl)) )
-
-#else
-
-#define OVERRIDE_CLASS(class,type,name) class = (type) name;
-
-#define BIT_VECTOR_CHECK(ref,hdl,adr,nam)  \
-    ( ref &&                               \
-    SvROK(ref) &&                          \
-    (hdl = (BitVector_Handle)SvRV(ref)) && \
-    SvOBJECT(hdl) &&                       \
-    (SvTYPE(hdl) == SVt_PVMG) &&           \
-    (strEQ(HvNAME(SvSTASH(hdl)),nam)) &&   \
-    SvREADONLY(hdl) &&                     \
-    (adr = (BitVector_Address)SvIV(hdl)) )
-
-#endif
+    SvOBJECT(hdl) && (SvTYPE(hdl) == SVt_PVMG) && \
+    (strEQ(HvNAME(SvSTASH(hdl)),BitVector_Class)) && \
+    SvREADONLY(hdl) && (adr = (BitVector_Address)SvIV(hdl)) )
 
 
 #define BIT_VECTOR_ERROR(name,error) \
@@ -77,13 +38,13 @@ static  N_char *Class_Name = "Bit::Vector";
     BIT_VECTOR_ERROR(name,"not a 'Bit::Vector' object reference")
 
 #define BIT_VECTOR_CREATE_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"unable to create new 'Bit::Vector' object")
+    BIT_VECTOR_ERROR(name,"unable to create new object")
 
 #define BIT_VECTOR_STRING_ERROR(name) \
     BIT_VECTOR_ERROR(name,"unable to create new string")
 
 #define BIT_VECTOR_LENGTH_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"zero length 'Bit::Vector' object not permitted")
+    BIT_VECTOR_ERROR(name,"zero length object not permitted")
 
 #define BIT_VECTOR_INDEX_ERROR(name) \
     BIT_VECTOR_ERROR(name,"index out of range")
@@ -134,7 +95,19 @@ static  N_char *Class_Name = "Bit::Vector";
     BIT_VECTOR_ERROR(name,"buffer contains no string")
 
 #define BIT_VECTOR_INTERNAL_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"internal error - please contact author")
+    BIT_VECTOR_ERROR(name,"unexpected internal error - please contact author")
+
+#define BIT_VECTOR_NUMERIC_ERROR(name) \
+    BIT_VECTOR_ERROR(name,"list item not numeric")
+
+#define BIT_VECTOR_EXCEPTION(code,name) \
+    { switch (code) { case ErrCode_Ok: break; \
+    case ErrCode_Size: BIT_VECTOR_SIZE_ERROR(name); break; \
+    case ErrCode_Same: BIT_VECTOR_DISTINCT_ERROR(name); break; \
+    case ErrCode_Zero: BIT_VECTOR_ZERO_ERROR(name); break; \
+    case ErrCode_Crea: BIT_VECTOR_CREATE_ERROR(name); break; \
+    case ErrCode_Ovfl: BIT_VECTOR_OVERFLOW_ERROR(name); break; \
+    default: BIT_VECTOR_INTERNAL_ERROR(name); break; } }
 
 
 MODULE = Bit::Vector		PACKAGE = Bit::Vector		PREFIX = BitVector_
@@ -145,44 +118,35 @@ PROTOTYPES: DISABLE
 
 BOOT:
 {
-    N_word rc;
-    if (rc = BitVector_Auto_Config())
+    ErrCode rc;
+
+    if (rc = BitVector_Boot())
     {
-        fprintf(stderr,
-"'Bit::Vector' failed to auto-configure:\n");
         switch (rc)
         {
-            case 1:
-                fprintf(stderr,
-"the type 'N_int' is larger (has more bits) than the type 'size_t'!\n");
+            case ErrCode_Type:
+                BIT_VECTOR_ERROR("Boot","sizeof(word) > sizeof(size_t)");
                 break;
-            case 2:
-                fprintf(stderr,
-"the number of bits of a machine word and 'sizeof(N_int)' are inconsistent!\n");
+            case ErrCode_Bits:
+                BIT_VECTOR_ERROR("Boot","bits(word) != sizeof(word)*8");
                 break;
-            case 3:
-                fprintf(stderr,
-"the number of bits of a machine word is less than 16!\n");
+            case ErrCode_Word:
+                BIT_VECTOR_ERROR("Boot","bits(word) < 16");
                 break;
-            case 4:
-                fprintf(stderr,
-"the type 'N_int' is larger (has more bits) than the type 'N_long'!\n");
+            case ErrCode_Long:
+                BIT_VECTOR_ERROR("Boot","bits(word) > bits(long)");
                 break;
-            case 5:
-                fprintf(stderr,
-"the number of bits of a machine word is not a power of 2!\n");
+            case ErrCode_Powr:
+                BIT_VECTOR_ERROR("Boot","bits(word) != 2^x");
                 break;
-            case 6:
-                fprintf(stderr,
-"the number of bits of a machine word and its logarithm are inconsistent!\n");
+            case ErrCode_Loga:
+                BIT_VECTOR_ERROR("Boot","bits(word) != 2^ld(bits(word))");
                 break;
-            case 7:
-                fprintf(stderr,
-"unable to allocate memory with 'malloc()'!\n");
+            case ErrCode_Null:
+                BIT_VECTOR_ERROR("Boot","unable to allocate memory");
                 break;
             default:
-                fprintf(stderr,
-"unexpected (unknown) error!\n");
+                BIT_VECTOR_INTERNAL_ERROR("Boot");
                 break;
         }
         exit(rc);
@@ -239,51 +203,27 @@ RETVAL
 
 
 void
-BitVector_new(class,elements)
-Class_Type	class
-N_int	elements
+BitVector_Create(class,bits)
+BitVector_Object	class
+N_int	bits
+ALIAS:
+  new = 2
 PPCODE:
 {
     BitVector_Address address;
     BitVector_Handle  handle;
     BitVector_Object  reference;
 
-    if ( class && SvROK(class) && (handle = (SV *)SvRV(class)) &&
-         SvOBJECT(handle) && (SvTYPE(handle) == SVt_PVMG) )
+    if ((address = BitVector_Create(bits,true)) != NULL)
     {
-        class = (Class_Type)HvNAME(SvSTASH(handle));
+        handle = newSViv((IV)address);
+        reference = sv_bless(sv_2mortal(newRV(handle)),
+            gv_stashpv(BitVector_Class,1));
+        SvREFCNT_dec(handle);
+        SvREADONLY_on(handle);
+        PUSHs(reference);
     }
-    else
-    {
-        if ( class && SvPOK(class) && SvCUR(class) )
-        {
-            class = (Class_Type)SvPV(class,na);
-        }
-        else
-        {
-            class = (Class_Type)Class_Name;
-        }
-    }
-
-    /* overrides input parameter unless ENABLE_SUBCLASSING is defined: */
-
-    OVERRIDE_CLASS(class,Class_Type,Class_Name)
-
-    if (elements != 0)
-    {
-        if ((address = BitVector_Create(elements,true)) != NULL)
-        {
-            handle = newSViv((IV)address);
-            reference = sv_bless(sv_2mortal(newRV(handle)),
-                gv_stashpv((char *)class,1));
-            SvREFCNT_dec(handle);
-            SvREADONLY_on(handle);
-            PUSHs(reference);
-        }
-        else BIT_VECTOR_CREATE_ERROR("new");
-    }
-    else BIT_VECTOR_LENGTH_ERROR("new");
-    DEBUG_CONSTRUCTOR(elements,reference,handle,address)
+    else BIT_VECTOR_CREATE_ERROR("new");
 }
 
 
@@ -294,16 +234,14 @@ PPCODE:
 {
     BitVector_Handle  handle;
     BitVector_Address address;
-    Class_Type        class;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
-        class = (Class_Type)HvNAME(SvSTASH(handle));
         if ((address = BitVector_Shadow(address)) != NULL)
         {
             handle = newSViv((IV)address);
             reference = sv_bless(sv_2mortal(newRV(handle)),
-                gv_stashpv((char *)class,1));
+                gv_stashpv(BitVector_Class,1));
             SvREFCNT_dec(handle);
             SvREADONLY_on(handle);
             PUSHs(reference);
@@ -321,16 +259,14 @@ PPCODE:
 {
     BitVector_Handle  handle;
     BitVector_Address address;
-    Class_Type        class;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
-        class = (Class_Type)HvNAME(SvSTASH(handle));
         if ((address = BitVector_Clone(address)) != NULL)
         {
             handle = newSViv((IV)address);
             reference = sv_bless(sv_2mortal(newRV(handle)),
-                gv_stashpv((char *)class,1));
+                gv_stashpv(BitVector_Class,1));
             SvREFCNT_dec(handle);
             SvREADONLY_on(handle);
             PUSHs(reference);
@@ -338,6 +274,91 @@ PPCODE:
         else BIT_VECTOR_CREATE_ERROR("Clone");
     }
     else BIT_VECTOR_TYPE_ERROR("Clone");
+}
+
+
+void
+BitVector_Concat(Xref,Yref)
+BitVector_Object        Xref
+BitVector_Object        Yref
+PPCODE:
+{
+    BitVector_Handle  Xhdl;
+    BitVector_Address Xadr;
+    BitVector_Handle  Yhdl;
+    BitVector_Address Yadr;
+    BitVector_Object  reference;
+    BitVector_Handle  handle;
+    BitVector_Address address;
+
+    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr) &&
+         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr) )
+    {
+        if ((address = BitVector_Concat(Xadr,Yadr)) != NULL)
+        {
+            handle = newSViv((IV)address);
+            reference = sv_bless(sv_2mortal(newRV(handle)),
+                gv_stashpv(BitVector_Class,1));
+            SvREFCNT_dec(handle);
+            SvREADONLY_on(handle);
+            PUSHs(reference);
+        }
+        else BIT_VECTOR_CREATE_ERROR("Concat");
+    }
+    else BIT_VECTOR_TYPE_ERROR("Concat");
+}
+
+
+void
+BitVector_Concat_List(...)
+PPCODE:
+{
+    BitVector_Object  Xref;
+    BitVector_Handle  Xhdl;
+    BitVector_Address Xadr;
+    BitVector_Object  reference;
+    BitVector_Handle  handle;
+    BitVector_Address address;
+    N_int offset;
+    N_int bits;
+    I32 index;
+
+    bits = 0;
+    index = items;
+    while (index-- > 0)
+    {
+        Xref = ST(index);
+        if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr) )
+        {
+            bits += bits_(Xadr);
+        }
+        else BIT_VECTOR_TYPE_ERROR("Concat_List");
+    }
+    if ((address = BitVector_Create(bits,false)) != NULL)
+    {
+        offset = 0;
+        index = items;
+        while (index-- > 0)
+        {
+            Xref = ST(index);
+            if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr) )
+            {
+                if ((bits = bits_(Xadr)) > 0)
+                {
+                    BitVector_Interval_Copy(address,Xadr,offset,0,bits);
+                    offset += bits;
+                }
+            }
+            else BIT_VECTOR_TYPE_ERROR("Concat_List");
+        }
+        handle = newSViv((IV)address);
+        reference = sv_bless(sv_2mortal(newRV(handle)),
+            gv_stashpv(BitVector_Class,1));
+        SvREFCNT_dec(handle);
+        SvREADONLY_on(handle);
+        PUSHs(reference);
+    }
+    else BIT_VECTOR_CREATE_ERROR("Concat_List");
 }
 
 
@@ -349,7 +370,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         RETVAL = bits_(address);
     }
@@ -360,27 +381,23 @@ RETVAL
 
 
 void
-BitVector_Resize(reference,elements)
+BitVector_Resize(reference,bits)
 BitVector_Object	reference
-N_int	elements
+N_int	bits
 CODE:
 {
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
-        if (elements != 0)
+        if ((address = BitVector_Resize(address,bits)) != NULL)
         {
-            if ((address = BitVector_Resize(address,elements)) != NULL)
-            {
-                SvREADONLY_off(handle);
-                sv_setiv(handle,(IV)address);
-                SvREADONLY_on(handle);
-            }
-            else BIT_VECTOR_CREATE_ERROR("Resize");
+            SvREADONLY_off(handle);
+            sv_setiv(handle,(IV)address);
+            SvREADONLY_on(handle);
         }
-        else BIT_VECTOR_LENGTH_ERROR("Resize");
+        else BIT_VECTOR_CREATE_ERROR("Resize");
     }
     else BIT_VECTOR_TYPE_ERROR("Resize");
 }
@@ -394,9 +411,8 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
-        DEBUG_DESTRUCTOR(reference,handle,address)
         BitVector_Destroy(address);
         SvREADONLY_off(handle);
         sv_setiv(handle,(IV)NULL);
@@ -417,8 +433,8 @@ CODE:
     BitVector_Handle  Yhdl;
     BitVector_Address Yadr;
 
-    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr,Class_Name) )
+    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr) &&
+         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr) )
     {
         if (bits_(Xadr) == bits_(Yadr))
         {
@@ -438,7 +454,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         BitVector_Empty(address);
     }
@@ -454,7 +470,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         BitVector_Fill(address);
     }
@@ -470,7 +486,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         BitVector_Flip(address);
     }
@@ -486,11 +502,35 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         BitVector_Primes(address);
     }
     else BIT_VECTOR_TYPE_ERROR("Primes");
+}
+
+
+void
+BitVector_Reverse(Xref,Yref)
+BitVector_Object	Xref
+BitVector_Object	Yref
+CODE:
+{
+    BitVector_Handle  Xhdl;
+    BitVector_Address Xadr;
+    BitVector_Handle  Yhdl;
+    BitVector_Address Yadr;
+
+    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr) &&
+         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr) )
+    {
+        if (bits_(Xadr) == bits_(Yadr))
+        {
+            BitVector_Reverse(Xadr,Yadr);
+        }
+        else BIT_VECTOR_SIZE_ERROR("Reverse");
+    }
+    else BIT_VECTOR_TYPE_ERROR("Reverse");
 }
 
 
@@ -506,7 +546,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         if      (min >= bits_(address)) BIT_VECTOR_MIN_ERROR("Interval_Empty");
         else if (max >= bits_(address)) BIT_VECTOR_MAX_ERROR("Interval_Empty");
@@ -529,7 +569,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         if      (min >= bits_(address)) BIT_VECTOR_MIN_ERROR("Interval_Fill");
         else if (max >= bits_(address)) BIT_VECTOR_MAX_ERROR("Interval_Fill");
@@ -552,7 +592,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         if      (min >= bits_(address)) BIT_VECTOR_MIN_ERROR("Interval_Flip");
         else if (max >= bits_(address)) BIT_VECTOR_MAX_ERROR("Interval_Flip");
@@ -560,6 +600,27 @@ CODE:
         else                         BitVector_Interval_Flip(address,min,max);
     }
     else BIT_VECTOR_TYPE_ERROR("Interval_Flip");
+}
+
+
+void
+BitVector_Interval_Reverse(reference,min,max)
+BitVector_Object	reference
+N_int	min
+N_int	max
+CODE:
+{
+    BitVector_Handle  handle;
+    BitVector_Address address;
+
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
+    {
+        if      (min >= bits_(address)) BIT_VECTOR_MIN_ERROR("Interval_Reverse");
+        else if (max >= bits_(address)) BIT_VECTOR_MAX_ERROR("Interval_Reverse");
+        else if (min > max)           BIT_VECTOR_ORDER_ERROR("Interval_Reverse");
+        else                         BitVector_Interval_Reverse(address,min,max);
+    }
+    else BIT_VECTOR_TYPE_ERROR("Interval_Reverse");
 }
 
 
@@ -574,7 +635,7 @@ PPCODE:
     N_int min;
     N_int max;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         if (start < bits_(address))
         {
@@ -603,7 +664,7 @@ PPCODE:
     N_int min;
     N_int max;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         if (start < bits_(address))
         {
@@ -635,14 +696,17 @@ CODE:
     BitVector_Handle  Yhdl;
     BitVector_Address Yadr;
 
-    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr,Class_Name) )
+    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr) &&
+         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr) )
     {
-        if ((Xoffset < bits_(Xadr)) and (Yoffset < bits_(Yadr)))
+        if (length > 0)
         {
-            BitVector_Interval_Copy(Xadr,Yadr,Xoffset,Yoffset,length);
+            if ((Xoffset < bits_(Xadr)) and (Yoffset < bits_(Yadr)))
+            {
+                BitVector_Interval_Copy(Xadr,Yadr,Xoffset,Yoffset,length);
+            }
+            else BIT_VECTOR_OFFSET_ERROR("Interval_Copy");
         }
-        else BIT_VECTOR_OFFSET_ERROR("Interval_Copy");
     }
     else BIT_VECTOR_TYPE_ERROR("Interval_Copy");
 }
@@ -662,31 +726,21 @@ CODE:
     BitVector_Address Xadr;
     BitVector_Handle  Yhdl;
     BitVector_Address Yadr;
-    N_int Xbits;
-    N_int Ybits;
 
-    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr,Class_Name) )
+    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr) &&
+         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr) )
     {
-        Xbits = bits_(Xadr);
-        Ybits = bits_(Yadr);
-        if ((Xoffset <= Xbits) and (Yoffset <= Ybits))
+        if ((Xoffset <= bits_(Xadr)) and (Yoffset <= bits_(Yadr)))
         {
-            if ((Xoffset + Xlength) > Xbits) Xlength = Xbits - Xoffset;
-            if ((Yoffset + Ylength) > Ybits) Ylength = Ybits - Yoffset;
-            if ((Xlength != Xbits) or (Ylength > 0))
+            Xadr = BitVector_Interval_Substitute(Xadr,Yadr,Xoffset,Xlength,
+                                                           Yoffset,Ylength);
+            if (Xadr != NULL)
             {
-                Xadr = BitVector_Interval_Substitute(Xadr,Yadr,Xoffset,Xlength,
-                                                               Yoffset,Ylength);
-                if (Xadr != NULL)
-                {
-                    SvREADONLY_off(Xhdl);
-                    sv_setiv(Xhdl,(IV)Xadr);
-                    SvREADONLY_on(Xhdl);
-                }
-                else BIT_VECTOR_CREATE_ERROR("Interval_Substitute");
+                SvREADONLY_off(Xhdl);
+                sv_setiv(Xhdl,(IV)Xadr);
+                SvREADONLY_on(Xhdl);
             }
-            else BIT_VECTOR_LENGTH_ERROR("Interval_Substitute");
+            else BIT_VECTOR_CREATE_ERROR("Interval_Substitute");
         }
         else BIT_VECTOR_OFFSET_ERROR("Interval_Substitute");
     }
@@ -702,7 +756,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         RETVAL = BitVector_is_empty(address);
     }
@@ -720,7 +774,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         RETVAL = BitVector_is_full(address);
     }
@@ -741,8 +795,8 @@ CODE:
     BitVector_Handle  Yhdl;
     BitVector_Address Yadr;
 
-    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr,Class_Name) )
+    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr) &&
+         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr) )
     {
         if (bits_(Xadr) == bits_(Yadr))
         {
@@ -767,8 +821,8 @@ CODE:
     BitVector_Handle  Yhdl;
     BitVector_Address Yadr;
 
-    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr,Class_Name) )
+    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr) &&
+         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr) )
     {
         if (bits_(Xadr) == bits_(Yadr))
         {
@@ -793,7 +847,7 @@ PPCODE:
     BitVector_Address address;
     charptr string;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         string = BitVector_to_Hex(address);
         if (string != NULL)
@@ -819,7 +873,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         RETVAL = BitVector_from_hex(address,string);
     }
@@ -838,7 +892,7 @@ PPCODE:
     BitVector_Address address;
     charptr string;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         string = BitVector_to_Bin(address);
         if (string != NULL)
@@ -862,7 +916,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         RETVAL = BitVector_from_bin(address,string);
     }
@@ -881,7 +935,7 @@ PPCODE:
     BitVector_Address address;
     charptr string;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         string = BitVector_to_Dec(address);
         if (string != NULL)
@@ -904,10 +958,16 @@ CODE:
 {
     BitVector_Handle  handle;
     BitVector_Address address;
+    ErrCode           code;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
-        RETVAL = BitVector_from_dec(address,string);
+        if (code = BitVector_from_dec(address,string))
+        {
+            if (code == ErrCode_Form) RETVAL = false;
+            else BIT_VECTOR_EXCEPTION(code,"from_dec");
+        }
+        else RETVAL = true;
     }
     else BIT_VECTOR_TYPE_ERROR("from_dec");
 }
@@ -926,7 +986,7 @@ PPCODE:
     BitVector_Address address;
     charptr string;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         string = BitVector_to_Enum(address);
         if (string != NULL)
@@ -952,7 +1012,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         RETVAL = BitVector_from_enum(address,string);
     }
@@ -971,7 +1031,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         if (index < bits_(address))
         {
@@ -992,7 +1052,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         if (index < bits_(address))
         {
@@ -1015,7 +1075,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         if (index < bits_(address))
         {
@@ -1041,7 +1101,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         if (index < bits_(address))
         {
@@ -1065,7 +1125,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         if (index < bits_(address))
         {
@@ -1085,7 +1145,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         RETVAL = BitVector_lsb(address);
     }
@@ -1103,7 +1163,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         RETVAL = BitVector_msb(address);
     }
@@ -1121,7 +1181,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         RETVAL = BitVector_rotate_left(address);
     }
@@ -1139,7 +1199,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         RETVAL = BitVector_rotate_right(address);
     }
@@ -1158,7 +1218,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         carry &= 1;
         RETVAL = BitVector_shift_left(address,carry);
@@ -1178,7 +1238,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         carry &= 1;
         RETVAL = BitVector_shift_right(address,carry);
@@ -1198,7 +1258,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         BitVector_Move_Left(address,bits);
     }
@@ -1215,7 +1275,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         BitVector_Move_Right(address,bits);
     }
@@ -1233,11 +1293,11 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         if (offset < bits_(address))
         {
-            BitVector_Insert(address,offset,count);
+            BitVector_Insert(address,offset,count,true);
         }
         else BIT_VECTOR_OFFSET_ERROR("Insert");
     }
@@ -1255,11 +1315,11 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         if (offset < bits_(address))
         {
-            BitVector_Delete(address,offset,count);
+            BitVector_Delete(address,offset,count,true);
         }
         else BIT_VECTOR_OFFSET_ERROR("Delete");
     }
@@ -1275,7 +1335,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         RETVAL = BitVector_increment(address);
     }
@@ -1293,7 +1353,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         RETVAL = BitVector_decrement(address);
     }
@@ -1318,9 +1378,9 @@ CODE:
     BitVector_Handle  Zhdl;
     BitVector_Address Zadr;
 
-    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Zref,Zhdl,Zadr,Class_Name) )
+    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr) &&
+         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr) &&
+         BIT_VECTOR_CHECK(Zref,Zhdl,Zadr) )
     {
         if ((bits_(Xadr) == bits_(Yadr)) and (bits_(Xadr) == bits_(Zadr)))
         {
@@ -1349,9 +1409,9 @@ CODE:
     BitVector_Handle  Zhdl;
     BitVector_Address Zadr;
 
-    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Zref,Zhdl,Zadr,Class_Name) )
+    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr) &&
+         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr) &&
+         BIT_VECTOR_CHECK(Zref,Zhdl,Zadr) )
     {
         if ((bits_(Xadr) == bits_(Yadr)) and (bits_(Xadr) == bits_(Zadr)))
         {
@@ -1378,8 +1438,8 @@ CODE:
     BitVector_Handle  Yhdl;
     BitVector_Address Yadr;
 
-    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr,Class_Name) )
+    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr) &&
+         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr) )
     {
         if (bits_(Xadr) == bits_(Yadr))
         {
@@ -1402,8 +1462,8 @@ CODE:
     BitVector_Handle  Yhdl;
     BitVector_Address Yadr;
 
-    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr,Class_Name) )
+    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr) &&
+         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr) )
     {
         if (bits_(Xadr) == bits_(Yadr))
         {
@@ -1423,7 +1483,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         RETVAL = BitVector_Sign(address);
     }
@@ -1446,27 +1506,16 @@ CODE:
     BitVector_Address Yadr;
     BitVector_Handle  Zhdl;
     BitVector_Address Zadr;
+    ErrCode           code;
 
-    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Zref,Zhdl,Zadr,Class_Name) )
+    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr) &&
+         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr) &&
+         BIT_VECTOR_CHECK(Zref,Zhdl,Zadr) )
     {
         if ((bits_(Xadr) >= bits_(Yadr)) and (bits_(Yadr) == bits_(Zadr)))
         {
-            switch (BitVector_Multiply(Xadr,Yadr,Zadr))
-            {
-                case 0:
-                    break;
-                case 1:
-                        BIT_VECTOR_CREATE_ERROR("Multiply");
-                    break;
-                case 2:
-                        BIT_VECTOR_OVERFLOW_ERROR("Multiply");
-                    break;
-                default:
-                        BIT_VECTOR_INTERNAL_ERROR("Multiply");
-                    break;
-            }
+            if (code = BitVector_Multiply(Xadr,Yadr,Zadr))
+                BIT_VECTOR_EXCEPTION(code,"Multiply");
         }
         else BIT_VECTOR_SIZE_ERROR("Multiply");
     }
@@ -1490,11 +1539,12 @@ CODE:
     BitVector_Address Yadr;
     BitVector_Handle  Rhdl;
     BitVector_Address Radr;
+    ErrCode           code;
 
-    if ( BIT_VECTOR_CHECK(Qref,Qhdl,Qadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Xref,Xhdl,Xadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Rref,Rhdl,Radr,Class_Name) )
+    if ( BIT_VECTOR_CHECK(Qref,Qhdl,Qadr) &&
+         BIT_VECTOR_CHECK(Xref,Xhdl,Xadr) &&
+         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr) &&
+         BIT_VECTOR_CHECK(Rref,Rhdl,Radr) )
     {
         if ((bits_(Qadr) == bits_(Xadr)) and
             (bits_(Qadr) == bits_(Yadr)) and (bits_(Qadr) == bits_(Radr)))
@@ -1503,8 +1553,8 @@ CODE:
             {
                 if (not BitVector_is_empty(Yadr))
                 {
-                    if (not BitVector_Divide(Qadr,Xadr,Yadr,Radr))
-                      BIT_VECTOR_CREATE_ERROR("Divide");
+                    if (code = BitVector_Divide(Qadr,Xadr,Yadr,Radr))
+                        BIT_VECTOR_EXCEPTION(code,"Divide");
                 }
                 else BIT_VECTOR_ZERO_ERROR("Divide");
             }
@@ -1529,18 +1579,19 @@ CODE:
     BitVector_Address Yadr;
     BitVector_Handle  Zhdl;
     BitVector_Address Zadr;
+    ErrCode           code;
 
-    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Zref,Zhdl,Zadr,Class_Name) )
+    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr) &&
+         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr) &&
+         BIT_VECTOR_CHECK(Zref,Zhdl,Zadr) )
     {
         if ((bits_(Xadr) == bits_(Yadr)) and (bits_(Xadr) == bits_(Zadr)))
         {
             if ((not BitVector_is_empty(Yadr)) and
                 (not BitVector_is_empty(Zadr)))
             {
-                if (not BitVector_GCD(Xadr,Yadr,Zadr))
-                  BIT_VECTOR_CREATE_ERROR("GCD");
+                if (code = BitVector_GCD(Xadr,Yadr,Zadr))
+                    BIT_VECTOR_EXCEPTION(code,"GCD");
             }
             else BIT_VECTOR_ZERO_ERROR("GCD");
         }
@@ -1561,7 +1612,7 @@ CODE:
     charptr string;
     N_int length;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         if ( buffer && SvPOK(buffer) )
         {
@@ -1585,7 +1636,7 @@ PPCODE:
     charptr string;
     N_int length;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         string = BitVector_Block_Read(address,&length);
         if (string != NULL)
@@ -1608,7 +1659,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         RETVAL = size_(address);
     }
@@ -1628,7 +1679,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         if (offset < size_(address))
         {
@@ -1649,7 +1700,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         if (offset < size_(address))
         {
@@ -1675,14 +1726,18 @@ CODE:
     N_int size;
     I32 index;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         size = size_(address);
         for ( offset = 0, index = 1;
             ((offset < size) and (index < items)); offset++, index++ )
         {
-            value = (N_int) SvIV( ST(index) );
-            BitVector_Word_Store(address,offset,value);
+            if (SvIOK( ST(index) ))
+            {
+                value = (N_int) SvIV( ST(index) );
+                BitVector_Word_Store(address,offset,value);
+            }
+            else BIT_VECTOR_NUMERIC_ERROR("Word_List_Store");
         }
         for ( ; (offset < size); offset++ )
         {
@@ -1704,7 +1759,7 @@ PPCODE:
     N_int value;
     N_int size;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         size = size_(address);
         EXTEND(sp,size);
@@ -1728,7 +1783,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         if (offset < size_(address))
         {
@@ -1750,7 +1805,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         if (offset < size_(address))
         {
@@ -1773,7 +1828,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         if (offset < bits_(address))
         {
@@ -1799,7 +1854,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         if (offset < bits_(address))
         {
@@ -1837,7 +1892,7 @@ CODE:
     N_int bits;
     I32 index;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         if ((chunksize > 0) and (chunksize <= BitVector_Long_Bits()))
         {
@@ -1854,10 +1909,14 @@ CODE:
             {
                 if ((chunkbits == 0) and (index < items))
                 {
-                    chunk = (N_long) SvIV( ST(index) );
-                    chunk &= chunkmask;
-                    chunkbits = chunksize;
-                    index++;
+                    if (SvIOK( ST(index) ))
+                    {
+                        chunk = (N_long) SvIV( ST(index) );
+                        chunk &= chunkmask;
+                        chunkbits = chunksize;
+                        index++;
+                    }
+                    else BIT_VECTOR_NUMERIC_ERROR("Chunk_List_Store");
                 }
                 bits = wordsize - wordbits;
                 if (chunkbits <= bits)
@@ -1913,7 +1972,7 @@ PPCODE:
     N_int size;
     N_int bits;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         if ((chunksize > 0) and (chunksize <= BitVector_Long_Bits()))
         {
@@ -1972,6 +2031,111 @@ PPCODE:
 }
 
 
+void
+BitVector_Index_List_Remove(reference, ...)
+BitVector_Object	reference
+CODE:
+{
+    BitVector_Handle  handle;
+    BitVector_Address address;
+    N_int value;
+    N_int bits;
+    I32 index;
+
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
+    {
+        bits = bits_(address);
+        for ( index = 1; index < items; index++ )
+        {
+            if (SvIOK( ST(index) ))
+            {
+                value = (N_int) SvIV( ST(index) );
+                if (value < bits)
+                {
+                    BitVector_Bit_Off(address,value);
+                }
+                else BIT_VECTOR_INDEX_ERROR("Index_List_Remove");
+            }
+            else BIT_VECTOR_NUMERIC_ERROR("Index_List_Remove");
+        }
+    }
+    else BIT_VECTOR_TYPE_ERROR("Index_List_Remove");
+}
+
+
+void
+BitVector_Index_List_Store(reference, ...)
+BitVector_Object	reference
+CODE:
+{
+    BitVector_Handle  handle;
+    BitVector_Address address;
+    N_int value;
+    N_int bits;
+    I32 index;
+
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
+    {
+        bits = bits_(address);
+        for ( index = 1; index < items; index++ )
+        {
+            if (SvIOK( ST(index) ))
+            {
+                value = (N_int) SvIV( ST(index) );
+                if (value < bits)
+                {
+                    BitVector_Bit_On(address,value);
+                }
+                else BIT_VECTOR_INDEX_ERROR("Index_List_Store");
+            }
+            else BIT_VECTOR_NUMERIC_ERROR("Index_List_Store");
+        }
+    }
+    else BIT_VECTOR_TYPE_ERROR("Index_List_Store");
+}
+
+
+void
+BitVector_Index_List_Read(reference)
+BitVector_Object	reference
+PPCODE:
+{
+    BitVector_Handle  handle;
+    BitVector_Address address;
+    N_int size;
+    N_int bits;
+    N_int norm;
+    N_int base;
+    N_int word;
+    N_int index;
+    N_int value;
+
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
+    {
+        size = size_(address);
+        bits = BitVector_Word_Bits();
+        norm = Set_Norm(address);
+        if (norm > 0)
+        {
+            EXTEND(sp,norm);
+            for ( base = word = 0; word < size; word++, base += bits )
+            {
+                index = base;
+                value = BitVector_Word_Read(address,word);
+                while (value)
+                {
+                    if (value AND 0x0001)
+                      PUSHs(sv_2mortal(newSViv((IV)index)));
+                    value >>= 1;
+                    index++;
+                }
+            }
+        }
+    }
+    else BIT_VECTOR_TYPE_ERROR("Index_List_Read");
+}
+
+
 MODULE = Bit::Vector		PACKAGE = Bit::Vector		PREFIX = Set_
 
 
@@ -1991,9 +2155,9 @@ CODE:
     BitVector_Handle  Zhdl;
     BitVector_Address Zadr;
 
-    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Zref,Zhdl,Zadr,Class_Name) )
+    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr) &&
+         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr) &&
+         BIT_VECTOR_CHECK(Zref,Zhdl,Zadr) )
     {
         if ((bits_(Xadr) == bits_(Yadr)) and (bits_(Xadr) == bits_(Zadr)))
         {
@@ -2021,9 +2185,9 @@ CODE:
     BitVector_Handle  Zhdl;
     BitVector_Address Zadr;
 
-    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Zref,Zhdl,Zadr,Class_Name) )
+    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr) &&
+         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr) &&
+         BIT_VECTOR_CHECK(Zref,Zhdl,Zadr) )
     {
         if ((bits_(Xadr) == bits_(Yadr)) and (bits_(Xadr) == bits_(Zadr)))
         {
@@ -2051,9 +2215,9 @@ CODE:
     BitVector_Handle  Zhdl;
     BitVector_Address Zadr;
 
-    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Zref,Zhdl,Zadr,Class_Name) )
+    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr) &&
+         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr) &&
+         BIT_VECTOR_CHECK(Zref,Zhdl,Zadr) )
     {
         if ((bits_(Xadr) == bits_(Yadr)) and (bits_(Xadr) == bits_(Zadr)))
         {
@@ -2081,9 +2245,9 @@ CODE:
     BitVector_Handle  Zhdl;
     BitVector_Address Zadr;
 
-    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Zref,Zhdl,Zadr,Class_Name) )
+    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr) &&
+         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr) &&
+         BIT_VECTOR_CHECK(Zref,Zhdl,Zadr) )
     {
         if ((bits_(Xadr) == bits_(Yadr)) and (bits_(Xadr) == bits_(Zadr)))
         {
@@ -2108,8 +2272,8 @@ CODE:
     BitVector_Handle  Yhdl;
     BitVector_Address Yadr;
 
-    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr,Class_Name) )
+    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr) &&
+         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr) )
     {
         if (bits_(Xadr) == bits_(Yadr))
         {
@@ -2134,8 +2298,8 @@ CODE:
     BitVector_Handle  Yhdl;
     BitVector_Address Yadr;
 
-    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr,Class_Name) )
+    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr) &&
+         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr) )
     {
         if (bits_(Xadr) == bits_(Yadr))
         {
@@ -2157,7 +2321,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         RETVAL = Set_Norm(address);
     }
@@ -2175,7 +2339,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         RETVAL = Set_Min(address);
     }
@@ -2193,7 +2357,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         RETVAL = Set_Max(address);
     }
@@ -2226,9 +2390,9 @@ CODE:
     BitVector_Handle  Zhdl;
     BitVector_Address Zadr;
 
-    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Zref,Zhdl,Zadr,Class_Name) )
+    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr) &&
+         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr) &&
+         BIT_VECTOR_CHECK(Zref,Zhdl,Zadr) )
     {
         if ((colsY == rowsZ) and (rowsX == rowsY) and (colsX == colsZ) and
             (bits_(Xadr) == rowsX*colsX) and
@@ -2255,7 +2419,7 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
 
-    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    if ( BIT_VECTOR_CHECK(reference,handle,address) )
     {
         if (rows == cols)
         {
@@ -2286,8 +2450,8 @@ CODE:
     BitVector_Handle  Yhdl;
     BitVector_Address Yadr;
 
-    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr,Class_Name) &&
-         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr,Class_Name) )
+    if ( BIT_VECTOR_CHECK(Xref,Xhdl,Xadr) &&
+         BIT_VECTOR_CHECK(Yref,Yhdl,Yadr) )
     {
         if ((rowsX == colsY) and (colsX == rowsY) and
             (bits_(Xadr) == rowsX*colsX) and

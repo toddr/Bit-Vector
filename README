@@ -90,8 +90,8 @@ in a machine word on your system and then adjusts its internal configuration
 constants accordingly.
 
 The greater the size of this basic storage unit, the better the complexity
-(= execution speed) of the methods in this module (but also the greater the
-average waste of unused bits in the last word).
+(= execution speed) of the methods in this module, but also the greater the
+average waste of unused bits in the last word.
 
 
 Important note:
@@ -103,12 +103,6 @@ also be used stand-alone (i.e., without Perl).
 To do so, link the output file "BitVector.o" (which is produced when you
 build this module or when you just compile "BitVector.c") with your
 application.
-
-Note however that this C library does not perform any bounds checking;
-this is your application's duty.
-
-See the file "Vector.xs" in this distribution for an example of how
-this can be done.
 
 
 Example applications:
@@ -125,8 +119,8 @@ or from any CPAN ftp server.)
 
 A tool relying crucially on this "Bit::Vector" module is "Slice" (see
 also "http://www.engelschall.com/sw/slice/"), a tool for generating
-varying document versions out of a single master file. (This tool was
-written by Ralf S. Engelschall).
+different document versions out of a single master file. (This tool
+was written by Ralf S. Engelschall).
 
 This tool is itself part of another tool (by the same author), "WML"
 (= "Website Meta Language"), which allows you to generate and maintain

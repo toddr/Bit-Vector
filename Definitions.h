@@ -174,8 +174,14 @@ typedef             union
 /*    ??.??.??    ???                                                        */
 /*    16.02.97    Version 3.0                                                */
 /*    24.03.97    Version 4.0                                                */
-/*    12.10.97    Version 5.0                                                */
+/*    24.10.97    Version 5.0                                                */
 /*****************************************************************************/
-/*  COPYRIGHT (C) 1993-1997 BY:  Steffen Beyer         ALL RIGHTS RESERVED.  */
+/*  COPYRIGHT:                                                               */
+/*                                                                           */
+/*   Copyright (c) 1995, 1996, 1997 by Steffen Beyer. All rights reserved.   */
+/*                                                                           */
+/*   Please refer to the file "LICENSE" in this distribution for the exact   */
+/*   terms under which this package may be used and distributed!             */
+/*                                                                           */
 /*****************************************************************************/
 #endif

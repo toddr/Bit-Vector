@@ -1,7 +1,8 @@
 
-#
 #  Copyright (c) 1995, 1996, 1997 by Steffen Beyer. All rights reserved.
 #
+#  Please refer to the file "LICENSE" in this distribution for the exact
+#  terms under which this package may be used and distributed!
 
 package Bit::Vector;
 
@@ -25,23 +26,30 @@ $CONFIG[2] = 0;
 
 #  Configuration:
 #
-#  0 = Scalar Input:        0 = Bit Index   1 = from_hex
-#                           2 = from_bin    3 = from_dec
+#  0 = Scalar Input:        0 = Bit Index  (default)
+#                           1 = from_hex
+#                           2 = from_bin
+#                           3 = from_dec
 #                           4 = from_enum
 #
-#  1 = Operator Semantics:  0 = Set Ops     1 = Arithmetic Ops
+#  1 = Operator Semantics:  0 = Set Ops    (default)
+#                           1 = Arithmetic Ops
 #
-#      Affected Operators:  "+"  "-"  "*"  "<"  "<="  ">"  ">="  "abs"
+#      Affected Operators:  "+"  "-"  "*"
+#                           "<"  "<="  ">"  ">="
+#                           "abs"
 #
-#  2 = String Output:       0 = to_Hex()    1 = to_Bin()
-#                           2 = to_Dec()    3 = to_Enum()
+#  2 = String Output:       0 = to_Hex()   (default)
+#                           1 = to_Bin()
+#                           2 = to_Dec()
+#                           3 = to_Enum()
 
 bootstrap Bit::Vector $VERSION;
 
 use Carp;
 
 use overload
-      '""' => '_stringify',
+      '""' => '_scalarize',
      'neg' => '_negate',
        '~' => '_complement',
     'bool' => '_boolean',
@@ -52,6 +60,8 @@ use overload
        '^' => '_exclusive_or',
       '<<' => '_move_left',
       '>>' => '_move_right',
+       '.' => '_concat',
+       'x' => '_xerox',
        '+' => '_add',
        '-' => '_sub',
        '*' => '_mul',
@@ -62,6 +72,8 @@ use overload
       '^=' => '_assign_exclusive_or',
      '<<=' => '_assign_move_left',
      '>>=' => '_assign_move_right',
+      '.=' => '_assign_concat',
+      'x=' => '_assign_xerox',
       '+=' => '_assign_add',
       '-=' => '_assign_sub',
       '*=' => '_assign_mul',
@@ -185,12 +197,33 @@ sub Configuration
     }
 }
 
+sub _vectorize
+{
+    my($vector,$scalar) = @_;
+
+    if    ($CONFIG[0] == 4) { return( $vector->from_enum($scalar) ); }
+    elsif ($CONFIG[0] == 3) { return( $vector->from_dec($scalar)  ); }
+    elsif ($CONFIG[0] == 2) { return( $vector->from_bin($scalar)  ); }
+    elsif ($CONFIG[0] == 1) { return( $vector->from_hex($scalar)  ); }
+    else                    { $vector->Bit_On($scalar); return( 1 ); }
+}
+
+sub _scalarize
+{
+    my($vector) = @_;
+
+    if    ($CONFIG[2] == 3) { return( $vector->to_Enum() ); }
+    elsif ($CONFIG[2] == 2) { return( $vector->to_Dec()  ); }
+    elsif ($CONFIG[2] == 1) { return( $vector->to_Bin()  ); }
+    else                    { return( $vector->to_Hex()  ); }
+}
+
 sub _fetch_operand
 {
-    my($name,$object,$argument,$build) = @_;
+    my($name,$object,$argument,$flag,$build) = @_;
     my($operand);
-    my($ok);
 
+    $name .= '=' unless (defined $flag);
     if ((defined $argument) && ref($argument) && (ref($argument) !~ /^[A-Z]+$/))
     {
         if ($build) { $operand = $argument->Clone(); }
@@ -199,14 +232,10 @@ sub _fetch_operand
     elsif ((defined $argument) && !(ref($argument)))
     {
         $operand = $object->Shadow();
-        if    ($CONFIG[0] == 4) { $ok = $operand->from_enum($argument); }
-        elsif ($CONFIG[0] == 3) { $ok = $operand->from_dec($argument);  }
-        elsif ($CONFIG[0] == 2) { $ok = $operand->from_bin($argument);  }
-        elsif ($CONFIG[0] == 1) { $ok = $operand->from_hex($argument);  }
-        else                    { $ok = 1; $operand->Bit_On($argument); }
-        if (!$ok) { croak "Bit::Vector $name: scalar argument error"; }
+        unless (_vectorize($operand,$argument))
+        { croak "Bit::Vector \"$name\": scalar argument error"; }
     }
-    else { croak "Bit::Vector $name: argument type error"; }
+    else { croak "Bit::Vector \"$name\": argument type error"; }
     return($operand);
 }
 
@@ -214,24 +243,15 @@ sub _check_operand
 {
     my($name,$argument,$flag) = @_;
 
+    $name .= '=' unless (defined $flag);
     if ((defined $argument) && !(ref($argument)))
     {
         if ((defined $flag) && $flag)
         {
-            croak "Bit::Vector $name: reversed arguments error";
+            croak "Bit::Vector \"$name\": reversed arguments error";
         }
     }
-    else { croak "Bit::Vector $name: argument type error"; }
-}
-
-sub _stringify
-{
-    my($object) = @_;
-
-    if    ($CONFIG[2] == 3) { return( $object->to_Enum() ); }
-    elsif ($CONFIG[2] == 2) { return( $object->to_Dec()  ); }
-    elsif ($CONFIG[2] == 1) { return( $object->to_Bin()  ); }
-    else                    { return( $object->to_Hex()  ); }
+    else { croak "Bit::Vector \"$name\": argument type error"; }
 }
 
 sub _negate
@@ -304,7 +324,7 @@ sub _union_
 sub _union
 {
     my($object,$argument,$flag) = @_;
-    my($operand) = &_fetch_operand("'|'",$object,$argument,1);
+    my($operand) = &_fetch_operand('|',$object,$argument,$flag,1);
 
     return ( &_union_($object,$operand,$flag) );
 }
@@ -328,7 +348,7 @@ sub _intersection_
 sub _intersection
 {
     my($object,$argument,$flag) = @_;
-    my($operand) = &_fetch_operand("'&'",$object,$argument,1);
+    my($operand) = &_fetch_operand('&',$object,$argument,$flag,1);
 
     return ( &_intersection_($object,$operand,$flag) );
 }
@@ -336,7 +356,7 @@ sub _intersection
 sub _exclusive_or
 {
     my($object,$argument,$flag) = @_;
-    my($operand) = &_fetch_operand("'^'",$object,$argument,1);
+    my($operand) = &_fetch_operand('^',$object,$argument,$flag,1);
 
     if (defined $flag)
     {
@@ -355,7 +375,7 @@ sub _move_left
     my($object,$argument,$flag) = @_;
     my($result);
 
-    &_check_operand("'<<'",$argument,$flag);
+    &_check_operand('<<',$argument,$flag);
     if (defined $flag)
     {
         $result = $object->Clone();
@@ -374,7 +394,7 @@ sub _move_right
     my($object,$argument,$flag) = @_;
     my($result);
 
-    &_check_operand("'>>'",$argument,$flag);
+    &_check_operand('>>',$argument,$flag);
     if (defined $flag)
     {
         $result = $object->Clone();
@@ -388,10 +408,84 @@ sub _move_right
     }
 }
 
+sub _concat
+{
+    my($object,$argument,$flag) = @_;
+    my($result);
+    my($name);
+
+    $name = '.';
+    $name .= '=' unless (defined $flag);
+    if ((defined $argument) && ref($argument) && (ref($argument) !~ /^[A-Z]+$/))
+    {
+        if (defined $flag)
+        {
+            if ($flag) { $result = $argument->Concat($object); }
+            else       { $result = $object->Concat($argument); }
+            return($result);
+        }
+        else
+        {
+            $object->Interval_Substitute($argument,0,0,0,$argument->Size());
+            return($object);
+        }
+    }
+    elsif ((defined $argument) && !(ref($argument)))
+    {
+        if (defined $flag)
+        {
+            if ($flag) { $result = $argument . _scalarize($object); }
+            else       { $result = _scalarize($object) . $argument; }
+            return($result);
+        }
+        else
+        {
+            if    ($CONFIG[0] == 2) { $result = $object->new( length($argument) ); }
+            elsif ($CONFIG[0] == 1) { $result = $object->new( length($argument) >> 2 ); }
+            else                    { $result = $object->Shadow(); }
+            unless (_vectorize($result,$argument))
+            { croak "Bit::Vector \"$name\": scalar argument error"; }
+            $object->Interval_Substitute($result,0,0,0,$result->Size());
+            return($object);
+        }
+    }
+    else { croak "Bit::Vector \"$name\": argument type error"; }
+}
+
+sub _xerox
+{
+    my($object,$argument,$flag) = @_;
+    my($result);
+    my($offset);
+    my($index);
+    my($size);
+
+    &_check_operand('x',$argument,$flag);
+    $size = $object->Size();
+    if (defined $flag)
+    {
+        $result = $object->new($size * $argument);
+        $offset = 0;
+        $index = 0;
+    }
+    else
+    {
+        $result = $object;
+        $result->Resize($size * $argument);
+        $offset = $size;
+        $index = 1;
+    }
+    for ( ; $index < $argument; $index++, $offset += $size )
+    {
+        $result->Interval_Copy($object,$offset,0,$size);
+    }
+    return($result);
+}
+
 sub _add
 {
     my($object,$argument,$flag) = @_;
-    my($operand) = &_fetch_operand("'+'",$object,$argument,1);
+    my($operand) = &_fetch_operand('+',$object,$argument,$flag,1);
 
     if ($CONFIG[1] == 1)
     {
@@ -415,7 +509,7 @@ sub _add
 sub _sub
 {
     my($object,$argument,$flag) = @_;
-    my($operand) = &_fetch_operand("'-'",$object,$argument,1);
+    my($operand) = &_fetch_operand('-',$object,$argument,$flag,1);
 
     if ($CONFIG[1] == 1)
     {
@@ -450,7 +544,7 @@ sub _sub
 sub _mul
 {
     my($object,$argument,$flag) = @_;
-    my($operand) = &_fetch_operand("'*'",$object,$argument,1);
+    my($operand) = &_fetch_operand('*',$object,$argument,$flag,1);
 
     if ($CONFIG[1] == 1)
     {
@@ -474,7 +568,7 @@ sub _mul
 sub _div
 {
     my($object,$argument,$flag) = @_;
-    my($operand) = &_fetch_operand("'/'",$object,$argument,1);
+    my($operand) = &_fetch_operand('/',$object,$argument,$flag,1);
     my($temp) = $object->Shadow();
 
     if (defined $flag)
@@ -493,7 +587,7 @@ sub _div
 sub _mod
 {
     my($object,$argument,$flag) = @_;
-    my($operand) = &_fetch_operand("'%'",$object,$argument,1);
+    my($operand) = &_fetch_operand('%',$object,$argument,$flag,1);
     my($temp) = $object->Shadow();
 
     if (defined $flag)
@@ -542,6 +636,20 @@ sub _assign_move_right
     my($object,$argument) = @_;
 
     return( &_move_right($object,$argument,undef) );
+}
+
+sub _assign_concat
+{
+    my($object,$argument) = @_;
+
+    return( &_concat($object,$argument,undef) );
+}
+
+sub _assign_xerox
+{
+    my($object,$argument) = @_;
+
+    return( &_xerox($object,$argument,undef) );
 }
 
 sub _assign_add
@@ -595,16 +703,16 @@ sub _decrement
 
 sub _equal
 {
-    my($object,$argument) = @_;
-    my($operand) = &_fetch_operand("'=='",$object,$argument,0);
+    my($object,$argument,$flag) = @_;
+    my($operand) = &_fetch_operand('==',$object,$argument,$flag,0);
 
     return( $object->equal($operand) );
 }
 
 sub _not_equal
 {
-    my($object,$argument) = @_;
-    my($operand) = &_fetch_operand("'!='",$object,$argument,0);
+    my($object,$argument,$flag) = @_;
+    my($operand) = &_fetch_operand('!=',$object,$argument,$flag,0);
 
     return( !$object->equal($operand) );
 }
@@ -612,7 +720,7 @@ sub _not_equal
 sub _less_than
 {
     my($object,$argument,$flag) = @_;
-    my($operand) = &_fetch_operand("'<'",$object,$argument,0);
+    my($operand) = &_fetch_operand('<',$object,$argument,$flag,0);
 
     if ($CONFIG[1] == 1)
     {
@@ -643,7 +751,7 @@ sub _less_than
 sub _less_equal
 {
     my($object,$argument,$flag) = @_;
-    my($operand) = &_fetch_operand("'<='",$object,$argument,0);
+    my($operand) = &_fetch_operand('<=',$object,$argument,$flag,0);
 
     if ($CONFIG[1] == 1)
     {
@@ -672,7 +780,7 @@ sub _less_equal
 sub _greater_than
 {
     my($object,$argument,$flag) = @_;
-    my($operand) = &_fetch_operand("'>'",$object,$argument,0);
+    my($operand) = &_fetch_operand('>',$object,$argument,$flag,0);
 
     if ($CONFIG[1] == 1)
     {
@@ -703,7 +811,7 @@ sub _greater_than
 sub _greater_equal
 {
     my($object,$argument,$flag) = @_;
-    my($operand) = &_fetch_operand("'>='",$object,$argument,0);
+    my($operand) = &_fetch_operand('>=',$object,$argument,$flag,0);
 
     if ($CONFIG[1] == 1)
     {
@@ -732,7 +840,7 @@ sub _greater_equal
 sub _compare
 {
     my($object,$argument,$flag) = @_;
-    my($operand) = &_fetch_operand("'cmp'",$object,$argument,0);
+    my($operand) = &_fetch_operand('cmp',$object,$argument,$flag,0);
 
     if ((defined $flag) && $flag)
     {
@@ -763,9 +871,9 @@ This module implements efficient methods for handling bit vectors.
 
 It is intended to serve as a base class for other applications or
 application classes, such as implementing sets or performing big
-integer arithmetic, for example.
+integer arithmetic.
 
-All methods are internally implemented in C for maximum performance.
+All methods are implemented in C internally for maximum performance.
 
 The module also provides overloaded arithmetic and relational operators
 for maximum ease of use.
@@ -784,18 +892,25 @@ for maximum ease of use.
       $bits = Bit::Vector->Long_Bits();  #  bits in an unsigned long
 
   new
-      $vector = Bit::Vector->new($bits);
+      $vector = Bit::Vector->new($bits);  #  bit vector constructor
 
 =head2 OBJECT METHODS (implemented in C)
 
   new
-      $vec2 = $vec1->new($bits);
+      $vec2 = $vec1->new($bits);  #  alternative constructor
 
   Shadow
       $vec2 = $vec1->Shadow();  #  new vector, same size but empty
 
   Clone
       $vec2 = $vec1->Clone();  #  new vector, exact copy
+
+  Concat
+      $vector = $vec1->Concat($vec2);
+
+  Concat_List
+      $vector = $vec1->Concat_List($vec2,$vec3,...);
+      $vector = Bit::Vector::Concat_List(@bitvectors);
 
   Size
       $bits = $vector->Size();
@@ -820,6 +935,9 @@ for maximum ease of use.
   Primes
       $vector->Primes();  #  Sieve of Erathostenes
 
+  Reverse
+      $vec2->Reverse($vec1);
+
   Interval_Empty
       $vector->Interval_Empty($min,$max);
 
@@ -828,6 +946,9 @@ for maximum ease of use.
 
   Interval_Flip
       $vector->Interval_Flip($min,$max);
+
+  Interval_Reverse
+      $vector->Interval_Reverse($min,$max);
 
   Interval_Scan_inc
       if (($min,$max) = $vector->Interval_Scan_inc($start))
@@ -1004,6 +1125,15 @@ for maximum ease of use.
   Chunk_List_Read
       @chunks = $vector->Chunk_List_Read($chunksize);
 
+  Index_List_Remove
+      $vector->Index_List_Remove(@indices);
+
+  Index_List_Store
+      $vector->Index_List_Store(@indices);
+
+  Index_List_Read
+      @indices = $vector->Index_List_Read();
+
   Union
       $set3->Union($set1,$set2);
 
@@ -1074,15 +1204,19 @@ zero ("0") for "false" and a numeric one ("1") for "true".
 
 =item *
 
-Bit indices
+Numeric input parameters
 
-All bit indices are handled as unsigned numbers internally.
+All numeric input parameters are regarded as being unsigned by this
+module.
 
-If you pass a negative number as a bit index to some method
-in this module, it will be treated as a (usually very large)
-positive number due to its internal 2's complement representation,
-usually resulting in an error message "index out of range"
-and program abortion.
+As a consequence, whenever you pass a negative number as an argument
+to some method in this module, it will be treated as a (usually very
+large) positive number due to its internal 2's complement representation,
+usually resulting in an "index out of range" error message and program
+abortion.
+
+Note that this does not apply to "big integer" decimal numbers, which
+are (usually) passed as strings, and which may of course be negative.
 
 =back
 
@@ -1112,37 +1246,6 @@ Copyright (c) 1995, 1996, 1997 by Steffen Beyer. All rights reserved.
 
 =head1 LICENSE
 
-You may freely use (and modify) this package and its parts for your
-personal and any non-profit use.
-
-This package or its parts may not be included into any commercial product
-whatsoever, nor may it be used to provide services to customers against
-payment, without prior written consent from its author, Steffen Beyer.
-
-You may also freely redistribute VERBATIM copies of this package
-provided that you don't charge for them.
-
-(Shareware CD etc. publishers please contact the author first; you
-will usually get permission to include this package on CD etc. free
-of charges provided that the costs of the CD (or the like) for the
-final customer will be within reasonable limits.)
-
-Modified versions of this package or parts thereof may not be
-redistributed without prior written permission from its author.
-
-Patches in form of UNIX "diff" files or from equivalent programs
-do not require such a permission and remain the property of their
-respective author(s).
-
-=head1 DISCLAIMER
-
-This package is provided "as is", without any warranty, neither express
-nor implied, including, but not limited to, the implied warranty of
-merchantability, regarding the fitness of this package or any of its
-parts for any particular purpose or the accuracy of its documentation.
-
-In no event will the author be liable for any damage that may result
-from the use (or non-use) of or inability to use this package and its
-documentation, even if the author has been advised of the possibility
-of such damage.
+Please refer to the file "LICENSE" in this module's distribution for
+the exact terms under which this package may be used and distributed!
 

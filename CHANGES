@@ -32,7 +32,7 @@ i.e., they are now distributed separately as modules of their own.
 This was done because it became more and more difficult to handle such a huge
 distribution.
 
-This is also because version 5.0 of the "Bit::Vector" module contains a large
+Another reason is that version 5.0 of the "Bit::Vector" module contains a large
 number of new methods:
 
   -  Version()
@@ -40,7 +40,11 @@ number of new methods:
   -  Long_Bits()
   -  Shadow()
   -  Clone()
+  -  Concat()
+  -  Concat_List()
   -  Primes()
+  -  Reverse()
+  -  Interval_Reverse()
   -  Interval_Copy()
   -  Interval_Substitute()
   -  to_Hex()
@@ -74,6 +78,9 @@ number of new methods:
   -  Chunk_Read()
   -  Chunk_List_Store()
   -  Chunk_List_Read()
+  -  Index_List_Remove()
+  -  Index_List_Store()
+  -  Index_List_Read()
   -  Transpose()
 
 See the "Bit::Vector" man page (after installing this module) for more
@@ -182,7 +189,7 @@ c) A method "BitVector()" is now available which allows you to call any
    is the core of the "Bit::Vector" module. See the file "COMPLEXITY" in
    this distribution for more details.
 
-   (This file is not available in version 5.0!)
+   (NB: This file is not available in version 5.0!)
 
 
 New features in version 4.0:
@@ -713,7 +720,11 @@ In version 5.0, the following new methods have been added:
 
   -  Word_Bits()
   -  Long_Bits()
+  -  Concat()
+  -  Concat_List()
   -  Primes()
+  -  Reverse()
+  -  Interval_Reverse()
   -  Interval_Copy()
   -  Interval_Substitute()
   -  to_Bin()
@@ -743,6 +754,9 @@ In version 5.0, the following new methods have been added:
   -  Chunk_Read()
   -  Chunk_List_Store()
   -  Chunk_List_Read()
+  -  Index_List_Remove()
+  -  Index_List_Store()
+  -  Index_List_Read()
   -  Transpose()
 
 The following methods have been re-implemented in C (instead of Perl):

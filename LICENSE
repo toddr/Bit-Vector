@@ -6,45 +6,92 @@
      Copyright (c) 1995, 1996, 1997 by Steffen Beyer. All rights reserved.
 
 
-LICENSE:
+License:
 --------
 
-Copyright (c) 1995, 1996, 1997 by Steffen Beyer. All rights reserved.
+You are allowed to use, copy, modify and redistribute this package free of
+charges or royalties under the conditions that follow:
 
-You may freely use (and modify) this package and its parts for your
-personal and any non-profit use.
+1) Only non-profit use and distribution is free; neither this package nor
+   its parts may be included into any commercial product whatsoever, nor
+   may it or its parts be used to produce such a commercial product, nor
+   may it or its parts be used to provide services of any kind to customers
+   for profit, without prior written agreement with the author of this
+   package.
 
-This package or its parts may not be included into any commercial product
-whatsoever, nor may it be used to provide services to customers against
-payment, without prior written consent from its author, Steffen Beyer.
+2) If you redistribute this package, you should always provide the original
+   distribution file.
 
-You may also freely redistribute VERBATIM copies of this package
-provided that you don't charge for them.
+3) If you do not distribute the original distribution file
+   (e.g., if you are only distributing parts thereof),
+   or IF YOU MADE ANY MODIFICATIONS to any of the parts of this package,
+   or if you distribute this package in binary (precompiled) form,
+   or if you distribute this package as part of a package of your own,
+   you are liable to say so explicitly and clearly at a prominent place
+   in your documentation and to describe what modifications have been made,
+   if applicable.  Moreover, you are obliged to include this LICENSE file
+   in your distribution and to mention it at a prominent location in your
+   documentation.
 
-(Shareware CD etc. publishers please contact the author first; you
-will usually get permission to include this package on CD etc. free
-of charges provided that the costs of the CD (or the like) for the
-final customer will be within reasonable limits.)
+   YOU ARE NOT ALLOWED TO REMOVE OR ALTER ANY COPYRIGHT NOTES IN ANY OF
+   THE PARTS OF THIS PACKAGE OR TO CHANGE THIS "LICENSE" FILE IN ANY WAY.
 
-Modified versions of this package or parts thereof may not be
-redistributed without prior written permission from its author.
-
-Patches in form of UNIX "diff" files or from equivalent programs
-do not require such a permission and remain the property of their
-respective author(s).
+4) You are not allowed to charge for the redistribution of this package
+   except for the net costs of the media involved (and postage fees and
+   packing material, if applicable).
 
 
-DISCLAIMER:
+Note to CD-ROM (or other media) publishers:
+-------------------------------------------
+
+You will usually be granted permission to include this package in a
+publication of yours free of charges provided that the costs of the
+medium for the final customer will be within reasonable limits.
+
+In any case, please contact the author first before including this
+package or any of its parts in any publication.
+
+In the case of a publication, the conditions mentioned above under
+"License" apply in an analog fashion.
+
+
+Disclaimer:
 -----------
 
 This package is provided "as is", without any warranty, neither express
 nor implied, including, but not limited to, the implied warranty of
-merchantability, regarding the fitness of this package or any of its
-parts for any particular purpose or the accuracy of its documentation.
+merchantability or fitness of this package (or any of its parts) for
+any particular purpose, and the accuracy of its documentation.
 
 In no event will the author be liable for any damage that may result
-from the use (or non-use) of or inability to use this package and its
-documentation, even if the author has been advised of the possibility
-of such damage.
+from the use (or non-use) of or inability to use this package or any
+of its parts (such as, but not limited to, its documentation), even
+if the author has been advised of the possibility of such damage.
+
+
+Distribution:
+-------------
+
+The original distribution file can be obtained either from:
+
+                  http://www.engelschall.com/u/sb/download/
+
+or any CPAN (= "Comprehensive Perl Archive Network") mirror server:
+
+                  http://www.perl.com/CPAN/authors/id/STBEY/
+
+
+Contact:
+--------
+
+To contact the author, please send e-mail to
+
+                              <sb@sdm.de>
+or write to
+                              Steffen Beyer
+                              Ainmillerstr. 5
+                              App. 513
+                              D-80801 Munich
+                              Germany
 
 

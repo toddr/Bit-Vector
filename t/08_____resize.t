@@ -29,7 +29,7 @@ if ($@ =~ /Modification of a read-only value attempted/)
 $n++;
 
 eval { $set->Resize(0); };
-if ($@ =~ /zero length '[^']+' object not permitted/)
+unless ($@)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 if (ref($set) eq 'Bit::Vector')
