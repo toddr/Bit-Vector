@@ -230,11 +230,12 @@ void    Matrix_Transpose     (wordptr X, N_int rowsX, N_int colsX,
 /*****************************************************************************/
 
 /*****************************************************************************/
-/*  VERSION:  5.4                                                            */
+/*  VERSION:  5.5                                                            */
 /*****************************************************************************/
 /*  VERSION HISTORY:                                                         */
 /*****************************************************************************/
 /*                                                                           */
+/*    Version 5.5  21.09.98  Fixed bug of uninitialized "error" in Multiply. */
 /*    Version 5.4  07.09.98  Fixed bug of uninitialized "error" in Divide.   */
 /*    Version 5.3  12.05.98  Improved Norm. Completed history.               */
 /*    Version 5.2  31.03.98  Improved Norm.                                  */

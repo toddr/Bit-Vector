@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 5.4
+                      Package "Bit::Vector" Version 5.5
                     =====================================
 
 
@@ -21,7 +21,7 @@ Edit the file "Makefile.PL" and change the line
 
     'VERSION_FROM'      => 'Vector.pm',
 to
-    'VERSION'           => '5.4',
+    'VERSION'           => '5.5',
 
 Then edit the file "Vector.pm" and change the line
 
@@ -31,7 +31,7 @@ to
 
 Also edit the file "t/00____version.t" and change the line
 
-    use Bit::Vector 5.4;
+    use Bit::Vector 5.5;
 to
     use Bit::Vector;
 
@@ -78,7 +78,7 @@ Detailed installation guide:
 ----------------------------
 
  1) Change directory to the directory that has been created by unpacking this
-    package ("cd Bit-Vector-5.4").
+    package ("cd Bit-Vector-5.5").
 
  2) Type "perl Makefile.PL" (or whatever the name and path of your Perl 5
     binary is).

@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 5.4
+                      Package "Bit::Vector" Version 5.5
                     =====================================
 
 
@@ -7,70 +7,21 @@
                              All rights reserved.
 
 
-What's new in version 5.4:
+What's new in version 5.5:
 --------------------------
 
-Version 5.4 is a bugfix and update release.
+Version 5.5 is a bugfix release.
 
-A bug was fixed in the method "Divide()" where the return code remained
-uninitialized when zero was divided by something non-zero, causing the
-program to take a shortcut exit and returning random return codes.
+The same bug (uninitialized return code) as in the method "Divide()"
+(fixed in version 5.4) was fixed in the method "Multiply()".
 
-Moreover, the "Makefile.PL" was updated for Perl 5.005 and its Win32
-ports.
-
-
-What's new in version 5.3:
---------------------------
-
-The method "Norm()" has been further improved to become still a bit more
-efficient.
-
-The upgrade utility "upgrade_BV52" (a shell script) was ported to Perl
-(now named "upgrade_BV54.pl"), making it faster, more flexible and easier
-to read and maintain and -- last but not least -- executable under
-Windows NT/95 as well.
-
-Moreover, a similar tool for upgrading from "Set::IntegerFast" version 3.x
-to "Bit::Vector" version 4.2 (called "upgrade_BV42.pl") was added.
-
-Support for Windows NT/95 was also improved by adding the extension ".txt"
-to all text files (where possible) in order to allow opening them with a
-double-click.
-
-Finally, this document, "CHANGES.txt", was completely rewritten because
-it had become a terrible mess.
+Moreover, the failure of tests 96-131 of test script "t/01________new.t"
+under HP-UX 10 was fixed; this was due to Perl calling the C function
+"pow()" internally for the "**" operator, which returns non-integers
+for powers of two larger than 2**4 under HP-UX (i.e., 2**5 != 32).
 
 
-Changes in version 5.2:
------------------------
-
-In version 5.2, the method "Norm()" has been improved and should now be
-faster by a factor varying between about 1.13 and 9.09, depending on the
-number of set bits (using a method suggested and according to benchmarks
-performed by Krzysztof Koczyjan <krzysztofk@rocketmail.com>).
-
-Moreover, the implementation of the overloaded operators "<<" and ">>"
-has been changed so that they should also be more efficient now, at least
-on average (the former implementation was faster under certain circumstances
-but not on average).
-
-And finally, four new methods have been added: "new_Hex()", "new_Bin()",
-"new_Dec()" and "new_Enum()", which allow you to create a new bit vector
-and to initialize it in a single statement.
-
-
-Changes in version 5.1:
------------------------
-
-In version 5.1, systematic exception handling was added to "Vector.pm" so that
-error conditions arising from method calls in overloaded operators do not show
-error messages anymore pointing to the location in "Vector.pm" where the method
-was called, but rather to the location in your application program where the
-overloaded operator was used.
-
-
-Migration strategy to version 5.4:
+Migration strategy to version 5.5:
 ----------------------------------
 
 Step 1:
@@ -137,11 +88,11 @@ Step 2:
 -------
 
 To upgrade your application(s) from "Bit::Vector" version 4.x
-to "Bit::Vector" version 5.4, simply issue the following command:
+to "Bit::Vector" version 5.5, simply issue the following command:
 
-    > perl ./tools/upgrade_BV54.pl  app1.pl  app2.pl  app3.pl  ...
+    > perl ./tools/upgrade_BV55.pl  app1.pl  app2.pl  app3.pl  ...
 or
-    > perl .\tools\upgrade_BV54.pl  app1.pl  app2.pl  app3.pl  ...
+    > perl .\tools\upgrade_BV55.pl  app1.pl  app2.pl  app3.pl  ...
 
 Note that this utility renames the original file "app<i>.pl" to
 "app<i>.pl.bak" before creating a fresh copy of this file (again
@@ -208,7 +159,7 @@ the method name and the opening parenthesis are optional, though.
 
 The substitutions performed by this upgrade utility are the following:
 
-          use Bit::Vector 4.x  ==>                 use Bit::Vector 5.4
+          use Bit::Vector 4.x  ==>                 use Bit::Vector 5.5
           to_ASCII             ==>                 to_Enum
           from_ASCII           ==>                 from_Enum
           to_String            ==>                 to_Hex
@@ -235,6 +186,12 @@ the new method "Lexicompare()" instead!
 
 Version history:
 ----------------
+
+Version 5.5   21.09.98
+
+ +  Fixed the bug of the uninitialized return code in method "Multiply()".
+ +  Fixed the failure of tests 96-131 of test script "t/01________new.t"
+    under HP-UX 10.
 
 Version 5.4   07.09.98
 

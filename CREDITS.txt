@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 5.4
+                      Package "Bit::Vector" Version 5.5
                     =====================================
 
 
@@ -111,5 +111,10 @@ version 5.3.
 Many thanks to Bryan Bayerdorffer <bryan.bayerdorffer@analog.com> for
 notifying me of the bug in the "Divide()" method, which was immediately
 fixed in version 5.4.
+
+Many thanks to Rob W. Koeling <koeling@let.rug.nl> for reporting and to
+Paul J. Schinder <schinder@pobox.com> for reporting and helping to investigate
+the error of the failed tests 96-131 of test script "t/01________new.t" under
+HP-UX 10! This was fixed in version 5.5.
 
 

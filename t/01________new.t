@@ -402,7 +402,7 @@ $n++;
 
 for ( $i = 1; $i <= 16; $i++ )
 {
-    $k = 2 ** $i;
+    $k = int(2 ** $i + 0.5);
     for ( $j = $k-1; $j <= $k+1; $j++ )
     {
         $set = Bit::Vector->new($j);

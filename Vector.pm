@@ -23,7 +23,7 @@ require DynaLoader;
 
 @EXPORT_OK = qw();
 
-$VERSION = '5.4';
+$VERSION = '5.5';
 
 $CONFIG[0] = 0;
 $CONFIG[1] = 0;
@@ -5287,7 +5287,7 @@ perltoot(1), perlxs(1), perlxstut(1), perlguts(1), overload(3).
 
 =head1 VERSION
 
-This man page documents "Bit::Vector" version 5.4.
+This man page documents "Bit::Vector" version 5.5.
 
 =head1 AUTHOR
 
