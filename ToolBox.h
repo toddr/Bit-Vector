@@ -104,17 +104,31 @@ typedef enum { false = FALSE , true = TRUE } boolean;
 /*****************************************************************************/
 
 /*****************************************************************************/
-/*  VERSION:  5.0                                                            */
+/*  VERSION:  5.2                                                            */
 /*****************************************************************************/
 /*  VERSION HISTORY:                                                         */
 /*****************************************************************************/
 /*                                                                           */
+/*    31.03.98    Version 5.2  no changes                                    */
+/*    09.03.98    Version 5.1  no changes                                    */
 /*    01.03.98    Version 5.0                                                */
 /*    24.03.97    Version 4.0                                                */
 /*    16.02.97    Version 3.0                                                */
 /*    ??.??.??    ???                                                        */
 /*    29.11.95    First version under UNIX (for Perl modules)                */
 /*    01.11.93    First version (MS C Compiler on PC with DOS)               */
+/*                                                                           */
+/*****************************************************************************/
+/*  AUTHOR:                                                                  */
+/*****************************************************************************/
+/*                                                                           */
+/*    Steffen Beyer                                                          */
+/*    Ainmillerstr. 5 / App. 513                                             */
+/*    D-80801 Munich                                                         */
+/*    Germany                                                                */
+/*                                                                           */
+/*    mailto:sb@engelschall.com                                              */
+/*    http://www.engelschall.com/u/sb/download/                              */
 /*                                                                           */
 /*****************************************************************************/
 /*  COPYRIGHT:                                                               */
@@ -127,13 +141,22 @@ typedef enum { false = FALSE , true = TRUE } boolean;
 /*  LICENSE:                                                                 */
 /*****************************************************************************/
 /*                                                                           */
-/*    This piece of software is "Non-Profit-Ware" ("NP-ware").               */
+/*    This library is free software; you can redistribute it and/or          */
+/*    modify it under the terms of the GNU Library General Public            */
+/*    License as published by the Free Software Foundation; either           */
+/*    version 2 of the License, or (at your option) any later version.       */
 /*                                                                           */
-/*    You may use, copy, modify and redistribute it under                    */
-/*    the terms of the "Non-Profit-License" (NPL).                           */
+/*    This library is distributed in the hope that it will be useful,        */
+/*    but WITHOUT ANY WARRANTY; without even the implied warranty of         */
+/*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU       */
+/*    Library General Public License for more details.                       */
 /*                                                                           */
-/*    Please refer to the file "NONPROFIT" in this distribution              */
-/*    for details!                                                           */
+/*    You should have received a copy of the GNU Library General Public      */
+/*    License along with this library; if not, write to the                  */
+/*    Free Software Foundation, Inc.,                                        */
+/*    59 Temple Place, Suite 330, Boston, MA 02111-1307 USA                  */
+/*                                                                           */
+/*    or download a copy from ftp://ftp.gnu.org/pub/gnu/COPYING.LIB-2.0      */
 /*                                                                           */
 /*****************************************************************************/
 #endif

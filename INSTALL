@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 5.1
+                      Package "Bit::Vector" Version 5.2
                     =====================================
 
 
@@ -21,7 +21,7 @@ Edit the file "Makefile.PL" and change the line
 
     'VERSION_FROM'      => 'Vector.pm',
 to
-    'VERSION'           => '5.1',
+    'VERSION'           => '5.2',
 
 Then edit the file "Vector.pm" and change the line
 
@@ -31,7 +31,7 @@ to
 
 Also edit the file "t/00____version.t" and change the line
 
-    use Bit::Vector 5.1;
+    use Bit::Vector 5.2;
 to
     use Bit::Vector;
 
@@ -47,7 +47,7 @@ Please unpack and build this package OUTSIDE the Perl source and distribution
 tree!!
 
  1) Change directory to the directory that has been created by unpacking this
-    package ("cd Bit-Vector-5.1/").
+    package ("cd Bit-Vector-5.2/").
 
  2) Type "perl Makefile.PL" (or whatever the name and path of your Perl 5
     binary is).
@@ -67,19 +67,19 @@ tree!!
 
     Should you encounter any compiler warnings or errors (like the redefi-
     nition of certain types already defined by your system), please contact
-    me via mail at <sb@sdm.de>, sending me your compiler output (both STDOUT
-    and STDERR). Thank you!
+    me via email at <sb@engelschall.com>, sending me your compiler output
+    (both STDOUT and STDERR). Thank you!
 
     ======================================================================
-    Be aware that you need a C compiler which supports ANSI C in order to
-    successfully compile this package!
+       BEWARE that you need an ANSI C compiler in order to successfully
+       compile this package!
     ======================================================================
 
     Also note that problems may arise with the c89 compiler of HP, although
     it allegedly supports ANSI C!
 
-    I recommend the GNU gcc compiler, which is available for free on the
-    Internet.
+    I recommend the GNU gcc compiler, which is freely available on the
+    Internet (see ftp://ftp.gnu.org/pub/gnu/ and mirror sites thereof).
 
     (HP users are strongly recommended to install the GNU assembler GAS
     first before installing GNU gcc)
@@ -128,7 +128,7 @@ tree!!
     t/28__chunklist.....ok
     t/30_overloaded.....ok
     All tests successful.
-    Files=19,  Tests=67061, 173 secs (116.80 cusr  5.01 csys = 121.80 cpu)
+    Files=19,  Tests=67081, 173 secs (116.80 cusr  5.01 csys = 121.80 cpu)
 
     (Note that the exact number of tests will depend on the number of bits
      of a machine word/an unsigned long on your system!)
@@ -136,8 +136,8 @@ tree!!
  5) At last, type "make install".
 
  6) Now you can run the "primes.pl" demo program from the "examples" sub-
-    directory, for instance. Start it with "perl primes.pl" (or whatever
-    the name and path of your Perl 5 binary is).
+    directory, for instance. Start it with "perl examples/primes.pl" (or
+    whatever the name and path of your Perl 5 binary is).
 
     It will ask you to enter a number which will serve as an upper limit for
     the calculation of all prime numbers up to that limit, using the algorithm

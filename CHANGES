@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 5.1
+                      Package "Bit::Vector" Version 5.2
                     =====================================
 
 
@@ -10,9 +10,10 @@
 Contents of this file:
 ----------------------
 
+  -  Changes in version 5.2
   -  Changes in version 5.1
   -  New features in version 5.0
-  -  Migration strategy to version 5.0 from previous versions
+  -  Migration strategy to version 5.2 from versions 4.x
   -  New features in version 4.2
   -  New features in version 4.1
   -  New features in version 4.0
@@ -21,6 +22,24 @@ Contents of this file:
   -  Most important differences between versions 2.x and 3.0
   -  Most important differences between versions 1.x and 2.0
   -  Version history in details
+
+
+Changes in version 5.2:
+-----------------------
+
+In version 5.2, the method "Norm()" has been improved and should now be
+faster by a factor varying between about 1.13 and 9.09, depending on the
+number of set bits (using a method suggested and according to benchmarks
+done by Krzysztof Koczyjan <krzysztofk@rocketmail.com>).
+
+Moreover, the implementation of the overloaded operators "<<" and ">>"
+has been changed so that they should also be more performant now, on
+average (the former implementation was faster under certain circumstances
+but not on average).
+
+And finally, four new methods have been added: "new_Hex()", "new_Bin()",
+"new_Dec()" and "new_Enum()", which allow you to create a new bit vector
+and to initialize it in a single statement.
 
 
 Changes in version 5.1:
@@ -104,8 +123,8 @@ See the "Bit::Vector" man page (after installing this module) for more
 details about these new methods.
 
 
-Migration strategy to version 5.0 from previous versions:
----------------------------------------------------------
+Migration strategy to version 5.2 from versions 4.x:
+----------------------------------------------------
 
 Step 0:
 -------
@@ -118,16 +137,26 @@ this document in case you have applications that use a version of
 Step 1:
 -------
 
-First of all, install version 5.0 of the "Bit::Vector" package.
+First of all, install the tools "modify" and "upgrade_BV52" from the
+"tools" subdirectory in this distribution in one of the directories
+listed in your "$PATH" environment variable, or set the "$PATH"
+environment variable (temporarily) so that it will include this
+"tools" subdirectory:
 
-This will also install an upgrade utility in your Perl "bin"
-directory which you will need in order to upgrade your existing
-application(s).
+    % PATH="/..../Bit-Vector-5.2/tools:$PATH"
+    % export PATH
+
+(Replace the dots in the command above with the absolute path to
+this distribution's directory!)
+
+Then change the first line of the script "modify" to reflect the
+path and name of your perl interpreter (this line is currently
+set to "#!/usr/local/bin/perl").
 
 After doing so, upgrade your existing application(s) using the
 following command:
 
-    % upgrade_BV50  appl1.pl  appl2.pl  appl3.pl  ...
+    % upgrade_BV52  appl1.pl  appl2.pl  appl3.pl  ...
 
 Note that this utility renames the original file "appli.pl"
 to "appli.pl.bak" before creating a fresh copy of this file
@@ -138,7 +167,7 @@ Be cautious to keep this backup copy (or better still, another
 copy of the original file) in a safe place!
 
 Beware that this backup file will get overwritten WITHOUT WARNING if
-you run the upgrade utility more than once on the same application!
+you run the upgrade utility MORE THAN ONCE on the same application!
 
 Beware also that this utility is far from fool-proof.
 
@@ -146,18 +175,19 @@ For instance, method calls may not span over multiple lines, or
 the upgrade utility will not work!
 
 Moreover, the upgrade utility assumes that method calls use the
-arrow ("->") - other forms of method calls that are legal in Perl
+arrow ("->") -- other forms of method calls that are legal in Perl
 are not supported.
 
 Some examples of things the upgrade utility can't handle properly:
 
         ('10110110' + $vector1)->lexorder($vector2)
 
-(The bit vector object for which the method is invoked must start
-with a dollar sign. This means that "($vec1 + $vec2)->" instead of
-"('10110110' + $vector1)->" would actually work, but this is not
-recommended, either. You always risk parentheses at the wrong places
-after the upgrade. See below for how to circumvent this problem!)
+(The bit vector object for which the method is invoked (you could call
+it the "lvalue" of the method call) must start with a dollar sign. This
+means that "($vec1 + $vec2)->" instead of "('10110110' + $vector1)->"
+would actually work, but this is not recommended, either. You always
+risk parentheses at the wrong places after the upgrade. See below for
+how to circumvent this problem!)
 
         $vector[$index]->lexorder($vector[int($index/2)+1])
 
@@ -185,7 +215,7 @@ Note also that in most cases, the upgrade utility assumes that all
 method calls have parentheses, even though this is not absolutely
 required by Perl syntax.
 
-Spaces before and after the method call arrow ("->") and between
+Spaces before and after the method invocation arrow ("->") and between
 the method name and the opening parenthesis are optional, though.
 
 The method calls affected by the upgrade utility are the following:
@@ -200,12 +230,11 @@ The method calls affected by the upgrade utility are the following:
 
     ... ->lexorder( ... )     ==>         ( ... ->Lexicompare( ... ) <= 0)
 
-    ... = Bit::Vector->new_from_String( ... );
+    ... = Bit::Vector->new_from_String( ... )
 
                               ==>
 
-    ... = Bit::Vector->new(length( ... ) << 2);
-    ... ->from_Hex( ... );
+    ... = Bit::Vector->new_Hex(length( ... ) << 2, ... )
 
 Step 2:
 -------
@@ -888,6 +917,8 @@ And finally, the following methods are gone:
   -  lexorder()
   -  new_from_String()
 
+(A substitute for "new_from_String()" is available since version 5.2.)
+
 ----------------------------------------------------------------------------
 
 In version 5.1, systematic exception handling was added to "Vector.pm" so that
@@ -895,6 +926,37 @@ error conditions arising from method calls in overloaded operators do not show
 error messages anymore pointing to the location in "Vector.pm" where the method
 was called, but rather to the location in your application program where the
 overloaded operator was used.
+
+----------------------------------------------------------------------------
+
+In version 5.2, the method "Norm()" and the overloaded operators "<<" and
+">>" have been improved for greater speed of execution.
+
+Four new methods have been added: "new_Hex()", "new_Bin()", "new_Dec()" and
+"new_Enum()", which allow to create a new bit vector and to initialize it
+in one go.
+
+----------------------------------------------------------------------------
+
+Elder versions of the module "Set::IntegerRange" (up to version 4.2) broke
+with version 5.0 of the "Bit::Vector" module due to the renamed and removed
+methods in the latter.
+
+Therefore, the module "Set::IntegerRange" was fixed accordingly and re-
+released with a version number of 5.0. This version is compatible with
+all versions of the "Bit::Vector" module starting with version 5.0, and
+higher.
+
+Beware that at the same time, the module "Set::IntegerRange" has been renamed
+to "Set::IntRange", in order to comply with the 11 character limit for names
+in the CPAN name space.
+
+Note though that this new version is just a fix. A more thorough rewrite
+of this module is currently under development.
+
+Note also that the wrapper module "Set::IntegerFast" is now definitely
+gone, because it is substituted by the "Bit::Vector" module itself,
+which is actually a superset (in functionality) of the former.
 
 ----------------------------------------------------------------------------
 

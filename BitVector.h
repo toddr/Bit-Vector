@@ -230,11 +230,13 @@ void    Matrix_Transpose     (wordptr X, N_int rowsX, N_int colsX,
 /*****************************************************************************/
 
 /*****************************************************************************/
-/*  VERSION:  5.0                                                            */
+/*  VERSION:  5.2                                                            */
 /*****************************************************************************/
 /*  VERSION HISTORY:                                                         */
 /*****************************************************************************/
 /*                                                                           */
+/*    31.03.98    Version 5.2  improved norm                                 */
+/*    09.03.98    Version 5.1  no changes                                    */
 /*    01.03.98    Version 5.0  major additions, new functions, rewrites      */
 /*    16.07.97    Version 4.2  added is_empty, is_full                       */
 /*    30.06.97    Version 4.1  added word-ins/del, move-left/right, inc/dec  */
@@ -250,6 +252,18 @@ void    Matrix_Transpose     (wordptr X, N_int rowsX, N_int colsX,
 /*    ca. 1989    Created - Turbo Pascal version under CP/M on Apple ][+     */
 /*                                                                           */
 /*****************************************************************************/
+/*  AUTHOR:                                                                  */
+/*****************************************************************************/
+/*                                                                           */
+/*    Steffen Beyer                                                          */
+/*    Ainmillerstr. 5 / App. 513                                             */
+/*    D-80801 Munich                                                         */
+/*    Germany                                                                */
+/*                                                                           */
+/*    mailto:sb@engelschall.com                                              */
+/*    http://www.engelschall.com/u/sb/download/                              */
+/*                                                                           */
+/*****************************************************************************/
 /*  COPYRIGHT:                                                               */
 /*****************************************************************************/
 /*                                                                           */
@@ -260,13 +274,22 @@ void    Matrix_Transpose     (wordptr X, N_int rowsX, N_int colsX,
 /*  LICENSE:                                                                 */
 /*****************************************************************************/
 /*                                                                           */
-/*    This piece of software is "Non-Profit-Ware" ("NP-ware").               */
+/*    This library is free software; you can redistribute it and/or          */
+/*    modify it under the terms of the GNU Library General Public            */
+/*    License as published by the Free Software Foundation; either           */
+/*    version 2 of the License, or (at your option) any later version.       */
 /*                                                                           */
-/*    You may use, copy, modify and redistribute it under                    */
-/*    the terms of the "Non-Profit-License" (NPL).                           */
+/*    This library is distributed in the hope that it will be useful,        */
+/*    but WITHOUT ANY WARRANTY; without even the implied warranty of         */
+/*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU       */
+/*    Library General Public License for more details.                       */
 /*                                                                           */
-/*    Please refer to the file "NONPROFIT" in this distribution              */
-/*    for details!                                                           */
+/*    You should have received a copy of the GNU Library General Public      */
+/*    License along with this library; if not, write to the                  */
+/*    Free Software Foundation, Inc.,                                        */
+/*    59 Temple Place, Suite 330, Boston, MA 02111-1307 USA                  */
+/*                                                                           */
+/*    or download a copy from ftp://ftp.gnu.org/pub/gnu/COPYING.LIB-2.0      */
 /*                                                                           */
 /*****************************************************************************/
 #endif

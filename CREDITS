@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 5.1
+                      Package "Bit::Vector" Version 5.2
                     =====================================
 
 
@@ -16,7 +16,7 @@ advice and suggestions! Thank you for doing such a tremendous (and time-
 consuming) job!!
 
 Also many thanks to David Jenkins <jenkins@sdm.de> for reviewing the
-first version of this README file and the man page.
+first version of the README file and the man page.
 
 Many thanks to Jarkko Hietaniemi <Jarkko.Hietaniemi@hut.fi> for his
 suggestions while I was developing the first release of this package!
@@ -99,5 +99,9 @@ the bit vector through the largest possible power of ten that will fit into
 a machine word and then breaking down the rest using only machine words,
 which is faster than repeatedly dividing the whole bit vector by ten).
 According to my measurements, this resulted in an 8-fold speed increase.
+
+Many thanks go to Krzysztof Koczyjan <krzysztofk@rocketmail.com> for
+suggesting and extensively benchmarking a more efficient method for
+bit counting in the method "Norm()", which was adopted in version 5.2.
 
 

@@ -11,7 +11,7 @@ use Bit::Vector;
 
 $prefix = 'Bit::Vector';
 
-print "1..900\n";
+print "1..920\n";
 
 $n = 1;
 
@@ -72,6 +72,10 @@ $method_list{'to_Dec'}              = [ 0 ];
 $method_list{'from_Dec'}            = [ 0, 8 ];
 $method_list{'to_Enum'}             = [ 0 ];
 $method_list{'from_Enum'}           = [ 0, 8 ];
+$method_list{'new_Hex'}             = [ 10, 1, 8 ];
+$method_list{'new_Bin'}             = [ 10, 1, 8 ];
+$method_list{'new_Dec'}             = [ 10, 1, 8 ];
+$method_list{'new_Enum'}            = [ 10, 1, 8 ];
 $method_list{'Bit_Off'}             = [ 0, 2 ];
 $method_list{'Bit_On'}              = [ 0, 2 ];
 $method_list{'bit_flip'}            = [ 0, 2 ];
@@ -298,7 +302,7 @@ sub correct_values
         }
         elsif ($type == 1)
         {
-            $parameter_list[$i] = ($bits < 1) | 1;
+            $parameter_list[$i] = ($bits << 1) | 1;
         }
         elsif ($type == 2)
         {
@@ -412,18 +416,18 @@ sub init_values
     if ($method ne "Concat_List")
     {
         push(@{$wrong_values[0]}, $global);
-        push(@{$error_message[0]}, "item is not a '$prefix' object");
+        push(@{$error_message[0]}, "item is not a \"$prefix\" object");
     }
 
     $fake[0] = Bit::Vector->new($bits);
     $fake[0]->DESTROY();
     push(@{$wrong_values[0]}, $fake[0]);
-    push(@{$error_message[0]}, "item is not a '$prefix' object");
+    push(@{$error_message[0]}, "item is not a \"$prefix\" object");
 
     $fake[1] = \$global;
     bless($fake[1], $prefix);
     push(@{$wrong_values[0]}, $fake[1]);
-    push(@{$error_message[0]}, "item is not a '$prefix' object");
+    push(@{$error_message[0]}, "item is not a \"$prefix\" object");
 
 #   push(@{$wrong_values[1]}, -1);
 #   push(@{$error_message[1]}, "unable to allocate memory");

@@ -4,13 +4,8 @@
 ##    Copyright (c) 1995, 1996, 1997, 1998 by Steffen Beyer.                 ##
 ##    All rights reserved.                                                   ##
 ##                                                                           ##
-##    This piece of software is "Non-Profit-Ware" ("NP-ware").               ##
-##                                                                           ##
-##    You may use, copy, modify and redistribute it under                    ##
-##    the terms of the "Non-Profit-License" (NPL).                           ##
-##                                                                           ##
-##    Please refer to the file "NONPROFIT" in this distribution              ##
-##    for details!                                                           ##
+##    This package is free software; you can redistribute it                 ##
+##    and/or modify it under the same terms as Perl itself.                  ##
 ##                                                                           ##
 ###############################################################################
 
@@ -28,7 +23,7 @@ require DynaLoader;
 
 @EXPORT_OK = qw();
 
-$VERSION = '5.1';
+$VERSION = '5.2';
 
 $CONFIG[0] = 0;
 $CONFIG[1] = 0;
@@ -204,7 +199,7 @@ sub Configuration
     return($result);
 }
 
-sub _error_
+sub _error
 {
     my($name,$code) = @_;
     my($text);
@@ -215,7 +210,7 @@ sub _error_
     croak("Bit::Vector \"$name\": $text");
 }
 
-sub _exception_
+sub _exception
 {
     my($name) = @_;
     my($text);
@@ -239,70 +234,78 @@ sub _exception_
 
 sub _vectorize_
 {
-    my($vector,$scalar,$name) = @_;
+    my($vector,$scalar) = @_;
 
-    if    ($CONFIG[0] == 4) { eval { $vector->from_Enum($scalar); }; }
-    elsif ($CONFIG[0] == 3) { eval { $vector->from_Dec ($scalar); }; }
-    elsif ($CONFIG[0] == 2) { eval { $vector->from_Bin ($scalar); }; }
-    elsif ($CONFIG[0] == 1) { eval { $vector->from_Hex ($scalar); }; }
-    else                    { eval { $vector->Bit_On   ($scalar); }; }
-    if ($@) { &_exception_($name); }
+    if    ($CONFIG[0] == 4) { $vector->from_Enum($scalar); }
+    elsif ($CONFIG[0] == 3) { $vector->from_Dec ($scalar); }
+    elsif ($CONFIG[0] == 2) { $vector->from_Bin ($scalar); }
+    elsif ($CONFIG[0] == 1) { $vector->from_Hex ($scalar); }
+    else                    { $vector->Bit_On   ($scalar); }
 }
 
 sub _scalarize_
 {
-    my($vector,$name) = @_;
-    my($scalar);
+    my($vector) = @_;
 
-    if    ($CONFIG[2] == 3) { eval { $scalar = $vector->to_Enum(); }; }
-    elsif ($CONFIG[2] == 2) { eval { $scalar = $vector->to_Dec (); }; }
-    elsif ($CONFIG[2] == 1) { eval { $scalar = $vector->to_Bin (); }; }
-    else                    { eval { $scalar = $vector->to_Hex (); }; }
-    if ($@) { &_exception_($name); }
-    return($scalar);
+    if    ($CONFIG[2] == 3) { return( $vector->to_Enum() ); }
+    elsif ($CONFIG[2] == 2) { return( $vector->to_Dec () ); }
+    elsif ($CONFIG[2] == 1) { return( $vector->to_Bin () ); }
+    else                    { return( $vector->to_Hex () ); }
 }
 
-sub _fetch_operand_
+sub _fetch_operand
 {
     my($object,$argument,$flag,$name,$build) = @_;
     my($operand);
 
     if ((defined $argument) && ref($argument) && (ref($argument) !~ /^[A-Z]+$/))
     {
-        if ($build && (defined $flag))
+        eval
         {
-            eval { $operand = $argument->Clone(); };
-            if ($@) { &_exception_($name); }
-        }
-        else { $operand = $argument; }
+            if ($build && (defined $flag))
+            {
+                $operand = $argument->Clone();
+            }
+            else { $operand = $argument; }
+        };
+        if ($@) { &_exception($name); }
     }
     elsif ((defined $argument) && (!ref($argument)))
     {
-        eval { $operand = $object->Shadow(); };
-        if ($@) { &_exception_($name); }
-        &_vectorize_($operand,$argument,$name);
+        eval
+        {
+            $operand = $object->Shadow();
+            &_vectorize_($operand,$argument);
+        };
+        if ($@) { &_exception($name); }
     }
-    else { &_error_($name,1); }
+    else { &_error($name,1); }
     return($operand);
 }
 
-sub _check_operand_
+sub _check_operand
 {
     my($argument,$flag,$name) = @_;
 
     if ((defined $argument) && (!ref($argument)))
     {
-        if ((defined $flag) && $flag) { &_error_($name,2); }
+        if ((defined $flag) && $flag) { &_error($name,2); }
     }
-    else { &_error_($name,1); }
+    else { &_error($name,1); }
 }
 
 sub _stringify
 {
     my($vector) = @_;
     my($name) = 'string interpolation';
+    my($result);
 
-    return( &_scalarize_($vector,$name) );
+    eval
+    {
+        $result = &_scalarize_($vector);
+    };
+    if ($@) { &_exception($name); }
+    return($result);
 }
 
 sub _boolean
@@ -311,8 +314,11 @@ sub _boolean
     my($name) = 'boolean expression';
     my($result);
 
-    eval { $result = $object->is_empty(); };
-    if ($@) { &_exception_($name); }
+    eval
+    {
+        $result = $object->is_empty();
+    };
+    if ($@) { &_exception($name); }
     return(! $result);
 }
 
@@ -322,8 +328,11 @@ sub _not_boolean
     my($name) = 'boolean expression';
     my($result);
 
-    eval { $result = $object->is_empty(); };
-    if ($@) { &_exception_($name); }
+    eval
+    {
+        $result = $object->is_empty();
+    };
+    if ($@) { &_exception($name); }
     return($result);
 }
 
@@ -333,10 +342,12 @@ sub _complement
     my($name) = '~';
     my($result);
 
-    eval { $result = $object->Shadow(); };
-    if ($@) { &_exception_($name); }
-    eval { $result->Complement($object); };
-    if ($@) { &_exception_($name); }
+    eval
+    {
+        $result = $object->Shadow();
+        $result->Complement($object);
+    };
+    if ($@) { &_exception($name); }
     return($result);
 }
 
@@ -346,10 +357,12 @@ sub _negate
     my($name) = 'unary minus';
     my($result);
 
-    eval { $result = $object->Shadow(); };
-    if ($@) { &_exception_($name); }
-    eval { $result->Negate($object); };
-    if ($@) { &_exception_($name); }
+    eval
+    {
+        $result = $object->Shadow();
+        $result->Negate($object);
+    };
+    if ($@) { &_exception($name); }
     return($result);
 }
 
@@ -359,17 +372,19 @@ sub _absolute
     my($name) = 'abs()';
     my($result);
 
-    if ($CONFIG[1] == 1)
+    eval
     {
-        eval { $result = $object->Shadow(); };
-        if ($@) { &_exception_($name); }
-        eval { $result->Absolute($object); };
-    }
-    else
-    {
-        eval { $result = $object->Norm(); };
-    }
-    if ($@) { &_exception_($name); }
+        if ($CONFIG[1] == 1)
+        {
+            $result = $object->Shadow();
+            $result->Absolute($object);
+        }
+        else
+        {
+            $result = $object->Norm();
+        }
+    };
+    if ($@) { &_exception($name); }
     return($result);
 }
 
@@ -382,41 +397,45 @@ sub _concat
     $name .= '=' unless (defined $flag);
     if ((defined $argument) && ref($argument) && (ref($argument) !~ /^[A-Z]+$/))
     {
-        if (defined $flag)
+        eval
         {
-            if ($flag) { eval { $result = $argument->Concat($object); }; }
-            else       { eval { $result = $object->Concat($argument); }; }
-            if ($@) { &_exception_($name); }
-            return($result);
-        }
-        else
-        {
-            eval { $object->Interval_Substitute($argument,0,0,0,$argument->Size()); };
-            if ($@) { &_exception_($name); }
-            return($object);
-        }
+            if (defined $flag)
+            {
+                if ($flag) { $result = $argument->Concat($object); }
+                else       { $result = $object->Concat($argument); }
+            }
+            else
+            {
+                $object->Interval_Substitute($argument,0,0,0,$argument->Size());
+                $result = $object;
+            }
+        };
+        if ($@) { &_exception($name); }
+        return($result);
     }
     elsif ((defined $argument) && (!ref($argument)))
     {
-        if (defined $flag)
+        eval
         {
-            if ($flag) { $result = $argument . &_scalarize_($object,$name); }
-            else       { $result = &_scalarize_($object,$name) . $argument; }
-            return($result);
-        }
-        else
-        {
-            if    ($CONFIG[0] == 2) { eval { $result = $object->new( length($argument) ); }; }
-            elsif ($CONFIG[0] == 1) { eval { $result = $object->new( length($argument) << 2 ); }; }
-            else                    { eval { $result = $object->Shadow(); }; }
-            if ($@) { &_exception_($name); }
-            &_vectorize_($result,$argument,$name);
-            eval { $object->Interval_Substitute($result,0,0,0,$result->Size()); };
-            if ($@) { &_exception_($name); }
-            return($object);
-        }
+            if (defined $flag)
+            {
+                if ($flag) { $result = $argument . &_scalarize_($object); }
+                else       { $result = &_scalarize_($object) . $argument; }
+            }
+            else
+            {
+                if    ($CONFIG[0] == 2) { $result = $object->new( length($argument) ); }
+                elsif ($CONFIG[0] == 1) { $result = $object->new( length($argument) << 2 ); }
+                else                    { $result = $object->Shadow(); }
+                &_vectorize_($result,$argument);
+                $object->Interval_Substitute($result,0,0,0,$result->Size());
+                $result = $object;
+            }
+        };
+        if ($@) { &_exception($name); }
+        return($result);
     }
-    else { &_error_($name,1); }
+    else { &_error($name,1); }
 }
 
 sub _xerox  #  (in Brazil, a photocopy is called a "xerox")
@@ -429,29 +448,29 @@ sub _xerox  #  (in Brazil, a photocopy is called a "xerox")
     my($size);
 
     $name .= '=' unless (defined $flag);
-    &_check_operand_($argument,$flag,$name);
-    eval { $size = $object->Size(); };
-    if ($@) { &_exception_($name); }
-    if (defined $flag)
+    &_check_operand($argument,$flag,$name);
+    eval
     {
-        eval { $result = $object->new($size * $argument); };
-        if ($@) { &_exception_($name); }
-        $offset = 0;
-        $index = 0;
-    }
-    else
-    {
-        $result = $object;
-        eval { $result->Resize($size * $argument); };
-        if ($@) { &_exception_($name); }
-        $offset = $size;
-        $index = 1;
-    }
-    for ( ; $index < $argument; $index++, $offset += $size )
-    {
-        eval { $result->Interval_Copy($object,$offset,0,$size); };
-        if ($@) { &_exception_($name); }
-    }
+        $size = $object->Size();
+        if (defined $flag)
+        {
+            $result = $object->new($size * $argument);
+            $offset = 0;
+            $index = 0;
+        }
+        else
+        {
+            $result = $object;
+            $result->Resize($size * $argument);
+            $offset = $size;
+            $index = 1;
+        }
+        for ( ; $index < $argument; $index++, $offset += $size )
+        {
+            $result->Interval_Copy($object,$offset,0,$size);
+        }
+    };
+    if ($@) { &_exception($name); }
     return($result);
 }
 
@@ -462,21 +481,24 @@ sub _shift_left
     my($result);
 
     $name .= '=' unless (defined $flag);
-    &_check_operand_($argument,$flag,$name);
-    if (defined $flag)
+    &_check_operand($argument,$flag,$name);
+    eval
     {
-        eval { $result = $object->Clone(); };
-        if ($@) { &_exception_($name); }
-        eval { $result->Move_Left($argument); };
-        if ($@) { &_exception_($name); }
-        return($result);
-    }
-    else
-    {
-        eval { $object->Move_Left($argument); };
-        if ($@) { &_exception_($name); }
-        return($object);
-    }
+        if (defined $flag)
+        {
+            $result = $object->Clone();
+            $result->Insert(0,$argument);
+#           $result->Move_Left($argument);
+        }
+        else
+        {
+#           $object->Move_Left($argument);
+            $object->Insert(0,$argument);
+            $result = $object;
+        }
+    };
+    if ($@) { &_exception($name); }
+    return($result);
 }
 
 sub _shift_right
@@ -486,37 +508,38 @@ sub _shift_right
     my($result);
 
     $name .= '=' unless (defined $flag);
-    &_check_operand_($argument,$flag,$name);
-    if (defined $flag)
+    &_check_operand($argument,$flag,$name);
+    eval
     {
-        eval { $result = $object->Clone(); };
-        if ($@) { &_exception_($name); }
-        eval { $result->Move_Right($argument); };
-        if ($@) { &_exception_($name); }
-        return($result);
-    }
-    else
-    {
-        eval { $object->Move_Right($argument); };
-        if ($@) { &_exception_($name); }
-        return($object);
-    }
+        if (defined $flag)
+        {
+            $result = $object->Clone();
+            $result->Delete(0,$argument);
+#           $result->Move_Right($argument);
+        }
+        else
+        {
+#           $object->Move_Right($argument);
+            $object->Delete(0,$argument);
+            $result = $object;
+        }
+    };
+    if ($@) { &_exception($name); }
+    return($result);
 }
 
 sub _union_
 {
-    my($object,$operand,$flag,$name) = @_;
+    my($object,$operand,$flag) = @_;
 
     if (defined $flag)
     {
-        eval { $operand->Union($object,$operand); };
-        if ($@) { &_exception_($name); }
+        $operand->Union($object,$operand);
         return($operand);
     }
     else
     {
-        eval { $object->Union($object,$operand); };
-        if ($@) { &_exception_($name); }
+        $object->Union($object,$operand);
         return($object);
     }
 }
@@ -528,24 +551,27 @@ sub _union
     my($operand);
 
     $name .= '=' unless (defined $flag);
-    $operand = &_fetch_operand_($object,$argument,$flag,$name,1);
-    return( &_union_($object,$operand,$flag,$name) );
+    $operand = &_fetch_operand($object,$argument,$flag,$name,1);
+    eval
+    {
+        $operand = &_union_($object,$operand,$flag);
+    };
+    if ($@) { &_exception($name); }
+    return($operand);
 }
 
 sub _intersection_
 {
-    my($object,$operand,$flag,$name) = @_;
+    my($object,$operand,$flag) = @_;
 
     if (defined $flag)
     {
-        eval { $operand->Intersection($object,$operand); };
-        if ($@) { &_exception_($name); }
+        $operand->Intersection($object,$operand);
         return($operand);
     }
     else
     {
-        eval { $object->Intersection($object,$operand); };
-        if ($@) { &_exception_($name); }
+        $object->Intersection($object,$operand);
         return($object);
     }
 }
@@ -557,8 +583,13 @@ sub _intersection
     my($operand);
 
     $name .= '=' unless (defined $flag);
-    $operand = &_fetch_operand_($object,$argument,$flag,$name,1);
-    return( &_intersection_($object,$operand,$flag,$name) );
+    $operand = &_fetch_operand($object,$argument,$flag,$name,1);
+    eval
+    {
+        $operand = &_intersection_($object,$operand,$flag);
+    };
+    if ($@) { &_exception($name); }
+    return($operand);
 }
 
 sub _exclusive_or
@@ -568,19 +599,21 @@ sub _exclusive_or
     my($operand);
 
     $name .= '=' unless (defined $flag);
-    $operand = &_fetch_operand_($object,$argument,$flag,$name,1);
-    if (defined $flag)
+    $operand = &_fetch_operand($object,$argument,$flag,$name,1);
+    eval
     {
-        eval { $operand->ExclusiveOr($object,$operand); };
-        if ($@) { &_exception_($name); }
-        return($operand);
-    }
-    else
-    {
-        eval { $object->ExclusiveOr($object,$operand); };
-        if ($@) { &_exception_($name); }
-        return($object);
-    }
+        if (defined $flag)
+        {
+            $operand->ExclusiveOr($object,$operand);
+        }
+        else
+        {
+            $object->ExclusiveOr($object,$operand);
+            $operand = $object;
+        }
+    };
+    if ($@) { &_exception($name); }
+    return($operand);
 }
 
 sub _add
@@ -590,26 +623,28 @@ sub _add
     my($operand);
 
     $name .= '=' unless (defined $flag);
-    $operand = &_fetch_operand_($object,$argument,$flag,$name,1);
-    if ($CONFIG[1] == 1)
+    $operand = &_fetch_operand($object,$argument,$flag,$name,1);
+    eval
     {
-        if (defined $flag)
+        if ($CONFIG[1] == 1)
         {
-            eval { $operand->add($object,$operand,0); };
-            if ($@) { &_exception_($name); }
-            return($operand);
+            if (defined $flag)
+            {
+                $operand->add($object,$operand,0);
+            }
+            else
+            {
+                $object->add($object,$operand,0);
+                $operand = $object;
+            }
         }
         else
         {
-            eval { $object->add($object,$operand,0); };
-            if ($@) { &_exception_($name); }
-            return($object);
+            $operand = &_union_($object,$operand,$flag);
         }
-    }
-    else
-    {
-        return( &_union_($object,$operand,$flag,$name) );
-    }
+    };
+    if ($@) { &_exception($name); }
+    return($operand);
 }
 
 sub _sub
@@ -619,39 +654,38 @@ sub _sub
     my($operand);
 
     $name .= '=' unless (defined $flag);
-    $operand = &_fetch_operand_($object,$argument,$flag,$name,1);
-    if ($CONFIG[1] == 1)
+    $operand = &_fetch_operand($object,$argument,$flag,$name,1);
+    eval
     {
-        if (defined $flag)
+        if ($CONFIG[1] == 1)
         {
-            if ($flag) { eval { $operand->subtract($operand,$object,0); }; }
-            else       { eval { $operand->subtract($object,$operand,0); }; }
-            if ($@) { &_exception_($name); }
-            return($operand);
+            if (defined $flag)
+            {
+                if ($flag) { $operand->subtract($operand,$object,0); }
+                else       { $operand->subtract($object,$operand,0); }
+            }
+            else
+            {
+                $object->subtract($object,$operand,0);
+                $operand = $object;
+            }
         }
         else
         {
-            eval { $object->subtract($object,$operand,0); };
-            if ($@) { &_exception_($name); }
-            return($object);
+            if (defined $flag)
+            {
+                if ($flag) { $operand->Difference($operand,$object); }
+                else       { $operand->Difference($object,$operand); }
+            }
+            else
+            {
+                $object->Difference($object,$operand);
+                $operand = $object;
+            }
         }
-    }
-    else
-    {
-        if (defined $flag)
-        {
-            if ($flag) { eval { $operand->Difference($operand,$object); }; }
-            else       { eval { $operand->Difference($object,$operand); }; }
-            if ($@) { &_exception_($name); }
-            return($operand);
-        }
-        else
-        {
-            eval { $object->Difference($object,$operand); };
-            if ($@) { &_exception_($name); }
-            return($object);
-        }
-    }
+    };
+    if ($@) { &_exception($name); }
+    return($operand);
 }
 
 sub _mul
@@ -661,26 +695,28 @@ sub _mul
     my($operand);
 
     $name .= '=' unless (defined $flag);
-    $operand = &_fetch_operand_($object,$argument,$flag,$name,1);
-    if ($CONFIG[1] == 1)
+    $operand = &_fetch_operand($object,$argument,$flag,$name,1);
+    eval
     {
-        if (defined $flag)
+        if ($CONFIG[1] == 1)
         {
-            eval { $operand->Multiply($object,$operand); };
-            if ($@) { &_exception_($name); }
-            return($operand);
+            if (defined $flag)
+            {
+                $operand->Multiply($object,$operand);
+            }
+            else
+            {
+                $object->Multiply($object,$operand);
+                $operand = $object;
+            }
         }
         else
         {
-            eval { $object->Multiply($object,$operand); };
-            if ($@) { &_exception_($name); }
-            return($object);
+            $operand = &_intersection_($object,$operand,$flag);
         }
-    }
-    else
-    {
-        return( &_intersection_($object,$operand,$flag,$name) );
-    }
+    };
+    if ($@) { &_exception($name); }
+    return($operand);
 }
 
 sub _div
@@ -691,22 +727,23 @@ sub _div
     my($temp);
 
     $name .= '=' unless (defined $flag);
-    $operand = &_fetch_operand_($object,$argument,$flag,$name,1);
-    eval { $temp = $object->Shadow(); };
-    if ($@) { &_exception_($name); }
-    if (defined $flag)
+    $operand = &_fetch_operand($object,$argument,$flag,$name,1);
+    eval
     {
-        if ($flag) { eval { $operand->Divide($operand,$object,$temp); }; }
-        else       { eval { $operand->Divide($object,$operand,$temp); }; }
-        if ($@) { &_exception_($name); }
-        return($operand);
-    }
-    else
-    {
-        eval { $object->Divide($object,$operand,$temp); };
-        if ($@) { &_exception_($name); }
-        return($object);
-    }
+        $temp = $object->Shadow();
+        if (defined $flag)
+        {
+            if ($flag) { $operand->Divide($operand,$object,$temp); }
+            else       { $operand->Divide($object,$operand,$temp); }
+        }
+        else
+        {
+            $object->Divide($object,$operand,$temp);
+            $operand = $object;
+        }
+    };
+    if ($@) { &_exception($name); }
+    return($operand);
 }
 
 sub _mod
@@ -717,22 +754,23 @@ sub _mod
     my($temp);
 
     $name .= '=' unless (defined $flag);
-    $operand = &_fetch_operand_($object,$argument,$flag,$name,1);
-    eval { $temp = $object->Shadow(); };
-    if ($@) { &_exception_($name); }
-    if (defined $flag)
+    $operand = &_fetch_operand($object,$argument,$flag,$name,1);
+    eval
     {
-        if ($flag) { eval { $temp->Divide($operand,$object,$operand); }; }
-        else       { eval { $temp->Divide($object,$operand,$operand); }; }
-        if ($@) { &_exception_($name); }
-        return($operand);
-    }
-    else
-    {
-        eval { $temp->Divide($object,$operand,$object); };
-        if ($@) { &_exception_($name); }
-        return($object);
-    }
+        $temp = $object->Shadow();
+        if (defined $flag)
+        {
+            if ($flag) { $temp->Divide($operand,$object,$operand); }
+            else       { $temp->Divide($object,$operand,$operand); }
+        }
+        else
+        {
+            $temp->Divide($object,$operand,$object);
+            $operand = $object;
+        }
+    };
+    if ($@) { &_exception($name); }
+    return($operand);
 }
 
 sub _assign_concat
@@ -825,8 +863,11 @@ sub _increment
     my($name) = '++';
     my($result);
 
-    eval { $result = $object->increment(); };
-    if ($@) { &_exception_($name); }
+    eval
+    {
+        $result = $object->increment();
+    };
+    if ($@) { &_exception($name); }
     return($result);
 }
 
@@ -836,8 +877,11 @@ sub _decrement
     my($name) = '--';
     my($result);
 
-    eval { $result = $object->decrement(); };
-    if ($@) { &_exception_($name); }
+    eval
+    {
+        $result = $object->decrement();
+    };
+    if ($@) { &_exception($name); }
     return($result);
 }
 
@@ -848,16 +892,19 @@ sub _lexicompare
     my($operand);
     my($result);
 
-    $operand = &_fetch_operand_($object,$argument,$flag,$name,0);
-    if ((defined $flag) && $flag)
+    $operand = &_fetch_operand($object,$argument,$flag,$name,0);
+    eval
     {
-        eval { $result = $operand->Lexicompare($object); };
-    }
-    else
-    {
-        eval { $result = $object->Lexicompare($operand); };
-    }
-    if ($@) { &_exception_($name); }
+        if ((defined $flag) && $flag)
+        {
+            $result = $operand->Lexicompare($object);
+        }
+        else
+        {
+            $result = $object->Lexicompare($operand);
+        }
+    };
+    if ($@) { &_exception($name); }
     return($result);
 }
 
@@ -868,16 +915,19 @@ sub _compare
     my($operand);
     my($result);
 
-    $operand = &_fetch_operand_($object,$argument,$flag,$name,0);
-    if ((defined $flag) && $flag)
+    $operand = &_fetch_operand($object,$argument,$flag,$name,0);
+    eval
     {
-        eval { $result = $operand->Compare($object); };
-    }
-    else
-    {
-        eval { $result = $object->Compare($operand); };
-    }
-    if ($@) { &_exception_($name); }
+        if ((defined $flag) && $flag)
+        {
+            $result = $operand->Compare($object);
+        }
+        else
+        {
+            $result = $object->Compare($operand);
+        }
+    };
+    if ($@) { &_exception($name); }
     return($result);
 }
 
@@ -888,9 +938,12 @@ sub _equal
     my($operand);
     my($result);
 
-    $operand = &_fetch_operand_($object,$argument,$flag,$name,0);
-    eval { $result = $object->equal($operand); };
-    if ($@) { &_exception_($name); }
+    $operand = &_fetch_operand($object,$argument,$flag,$name,0);
+    eval
+    {
+        $result = $object->equal($operand);
+    };
+    if ($@) { &_exception($name); }
     return($result);
 }
 
@@ -901,9 +954,12 @@ sub _not_equal
     my($operand);
     my($result);
 
-    $operand = &_fetch_operand_($object,$argument,$flag,$name,0);
-    eval { $result = $object->equal($operand); };
-    if ($@) { &_exception_($name); }
+    $operand = &_fetch_operand($object,$argument,$flag,$name,0);
+    eval
+    {
+        $result = $object->equal($operand);
+    };
+    if ($@) { &_exception($name); }
     return(! $result);
 }
 
@@ -914,32 +970,35 @@ sub _less_than
     my($operand);
     my($result);
 
-    $operand = &_fetch_operand_($object,$argument,$flag,$name,0);
-    if ($CONFIG[1] == 1)
+    $operand = &_fetch_operand($object,$argument,$flag,$name,0);
+    eval
     {
-        if ((defined $flag) && $flag)
+        if ($CONFIG[1] == 1)
         {
-            eval { $result = ($operand->Compare($object) < 0); };
+            if ((defined $flag) && $flag)
+            {
+                $result = ($operand->Compare($object) < 0);
+            }
+            else
+            {
+                $result = ($object->Compare($operand) < 0);
+            }
         }
         else
         {
-            eval { $result = ($object->Compare($operand) < 0); };
+            if ((defined $flag) && $flag)
+            {
+                $result = ((!$operand->equal($object)) &&
+                            ($operand->subset($object)));
+            }
+            else
+            {
+                $result = ((!$object->equal($operand)) &&
+                            ($object->subset($operand)));
+            }
         }
-    }
-    else
-    {
-        if ((defined $flag) && $flag)
-        {
-            eval { $result = ((!$operand->equal($object)) &&
-                               ($operand->subset($object))); };
-        }
-        else
-        {
-            eval { $result = ((!$object->equal($operand)) &&
-                               ($object->subset($operand))); };
-        }
-    }
-    if ($@) { &_exception_($name); }
+    };
+    if ($@) { &_exception($name); }
     return($result);
 }
 
@@ -950,30 +1009,33 @@ sub _less_equal
     my($operand);
     my($result);
 
-    $operand = &_fetch_operand_($object,$argument,$flag,$name,0);
-    if ($CONFIG[1] == 1)
+    $operand = &_fetch_operand($object,$argument,$flag,$name,0);
+    eval
     {
-        if ((defined $flag) && $flag)
+        if ($CONFIG[1] == 1)
         {
-            eval { $result = ($operand->Compare($object) <= 0); };
+            if ((defined $flag) && $flag)
+            {
+                $result = ($operand->Compare($object) <= 0);
+            }
+            else
+            {
+                $result = ($object->Compare($operand) <= 0);
+            }
         }
         else
         {
-            eval { $result = ($object->Compare($operand) <= 0); };
+            if ((defined $flag) && $flag)
+            {
+                $result = $operand->subset($object);
+            }
+            else
+            {
+                $result = $object->subset($operand);
+            }
         }
-    }
-    else
-    {
-        if ((defined $flag) && $flag)
-        {
-            eval { $result = $operand->subset($object); };
-        }
-        else
-        {
-            eval { $result = $object->subset($operand); };
-        }
-    }
-    if ($@) { &_exception_($name); }
+    };
+    if ($@) { &_exception($name); }
     return($result);
 }
 
@@ -984,32 +1046,35 @@ sub _greater_than
     my($operand);
     my($result);
 
-    $operand = &_fetch_operand_($object,$argument,$flag,$name,0);
-    if ($CONFIG[1] == 1)
+    $operand = &_fetch_operand($object,$argument,$flag,$name,0);
+    eval
     {
-        if ((defined $flag) && $flag)
+        if ($CONFIG[1] == 1)
         {
-            eval { $result = ($operand->Compare($object) > 0); };
+            if ((defined $flag) && $flag)
+            {
+                $result = ($operand->Compare($object) > 0);
+            }
+            else
+            {
+                $result = ($object->Compare($operand) > 0);
+            }
         }
         else
         {
-            eval { $result = ($object->Compare($operand) > 0); };
+            if ((defined $flag) && $flag)
+            {
+                $result = ((!$object->equal($operand)) &&
+                            ($object->subset($operand)));
+            }
+            else
+            {
+                $result = ((!$operand->equal($object)) &&
+                            ($operand->subset($object)));
+            }
         }
-    }
-    else
-    {
-        if ((defined $flag) && $flag)
-        {
-            eval { $result = ((!$object->equal($operand)) &&
-                               ($object->subset($operand))); };
-        }
-        else
-        {
-            eval { $result = ((!$operand->equal($object)) &&
-                               ($operand->subset($object))); };
-        }
-    }
-    if ($@) { &_exception_($name); }
+    };
+    if ($@) { &_exception($name); }
     return($result);
 }
 
@@ -1020,30 +1085,33 @@ sub _greater_equal
     my($operand);
     my($result);
 
-    $operand = &_fetch_operand_($object,$argument,$flag,$name,0);
-    if ($CONFIG[1] == 1)
+    $operand = &_fetch_operand($object,$argument,$flag,$name,0);
+    eval
     {
-        if ((defined $flag) && $flag)
+        if ($CONFIG[1] == 1)
         {
-            eval { $result = ($operand->Compare($object) >= 0); };
+            if ((defined $flag) && $flag)
+            {
+                $result = ($operand->Compare($object) >= 0);
+            }
+            else
+            {
+                $result = ($object->Compare($operand) >= 0);
+            }
         }
         else
         {
-            eval { $result = ($object->Compare($operand) >= 0); };
+            if ((defined $flag) && $flag)
+            {
+                $result = $object->subset($operand);
+            }
+            else
+            {
+                $result = $operand->subset($object);
+            }
         }
-    }
-    else
-    {
-        if ((defined $flag) && $flag)
-        {
-            eval { $result = $object->subset($operand); };
-        }
-        else
-        {
-            eval { $result = $operand->subset($object); };
-        }
-    }
-    if ($@) { &_exception_($name); }
+    };
+    if ($@) { &_exception($name); }
     return($result);
 }
 
@@ -1053,8 +1121,11 @@ sub _clone
     my($name) = 'automatic duplication';
     my($result);
 
-    eval { $result = $object->Clone(); };
-    if ($@) { &_exception_($name); }
+    eval
+    {
+        $result = $object->Clone();
+    };
+    if ($@) { &_exception($name); }
     return($result);
 }
 
@@ -1064,7 +1135,7 @@ __END__
 
 =head1 NAME
 
-Bit::Vector - efficient base class implementing bit vectors
+Bit::Vector - efficient base class implementing bit vectors.
 
 This module implements bit vectors of arbitrary size
 and provides efficient methods for handling them.
@@ -1088,6 +1159,123 @@ Note that there is (of course) a little speed penalty to pay for
 overloaded operators. If speed is crucial, use the methods of this
 module directly instead of their corresponding overloaded operators!
 
+This module is useful for a large range of different tasks:
+
+=over 3
+
+=item -
+
+for example for implementing sets and performing set operations
+(like union, difference, intersection, complement, check for subset
+relationship etc.),
+
+=item -
+
+as a basis for many efficient algorithms, for instance the
+"Sieve of Erathostenes" (for calculating prime numbers),
+
+(The complexities of the methods in this module are usually either
+O(1) or O(n/b), where "b" is the number of bits in a machine word
+on your system.)
+
+=item -
+
+for shift registers of arbitrary length (for example for cyclic
+redundancy checksums),
+
+=item -
+
+to calculate "look-ahead", "first" and "follow" character sets
+for parsers and compiler-compilers,
+
+=item -
+
+for graph algorithms,
+
+=item -
+
+for efficient storage and retrieval of status information,
+
+=item -
+
+for performing text synthesis ruled by boolean expressions,
+
+=item -
+
+for "big integer" arithmetic with arbitrarily large integers,
+
+=item -
+
+for manipulations of chunks of bits of arbitrary size,
+
+=item -
+
+for bitwise processing of audio CD wave files,
+
+=item -
+
+to convert formats of data files,
+
+=back
+
+and more.
+
+(A number of example applications is available from my web site at
+http://www.engelschall.com/u/sb/download/.)
+
+A large number of import/export methods allow you to access individual
+bits, contiguous ranges of bits, machine words, arbitrary chunks of
+bits, lists (arrays) of chunks of bits or machine words and a whole
+bit vector at once (for instance for blockwrite/-read to and from
+a file).
+
+You can also import and export the contents of a bit vector in binary,
+hexadecimal and decimal representation as well as ".newsrc" style
+enumerations.
+
+Note that this module is specifically designed for efficiency, which is
+also the reason why its methods are implemented in C.
+
+To further increase execution speed, the module doesn't use bytes as its
+basic storage unit, but rather uses machine words, assuming that a machine
+word is the most efficiently handled size of all scalar types on all
+machines (that's what the ANSI C standard proposes and assumes anyway).
+
+In order to achieve this, it automatically determines the number of bits
+in a machine word on your system and then adjusts its internal configuration
+constants accordingly.
+
+The greater the size of this basic storage unit, the better the complexity
+(= execution speed) of the methods in this module, but also the greater the
+average waste of unused bits in the last word.
+
+=head2 Example applications:
+
+See the module "Set::IntRange" for an easy-to-use module for sets
+of integers of arbitrary ranges.
+
+See the module "Math::MatrixBool" for an efficient implementation
+of boolean matrices and boolean matrix operations.
+
+(Both modules are also available from my web site at
+http://www.engelschall.com/u/sb/download/ or any CPAN server.)
+
+An application relying crucially on this "Bit::Vector" module is "Slice",
+a tool for generating different document versions out of a single
+master file, ruled by boolean expressions ("include english version
+of text plus examples but not ...").
+
+(See also http://www.engelschall.com/sw/slice/.)
+
+This tool is itself part of another tool, "Website META Language" ("WML"),
+which allows you to generate and maintain large web sites.
+
+Among many other features, it allows you to define your own HTML tags which
+will be expanded either at generation or at run time, depending on your
+choice.
+
+(See also http://www.engelschall.com/sw/wml/.)
+
 =head1 SYNOPSIS
 
 =head2 CLASS METHODS (implemented in C)
@@ -1103,6 +1291,18 @@ module directly instead of their corresponding overloaded operators!
 
   new
       $vector = Bit::Vector->new($bits);  #  bit vector constructor
+
+  new_Hex
+      $vector = Bit::Vector->new_Hex($bits,$string);
+
+  new_Bin
+      $vector = Bit::Vector->new_Bin($bits,$string);
+
+  new_Dec
+      $vector = Bit::Vector->new_Dec($bits,$string);
+
+  new_Enum
+      $vector = Bit::Vector->new_Enum($bits,$string);
 
   Concat_List
       $vector = Bit::Vector->Concat_List(@vectors);
@@ -1977,6 +2177,111 @@ complement binary representation.
 In such a case, the bit vector constructor method will obediently attempt
 to create a bit vector of that size, probably resulting in an exception,
 as explained above.
+
+=item *
+
+C<$vector = Bit::Vector-E<gt>new_Hex($bits,$string);>
+
+This method is an alternative constructor which allows you to create
+a new bit vector object (with "C<$bits>" bits) and to initialize it
+all in one go.
+
+The method is more efficient than performing these two steps separately
+first because in this method, the memory area occupied by the new bit
+vector is not initialized to zeros (which is pointless in this case),
+and second because it saves you from the associated overhead of one
+additional method invocation.
+
+The method first calls the bit vector constructor method "C<new()>"
+internally, and then passes the given string to the method "C<from_Hex()>".
+
+An exception will be raised if the necessary memory cannot be allocated
+(see the description of the method "C<new()>" immediately above for
+possible causes) or if the given string cannot be converted successfully
+(see the description of the method "C<from_Hex()>" further below for
+details).
+
+In the latter case, the memory occupied by the new bit vector is
+released first (i.e., "free"d) before the exception is actually
+raised.
+
+=item *
+
+C<$vector = Bit::Vector-E<gt>new_Bin($bits,$string);>
+
+This method is an alternative constructor which allows you to create
+a new bit vector object (with "C<$bits>" bits) and to initialize it
+all in one go.
+
+The method is more efficient than performing these two steps separately
+first because in this method, the memory area occupied by the new bit
+vector is not initialized to zeros (which is pointless in this case),
+and second because it saves you from the associated overhead of one
+additional method invocation.
+
+The method first calls the bit vector constructor method "C<new()>"
+internally, and then passes the given string to the method "C<from_Bin()>".
+
+An exception will be raised if the necessary memory cannot be allocated
+(see the description of the method "C<new()>" above for possible causes)
+or if the given string cannot be converted successfully (see the
+description of the method "C<from_Bin()>" further below for details).
+
+In the latter case, the memory occupied by the new bit vector is
+released first (i.e., "free"d) before the exception is actually
+raised.
+
+=item *
+
+C<$vector = Bit::Vector-E<gt>new_Dec($bits,$string);>
+
+This method is an alternative constructor which allows you to create
+a new bit vector object (with "C<$bits>" bits) and to initialize it
+all in one go.
+
+The method is more efficient than performing these two steps separately
+first because in this method, the memory area occupied by the new bit
+vector is not initialized to zeros (which is pointless in this case),
+and second because it saves you from the associated overhead of one
+additional method invocation.
+
+The method first calls the bit vector constructor method "C<new()>"
+internally, and then passes the given string to the method "C<from_Dec()>".
+
+An exception will be raised if the necessary memory cannot be allocated
+(see the description of the method "C<new()>" above for possible causes)
+or if the given string cannot be converted successfully (see the
+description of the method "C<from_Dec()>" further below for details).
+
+In the latter case, the memory occupied by the new bit vector is
+released first (i.e., "free"d) before the exception is actually
+raised.
+
+=item *
+
+C<$vector = Bit::Vector-E<gt>new_Enum($bits,$string);>
+
+This method is an alternative constructor which allows you to create
+a new bit vector object (with "C<$bits>" bits) and to initialize it
+all in one go.
+
+The method is more efficient than performing these two steps separately
+first because in this method, the memory area occupied by the new bit
+vector is not initialized to zeros (which is pointless in this case),
+and second because it saves you from the associated overhead of one
+additional method invocation.
+
+The method first calls the bit vector constructor method "C<new()>"
+internally, and then passes the given string to the method "C<from_Enum()>".
+
+An exception will be raised if the necessary memory cannot be allocated
+(see the description of the method "C<new()>" above for possible causes)
+or if the given string cannot be converted successfully (see the
+description of the method "C<from_Enum()>" further below for details).
+
+In the latter case, the memory occupied by the new bit vector is
+released first (i.e., "free"d) before the exception is actually
+raised.
 
 =item *
 
@@ -4972,19 +5277,25 @@ The latter comparison assumes B<SIGNED> bit vectors.
 
 =head1 SEE ALSO
 
-Set::IntegerFast(3), Set::IntegerRange(3), Math::MatrixBool(3),
-Math::MatrixReal(3), DFA::Kleene(3), Math::Kleene(3), Graph::Kruskal(3).
+Set::IntRange(3), Math::MatrixBool(3), Math::MatrixReal(3),
+DFA::Kleene(3), Math::Kleene(3), Graph::Kruskal(3).
 
 perl(1), perlsub(1), perlmod(1), perlref(1), perlobj(1), perlbot(1),
 perltoot(1), perlxs(1), perlxstut(1), perlguts(1), overload(3).
 
 =head1 VERSION
 
-This man page documents "Bit::Vector" version 5.1.
+This man page documents "Bit::Vector" version 5.2.
 
 =head1 AUTHOR
 
-Steffen Beyer <sb@sdm.de>.
+  Steffen Beyer
+  Ainmillerstr. 5 / App. 513
+  D-80801 Munich
+  Germany
+
+  mailto:sb@engelschall.com
+  http://www.engelschall.com/u/sb/download/
 
 =head1 COPYRIGHT
 
@@ -4993,11 +5304,20 @@ All rights reserved.
 
 =head1 LICENSE
 
-This package is "Non-Profit-Ware" ("NP-ware").
+This package is free software; you can redistribute it and/or
+modify it under the same terms as Perl itself, i.e., under the
+terms of the "Artistic License" or the "GNU General Public License".
 
-You may use, copy, modify and redistribute it
-under the terms of the "Non-Profit-License" (NPL).
+The C library at the core of this Perl module can additionally
+be redistributed and/or modified under the terms of the "GNU
+Library General Public License".
 
-Please refer to the file "NONPROFIT" in this module's
-distribution for details!
+Please refer to the files "Artistic", "GNU_GPL" and "GNU_LGPL"
+in this distribution for details!
+
+=head1 DISCLAIMER
+
+This package is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 

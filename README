@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 5.1
+                      Package "Bit::Vector" Version 5.2
                     =====================================
 
 
@@ -26,14 +26,16 @@ This package with all its parts is
 Copyright (c) 1995, 1996, 1997, 1998 by Steffen Beyer.
 All rights reserved.
 
-This package is "Non-Profit-Ware" ("NP-ware").
+This package is free software; you can redistribute it and/or
+modify it under the same terms as Perl itself, i.e., under the
+terms of the "Artistic License" or the "GNU General Public License".
 
-You may use, copy, modify and redistribute it under the terms of the
-"Non-Profit-License" (NPL).
+The C library at the core of this Perl module can additionally
+be redistributed and/or modified under the terms of the "GNU
+Library General Public License".
 
-Please refer to the file "NONPROFIT" in this distribution for details!
-
-Note that these terms have changed since version 5.0 of this package.
+Please refer to the files "Artistic", "GNU_GPL" and "GNU_LGPL"
+in this distribution for details!
 
 
 Prerequisites:
@@ -127,37 +129,38 @@ average waste of unused bits in the last word.
 The range of available methods is exceptionally large for this kind of library;
 in detail:
 
-Version()                to_Bin()                 Divide()
-Word_Bits()              from_Bin()               GCD()
-Long_Bits()              to_Dec()                 Block_Store()
-new()                    from_Dec()               Block_Read()
-Shadow()                 to_Enum()                Word_Size()
-Clone()                  from_Enum()              Word_Store()
-Concat()                 Bit_Off()                Word_Read()
-Concat_List()            Bit_On()                 Word_List_Store()
-Size()                   bit_flip()               Word_List_Read()
-Resize()                 bit_test()               Word_Insert()
-Copy()                   Bit_Copy()               Word_Delete()
-Empty()                  LSB()                    Chunk_Store()
-Fill()                   MSB()                    Chunk_Read()
-Flip()                   lsb()                    Chunk_List_Store()
-Primes()                 msb()                    Chunk_List_Read()
-Reverse()                rotate_left()            Index_List_Remove()
-Interval_Empty()         rotate_right()           Index_List_Store()
-Interval_Fill()          shift_left()             Index_List_Read()
-Interval_Flip()          shift_right()            Union()
-Interval_Reverse()       Move_Left()              Intersection()
-Interval_Scan_inc()      Move_Right()             Difference()
-Interval_Scan_dec()      Insert()                 ExclusiveOr()
-Interval_Copy()          Delete()                 Complement()
-Interval_Substitute()    increment()              subset()
-is_empty()               decrement()              Norm()
-is_full()                add()                    Min()
-equal()                  subtract()               Max()
-Lexicompare()            Negate()                 Multiplication()
-Compare()                Absolute()               Closure()
-to_Hex()                 Sign()                   Transpose()
-from_Hex()               Multiply()
+Version()                Word_Bits()              Long_Bits()
+new()                    new_Hex()                new_Bin()
+new_Dec()                new_Enum()               Shadow()
+Clone()                  Concat()                 Concat_List()
+Size()                   Resize()                 Copy()
+Empty()                  Fill()                   Flip()
+Primes()                 Reverse()                Interval_Empty()
+Interval_Fill()          Interval_Flip()          Interval_Reverse()
+Interval_Scan_inc()      Interval_Scan_dec()      Interval_Copy()
+Interval_Substitute()    is_empty()               is_full()
+equal()                  Lexicompare()            Compare()
+to_Hex()                 from_Hex()               to_Bin()
+from_Bin()               to_Dec()                 from_Dec()
+to_Enum()                from_Enum()              Bit_Off()
+Bit_On()                 bit_flip()               bit_test()
+Bit_Copy()               LSB()                    MSB()
+lsb()                    msb()                    rotate_left()
+rotate_right()           shift_left()             shift_right()
+Move_Left()              Move_Right()             Insert()
+Delete()                 increment()              decrement()
+add()                    subtract()               Negate()
+Absolute()               Sign()                   Multiply()
+Divide()                 GCD()                    Block_Store()
+Block_Read()             Word_Size()              Word_Store()
+Word_Read()              Word_List_Store()        Word_List_Read()
+Word_Insert()            Word_Delete()            Chunk_Store()
+Chunk_Read()             Chunk_List_Store()       Chunk_List_Read()
+Index_List_Remove()      Index_List_Store()       Index_List_Read()
+Union()                  Intersection()           Difference()
+ExclusiveOr()            Complement()             subset()
+Norm()                   Min()                    Max()
+Multiplication()         Closure()                Transpose()
 
 
 Important note:
@@ -174,22 +177,22 @@ your application.
 Example applications:
 ---------------------
 
-See the module "Set::IntegerRange" for an easy-to-use module for sets
-of integers.
+See the module "Set::IntRange" for an easy-to-use module for sets
+of integers of arbitrary ranges.
 
-See the module "Math::MatrixBool" for an implementation of boolean
-matrices.
+See the module "Math::MatrixBool" for an efficient implementation
+of boolean matrices and boolean matrix operations.
 
 (Both modules are also available from my web site or any CPAN server.)
 
-A tool relying crucially on this "Bit::Vector" module is "Slice",
+An application relying crucially on this "Bit::Vector" module is "Slice",
 a tool for generating different document versions out of a single
 master file, ruled by boolean expressions ("include english version
 of text plus examples but not ...").
 
 (See also http://www.engelschall.com/sw/slice/.)
 
-This tool is itself part of another tool, "WML" ("Website Meta Language"),
+This tool is itself part of another tool, "Website META Language" ("WML"),
 which allows you to generate and maintain large web sites.
 
 Among many other features, it allows you to define your own HTML tags which
@@ -223,6 +226,6 @@ I hope you will find this module beneficial!
 
 Yours,
 --
-    Steffen Beyer <sb@sdm.de> http://www.engelschall.com/u/sb/
-     "There is enough for the need of everyone in this world,
-      but not for the greed of everyone." - Mahatma Gandhi
+  Steffen Beyer <sb@engelschall.com> http://www.engelschall.com/u/sb/
+       "There is enough for the need of everyone in this world,
+         but not for the greed of everyone." - Mahatma Gandhi

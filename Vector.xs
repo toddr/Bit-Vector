@@ -5,13 +5,8 @@
 /*    Copyright (c) 1995, 1996, 1997, 1998 by Steffen Beyer.                 */
 /*    All rights reserved.                                                   */
 /*                                                                           */
-/*    This piece of software is "Non-Profit-Ware" ("NP-ware").               */
-/*                                                                           */
-/*    You may use, copy, modify and redistribute it under                    */
-/*    the terms of the "Non-Profit-License" (NPL).                           */
-/*                                                                           */
-/*    Please refer to the file "NONPROFIT" in this distribution              */
-/*    for details!                                                           */
+/*    This package is free software; you can redistribute it                 */
+/*    and/or modify it under the same terms as Perl itself.                  */
 /*                                                                           */
 /*****************************************************************************/
 
@@ -58,7 +53,7 @@ typedef     SV *BitVector_Scalar;
     BIT_VECTOR_ERROR(name,"unable to allocate memory")
 
 #define BIT_VECTOR_OBJECT_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"item is not a 'Bit::Vector' object")
+    BIT_VECTOR_ERROR(name,"item is not a \"Bit::Vector\" object")
 
 #define BIT_VECTOR_SCALAR_ERROR(name) \
     BIT_VECTOR_ERROR(name,"item is not a scalar")
@@ -246,6 +241,178 @@ PPCODE:
         else BIT_VECTOR_MEMORY_ERROR("Create");
     }
     else BIT_VECTOR_SCALAR_ERROR("Create");
+}
+
+
+void
+BitVector_new_Hex(class,bits,string)
+BitVector_Object	class
+BitVector_Scalar	bits
+BitVector_Scalar	string
+PPCODE:
+{
+    BitVector_Address address;
+    BitVector_Handle  handle;
+    BitVector_Object  reference;
+    N_int   size;
+    charptr pointer;
+    ErrCode code;
+
+    if ( BIT_VECTOR_SCALAR(bits,N_int,size) )
+    {
+        if ( BIT_VECTOR_STRING(string,pointer) )
+        {
+            if ((address = BitVector_Create(size,false)) != NULL)
+            {
+                if (code = BitVector_from_Hex(address,pointer))
+                {
+                    BitVector_Destroy(address);
+                    BIT_VECTOR_EXCEPTION(code,"new_Hex");
+                }
+                else
+                {
+                    handle = newSViv((IV)address);
+                    reference = sv_bless(sv_2mortal(newRV(handle)),
+                        gv_stashpv(BitVector_Class,1));
+                    SvREFCNT_dec(handle);
+                    SvREADONLY_on(handle);
+                    PUSHs(reference);
+                }
+            }
+            else BIT_VECTOR_MEMORY_ERROR("new_Hex");
+        }
+        else BIT_VECTOR_STRING_ERROR("new_Hex");
+    }
+    else BIT_VECTOR_SCALAR_ERROR("new_Hex");
+}
+
+
+void
+BitVector_new_Bin(class,bits,string)
+BitVector_Object	class
+BitVector_Scalar	bits
+BitVector_Scalar	string
+PPCODE:
+{
+    BitVector_Address address;
+    BitVector_Handle  handle;
+    BitVector_Object  reference;
+    N_int   size;
+    charptr pointer;
+    ErrCode code;
+
+    if ( BIT_VECTOR_SCALAR(bits,N_int,size) )
+    {
+        if ( BIT_VECTOR_STRING(string,pointer) )
+        {
+            if ((address = BitVector_Create(size,false)) != NULL)
+            {
+                if (code = BitVector_from_Bin(address,pointer))
+                {
+                    BitVector_Destroy(address);
+                    BIT_VECTOR_EXCEPTION(code,"new_Bin");
+                }
+                else
+                {
+                    handle = newSViv((IV)address);
+                    reference = sv_bless(sv_2mortal(newRV(handle)),
+                        gv_stashpv(BitVector_Class,1));
+                    SvREFCNT_dec(handle);
+                    SvREADONLY_on(handle);
+                    PUSHs(reference);
+                }
+            }
+            else BIT_VECTOR_MEMORY_ERROR("new_Bin");
+        }
+        else BIT_VECTOR_STRING_ERROR("new_Bin");
+    }
+    else BIT_VECTOR_SCALAR_ERROR("new_Bin");
+}
+
+
+void
+BitVector_new_Dec(class,bits,string)
+BitVector_Object	class
+BitVector_Scalar	bits
+BitVector_Scalar	string
+PPCODE:
+{
+    BitVector_Address address;
+    BitVector_Handle  handle;
+    BitVector_Object  reference;
+    N_int   size;
+    charptr pointer;
+    ErrCode code;
+
+    if ( BIT_VECTOR_SCALAR(bits,N_int,size) )
+    {
+        if ( BIT_VECTOR_STRING(string,pointer) )
+        {
+            if ((address = BitVector_Create(size,false)) != NULL)
+            {
+                if (code = BitVector_from_Dec(address,pointer))
+                {
+                    BitVector_Destroy(address);
+                    BIT_VECTOR_EXCEPTION(code,"new_Dec");
+                }
+                else
+                {
+                    handle = newSViv((IV)address);
+                    reference = sv_bless(sv_2mortal(newRV(handle)),
+                        gv_stashpv(BitVector_Class,1));
+                    SvREFCNT_dec(handle);
+                    SvREADONLY_on(handle);
+                    PUSHs(reference);
+                }
+            }
+            else BIT_VECTOR_MEMORY_ERROR("new_Dec");
+        }
+        else BIT_VECTOR_STRING_ERROR("new_Dec");
+    }
+    else BIT_VECTOR_SCALAR_ERROR("new_Dec");
+}
+
+
+void
+BitVector_new_Enum(class,bits,string)
+BitVector_Object	class
+BitVector_Scalar	bits
+BitVector_Scalar	string
+PPCODE:
+{
+    BitVector_Address address;
+    BitVector_Handle  handle;
+    BitVector_Object  reference;
+    N_int   size;
+    charptr pointer;
+    ErrCode code;
+
+    if ( BIT_VECTOR_SCALAR(bits,N_int,size) )
+    {
+        if ( BIT_VECTOR_STRING(string,pointer) )
+        {
+            if ((address = BitVector_Create(size,false)) != NULL)
+            {
+                if (code = BitVector_from_Enum(address,pointer))
+                {
+                    BitVector_Destroy(address);
+                    BIT_VECTOR_EXCEPTION(code,"new_Enum");
+                }
+                else
+                {
+                    handle = newSViv((IV)address);
+                    reference = sv_bless(sv_2mortal(newRV(handle)),
+                        gv_stashpv(BitVector_Class,1));
+                    SvREFCNT_dec(handle);
+                    SvREADONLY_on(handle);
+                    PUSHs(reference);
+                }
+            }
+            else BIT_VECTOR_MEMORY_ERROR("new_Enum");
+        }
+        else BIT_VECTOR_STRING_ERROR("new_Enum");
+    }
+    else BIT_VECTOR_SCALAR_ERROR("new_Enum");
 }
 
 
