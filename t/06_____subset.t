@@ -6,7 +6,7 @@ no strict "vars";
 use Set::IntegerFast;
 
 # ======================================================================
-#   $set1->inclusion($set2);
+#   $set1->subset($set2);
 # ======================================================================
 
 $bits = 6;
@@ -44,7 +44,7 @@ for ( $b = 1; $b <= $bits; ++$b )
                 if ($c & 1) { $set2->Insert($k); } else { $set2->Delete($k); }
                 $c >>= 1;
             }
-            if ($set1->inclusion($set2)) { ++$c2; }
+            if ($set1->subset($set2)) { ++$c2; }
         }
     }
 

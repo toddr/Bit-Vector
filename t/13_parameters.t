@@ -11,7 +11,7 @@ use Set::IntegerRange;
 
 $prefix = 'Set::IntegerRange';
 
-$bad_idx = "${prefix}::\\w+\\(\\): (?:lower |upper |)index out of range";
+$bad_idx = "${prefix}::\\w+\\(\\): (?:minimum |maximum |start |)index out of range";
 
 $bad_size = "${prefix}::\\w+\\(\\): set size mismatch";
 
@@ -19,29 +19,42 @@ $numeric  = 1 << 3;
 
 $limit = $numeric;
 
-$method_list{'Size'}           = 1;
-$method_list{'Empty'}          = 1;
-$method_list{'Fill'}           = 1;
-$method_list{'Empty_Interval'} = 3 + $numeric;
-$method_list{'Fill_Interval'}  = 3 + $numeric;
-$method_list{'Flip_Interval'}  = 3 + $numeric;
-$method_list{'Insert'}         = 2 + $numeric;
-$method_list{'Delete'}         = 2 + $numeric;
-$method_list{'flip'}           = 2 + $numeric;
-$method_list{'in'}             = 2 + $numeric;
-$method_list{'Norm'}           = 1;
-$method_list{'Min'}            = 1;
-$method_list{'Max'}            = 1;
-$method_list{'Union'}          = 3;
-$method_list{'Intersection'}   = 3;
-$method_list{'Difference'}     = 3;
-$method_list{'ExclusiveOr'}    = 3;
-$method_list{'Complement'}     = 2;
-$method_list{'equal'}          = 2;
-$method_list{'inclusion'}      = 2;
-$method_list{'lexorder'}       = 2;
-$method_list{'Compare'}        = 2;
-$method_list{'Copy'}           = 2;
+$method_list{'Size'}              = 1;
+$method_list{'Empty'}             = 1;
+$method_list{'Fill'}              = 1;
+$method_list{'Flip'}              = 1;
+$method_list{'Interval_Empty'}    = 3 + $numeric;
+$method_list{'Interval_Fill'}     = 3 + $numeric;
+$method_list{'Interval_Flip'}     = 3 + $numeric;
+$method_list{'Empty_Interval'}    = 3 + $numeric;
+$method_list{'Fill_Interval'}     = 3 + $numeric;
+$method_list{'Flip_Interval'}     = 3 + $numeric;
+$method_list{'Interval_Scan_inc'} = 2 + $numeric;
+$method_list{'Interval_Scan_dec'} = 2 + $numeric;
+$method_list{'Bit_Off'}           = 2 + $numeric;
+$method_list{'Bit_On'}            = 2 + $numeric;
+$method_list{'Delete'}            = 2 + $numeric;
+$method_list{'Insert'}            = 2 + $numeric;
+$method_list{'bit_flip'}          = 2 + $numeric;
+$method_list{'flip'}              = 2 + $numeric;
+$method_list{'bit_test'}          = 2 + $numeric;
+$method_list{'contains'}          = 2 + $numeric;
+$method_list{'in'}                = 2 + $numeric;
+$method_list{'Norm'}              = 1;
+$method_list{'Min'}               = 1;
+$method_list{'Max'}               = 1;
+$method_list{'Union'}             = 3;
+$method_list{'Intersection'}      = 3;
+$method_list{'Difference'}        = 3;
+$method_list{'ExclusiveOr'}       = 3;
+$method_list{'Complement'}        = 2;
+$method_list{'equal'}             = 2;
+$method_list{'subset'}            = 2;
+$method_list{'inclusion'}         = 2;
+$method_list{'lexorder'}          = 2;
+$method_list{'Compare'}           = 2;
+$method_list{'Copy'}              = 2;
+$method_list{'BitVector'}         = 1;
 
 $operator_list{'+'}   = 1;
 $operator_list{'|'}   = 1;
@@ -63,7 +76,7 @@ $operator_list{'le'}  = 1;
 $operator_list{'gt'}  = 1;
 $operator_list{'ge'}  = 1;
 
-print "1..975\n";
+print "1..1789\n";
 
 $n = 1;
 
@@ -284,7 +297,7 @@ foreach $method (keys %method_list)
         eval "$action";
         if ($i != $parms)
         {
-            if ($@ =~ /^Usage: (?:\$\w+ = |\([\w\$,]+\) = |if \()?\$\w+->\w+\([\w\$,]*\)/)
+            if ($@ =~ /^Usage: (?:\$\w+ = |\([\w\$,]+\) = |if \()?\$\w+->\w+(?:\([\w\$,]*\)|->)/)
             {print "ok $n\n";} else {print "not ok $n\n";}
             $n++;
         }

@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 4.0
+                      Package "Bit::Vector" Version 4.1
                     =====================================
                       for Perl version 5.000 and higher
 
@@ -12,48 +12,69 @@
 Contents of this file:
 ----------------------
 
-  -  Migration strategy
+  -  New features and changes in version 4.1
   -  New features in version 4.0
+  -  Migration strategy
   -  Most important differences between versions 3.x and 4.0
   -  Most important differences between versions 2.x and 3.0
   -  Most important differences between versions 1.x and 2.0
   -  Version history in details
 
 
-Migration strategy:
--------------------
+New features in version 4.1:
+----------------------------
 
-You will need to apply the following changes to your existing
-applications that use the "Set::IntegerFast" module (use
-interactive global text search & replace for this):
+1) In the "Bit::Vector" module:
 
-    "Set::IntegerFast"    -->    "Bit::Vector"         (required)
+a) There are two new methods called "Move_Left()" and "Move_Right()"
+   for shifting a bit vector by more than one bit at a time.
 
-    "Empty_Interval("     -->    "Interval_Empty("     (recommended)
-    "Fill_Interval("      -->    "Interval_Fill("      (recommended)
-    "Flip_Interval("      -->    "Interval_Flip("      (recommended)
-    "Delete("             -->    "Bit_On("             (recommended)
-    "Insert("             -->    "Bit_Off("            (recommended)
-    "flip("               -->    "bit_flip("           (recommended)
-    "in("                 -->    "bit_test("           (recommended)
-    "in("                 -->    "contains("           (alternative)
-    "inclusion("          -->    "subset("             (recommended)
+   These methods are far more efficient than calling "shift_left()" or
+   "shift_right()" the desired number of times.
 
-You should also apply these very changes to all of your applications
-using the "Set::IntegerRange" and the "Math::MatrixBool" module.
+b) BEWARE that the semantics of the overloaded operators "<<" and ">>"
+   has been changed accordingly:
 
-This is because the same changes as in the new "Bit::Vector" module
-have also been applied to these two modules, including (some of) the
-new methods and (all of) the new method names and aliases!
+   These operators now use "Move_Left()" and "Move_Right()" internally
+   to produce the usual behaviour for these two operators, i.e.,
 
-The old method names on the left of the table above are still supported,
-but deprecated from now on (this means that they could disappear at some
-day in the future).
+       $vector << 5
+       $vector >> 5
 
-The module "Set::IntegerFast" still exists, but it is maintained only to
-assure backward compatibility. It might also go sometime in the future.
+   moves all bits up/down by 5 places (inserting 5 zero bits at the
+   right/left end), respectively.
 
-Therefore, it is strongly recommended that you migrate your application(s).
+c) Two new methods named "increment()" and "decrement()" have been added
+   which increment/decrement a given bit vector as though it was one large
+   (unsigned) integer in binary representation.
+
+d) BEWARE that the semantics of the overloaded operators "++" and "--"
+   has been changed accordingly: Whereas in previous versions, "++"
+   was the same as setting bit #1 to the "on" state and "--" was the
+   same as setting bit #1 to the "off" state, these two operators now
+   perform a true increment and decrement operation on the given bit
+   vector, which - by the way - can be used in its pre-increment and
+   post-increment or pre-decrement and post-decrement form as usual!
+
+2) In the "Set::IntegerRange" module:
+
+a) A "Resize()" method was added which allows you to change the size of
+   an existing set while preserving as many bits (i.e., elements) of the
+   old set as will fit into the new set.
+
+b) The methods "Interval_Scan_inc" and "Interval_Scan_dec" are now also
+   available in the "Set::IntegerRange" module.
+
+c) A method "BitVector" is now available which allows you to call any of
+   the methods of the "Bit::Vector" class for the underlying bit vector
+   which contains your set. Use wisely and with precaution!
+
+3) In general:
+
+   A complexity analysis has been added to this distribution that shows
+   the time complexity of the functions implemented in the C library which
+   is the core of the "Bit::Vector" module. See the file "COMPLEXITY" in
+   this distribution for more details.
 
 
 New features in version 4.0:
@@ -212,6 +233,42 @@ True Superset Relationship
 
 Norm
     $norm = abs($set);
+
+
+Migration strategy:
+-------------------
+
+You will need to apply the following changes to your existing
+applications that use the "Set::IntegerFast" module (use
+interactive global text search & replace for this):
+
+    "Set::IntegerFast"    -->    "Bit::Vector"         (required)
+
+    "Empty_Interval("     -->    "Interval_Empty("     (recommended)
+    "Fill_Interval("      -->    "Interval_Fill("      (recommended)
+    "Flip_Interval("      -->    "Interval_Flip("      (recommended)
+    "Delete("             -->    "Bit_Off("            (recommended)
+    "Insert("             -->    "Bit_On("             (recommended)
+    "flip("               -->    "bit_flip("           (recommended)
+    "in("                 -->    "bit_test("           (recommended)
+    "in("                 -->    "contains("           (alternative)
+    "inclusion("          -->    "subset("             (recommended)
+
+You should also apply these very changes to all of your applications
+using the "Set::IntegerRange" and the "Math::MatrixBool" module.
+
+This is because the same changes and additions as in the new "Bit::Vector"
+module have also been applied to these two modules, including (some of)
+the new methods and (all of) the new method names and aliases!
+
+The old method names on the left of the table above are still supported,
+but deprecated from now on (this means that they could disappear at some
+day in the future).
+
+The module "Set::IntegerFast" still exists, but it is maintained only to
+assure backward compatibility. It might also go sometime in the future.
+
+Therefore, it is strongly recommended that you migrate your application(s).
 
 
 Most important differences between versions 3.x and 4.0:
@@ -461,7 +518,7 @@ module, whose version number moved on to 1.1.
 
 ----------------------------------------------------------------------------
 
-Version 4.0 is a complete rewrite of the whole "Set::Integerfast" module
+Version 4.0 was a complete rewrite of the whole "Set::Integerfast" module
 (which besides has been renamed to "Bit::Vector") with also large additions
 to its associated application modules.
 
@@ -501,4 +558,37 @@ The latter was also a major reason for renaming the module to "Bit::Vector".
 
 ----------------------------------------------------------------------------
 
+In version 4.1, two new methods named "Move_Left()" and "Move_Right()"
+have been added to the "Bit::Vector" module for shifting a bit vector
+to the left or right by more than one bit at a time.
+
+Note that the semantics of the overloaded operators "<<" and ">>" returned
+to their usual behaviour, i.e., they now shift the given bit vector left
+or right by the indicated number of bits.
+
+Moreover, two new methods named "increment()" and "decrement()" have been
+added which increment/decrement a given bit vector as though it was one
+large (unsigned) integer in binary representation.
+
+Note that the semantics of the overloaded operators "++" and "--" have
+been changed to call these two new methods instead of setting/clearing
+bit #1, as they did before.
+
+The two new methods "Move_Left()" and "Move_Right()" allowed to implement
+a likewise rather efficient new method in the "Set::IntegerRange" module
+named "Resize()" which allows you to change the size of an existing set
+while preserving as many bits (i.e., elements) of the old set as will
+possibly fit into the new set.
+
+(If you INCREASE the size of your set there will be no loss at all!)
+
+Finally, the two methods "Interval_Scan_inc()" and "Interval_Scan_dec()"
+(from the "Bit::Vector" module) are now also available in the
+"Set::IntegerRange" module (with similar functionality).
+
+In order to facilitate the calling of methods of the underlying "Bit::Vector"
+class without violating the module's privacy (i.e., without having to know
+the module's implementation), a method named "BitVector" has been added.
+
+----------------------------------------------------------------------------
 

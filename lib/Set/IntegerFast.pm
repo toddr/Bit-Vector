@@ -17,7 +17,7 @@ require Exporter;
 
 @EXPORT_OK = qw();
 
-$VERSION = '4.0';
+$VERSION = '4.1';
 
 sub new
 {
@@ -91,7 +91,7 @@ Graph::Kruskal(3).
 
 =head1 VERSION
 
-This man page documents "Set::IntegerFast" version 4.0.
+This man page documents "Set::IntegerFast" version 4.1.
 
 =head1 AUTHOR
 

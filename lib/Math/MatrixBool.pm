@@ -16,7 +16,7 @@ require Exporter;
 
 @EXPORT_OK = qw();
 
-$VERSION = '4.0';
+$VERSION = '4.1';
 
 use Carp;
 
@@ -1932,7 +1932,7 @@ Math::Kleene(3), Set::IntegerFast(3), Set::IntegerRange(3).
 
 =head1 VERSION
 
-This man page documents "Math::MatrixBool" version 4.0.
+This man page documents "Math::MatrixBool" version 4.1.
 
 =head1 AUTHOR
 

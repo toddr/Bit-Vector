@@ -1,11 +1,29 @@
                     =====================================
-                      Package "Bit::Vector" Version 4.0
+                      Package "Bit::Vector" Version 4.1
                     =====================================
                       for Perl version 5.000 and higher
 
      Copyright (c) 1995, 1996, 1997 by Steffen Beyer. All rights reserved.
      This package is free software; you can redistribute it and/or modify
      it under the same terms as Perl itself.
+
+
+Abstract:
+---------
+
+This module is extremely useful for a lot of different tasks:
+
+For example for implementing sets and performing set operations (like
+union, difference, intersection, complement, check for subset relation-
+ship etc.), as a basis for many efficient algorithms (the complexities
+of the methods in this module are either O(1) or O(n), which is very
+good, and they are mostly implemented in C for maximum execution speed)
+like the Sieve of Erathostenes (for calculating prime numbers), for
+having shift registers (for instance for Cyclic Redundancy Checksums!)
+of arbitrary length, to calculate "look-ahead", "first" and "follow"
+character sets for parsers and compiler-compilers, for graph algorithms,
+for performing text generation depending on logical expressions, and
+much more!
 
 
 Contents of this file:
@@ -18,6 +36,7 @@ Contents of this file:
    -   Changes over previous versions (-> CHANGES)
    -   This distribution contains
    -   What does it do
+   -   Complexity analysis (-> COMPLEXITY)
    -   Credits (-> CREDITS)
    -   Author's note
 
@@ -26,7 +45,7 @@ Where to find:
 --------------
 
 At any CPAN ftp site (CPAN = "Comprehensive Perl Archive Network"),
-the file "Bit-Vector-4.0.tar.gz" can be found in any of the following
+the file "Bit-Vector-4.1.tar.gz" can be found in any of the following
 directories:
 
     .../CPAN/authors/id/STBEY/
@@ -35,7 +54,7 @@ directories:
 
 To find a CPAN ftp site, you can either direct your web browser to
 
-    http://www.perl.com/CPAN/modules/by-module/Bit/Bit-Vector-4.0.tar.gz
+    http://www.perl.com/CPAN/modules/by-module/Bit/Bit-Vector-4.1.tar.gz
 
 (which will automatically redirect you to a CPAN ftp server near you) or
 look into "The Perl 5 Module List" by Tim Bunce and Andreas Koenig either
@@ -78,16 +97,13 @@ Please refer to the file "CHANGES" in this distribution for a list of new
 features in and for instructions on how to adapt your existing applications
 to this new version.
 
-(Basically, you just need to change "Set::IntegerFast" into "Bit::Vector"
-with a global text "search & replace".)
-
 
 This distribution contains:
 ---------------------------
 
    *   a "BitVector" C library (can be used stand-alone!)
 
-       (files "Definitions.h" and "BitVector.c")
+       (files "Definitions.h", "BitVector.h" and "BitVector.c")
 
           +   efficient (fast) handling of bit vectors and sets of
               integers (and more)
@@ -98,8 +114,8 @@ This distribution contains:
 
    *   a "Bit::Vector" base class
 
-       (files "Vector.pm", "Vector.xs", "typemap", "BitVector.h",
-        "Definitions.h" and "BitVector.c")
+       (files "Vector.pm", "Vector.xs", "typemap", "Definitions.h",
+        "BitVector.h" and "BitVector.c")
 
           +   efficient (fast) object-oriented methods for handling
               bit vectors and sets of integers (intervals from zero
@@ -254,7 +270,7 @@ algorithm for minimal spanning trees in graphs.
 
 (See the module "Graph::Kruskal" and its man page in this distribution.)
 
-Another famous algorithm using bit vectors is the "Seave of Erathostenes"
+Another famous algorithm using bit vectors is the "Sieve of Erathostenes"
 for calculating prime numbers, which is included here as a demo program
 (see the file "primes.pl" in this distribution).
 
@@ -306,6 +322,14 @@ For more details about the modules in this distribution, please refer to
 their respective man pages!
 
 
+Complexity analysis:
+--------------------
+
+For an analysis of the (time) complexity of the methods implemented in
+the "Bit::Vector" module, please refer to the file "COMPLEXITY" in this
+distribution!
+
+
 Credits:
 --------
 
@@ -316,22 +340,11 @@ contributors.
 Author's note:
 --------------
 
-If you need any assistance or have any comments, problems, suggestions,
-findings, complaints, questions, insights, compliments or donations to give ;-)
-then please don't hesitate to send me some e-mail:
+If you have any questions or need any assistance, or should you have some
+comments to make, suggestions, compliments or donations ;-) to give, then
+please don't hesitate to send me some e-mail!
 
-sb@sdm.de (Steffen Beyer)
-
-In fact I'd be glad if you could drop me a note if you are using this
-package, so I can see how much interest exists in it and in which direction
-it should be developed further.
-
-Please tell me what you liked and what you disliked about this package!
-
-Also, I would be very interested to know what your application is in
-which you found this package to be useful! (Just in order to get an idea)
-
-Many thanks in advance!
+I hope you will find this module benefitful!
 
 Share and enjoy!
 

@@ -163,7 +163,7 @@ Version()
 PPCODE:
 {
     EXTEND(sp,1);
-    PUSHs(sv_2mortal(newSVpv("4.0",0)));
+    PUSHs(sv_2mortal(newSVpv("4.1",0)));
 }
 
 
@@ -729,6 +729,76 @@ CODE:
         RETVAL = BitVector_shift_right(address,carry);
     }
     else BIT_VECTOR_TYPE_ERROR("shift_right");
+}
+OUTPUT:
+RETVAL
+
+
+void
+BitVector_Move_Left(reference,bits)
+BitVector_Object	reference
+N_int	bits
+CODE:
+{
+    BitVector_Handle  handle;
+    BitVector_Address address;
+
+    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    {
+        BitVector_Move_Left(address,bits);
+    }
+    else BIT_VECTOR_TYPE_ERROR("Move_Left");
+}
+
+
+void
+BitVector_Move_Right(reference,bits)
+BitVector_Object	reference
+N_int	bits
+CODE:
+{
+    BitVector_Handle  handle;
+    BitVector_Address address;
+
+    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    {
+        BitVector_Move_Right(address,bits);
+    }
+    else BIT_VECTOR_TYPE_ERROR("Move_Right");
+}
+
+
+boolean
+BitVector_increment(reference)
+BitVector_Object	reference
+CODE:
+{
+    BitVector_Handle  handle;
+    BitVector_Address address;
+
+    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    {
+        RETVAL = BitVector_increment(address);
+    }
+    else BIT_VECTOR_TYPE_ERROR("increment");
+}
+OUTPUT:
+RETVAL
+
+
+boolean
+BitVector_decrement(reference)
+BitVector_Object	reference
+CODE:
+{
+    BitVector_Handle  handle;
+    BitVector_Address address;
+
+    if ( BIT_VECTOR_CHECK(reference,handle,address,Class_Name) )
+    {
+        RETVAL = BitVector_decrement(address);
+    }
+    else BIT_VECTOR_TYPE_ERROR("decrement");
 }
 OUTPUT:
 RETVAL

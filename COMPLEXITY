@@ -1,0 +1,506 @@
+                    =====================================
+                      Package "Bit::Vector" Version 4.1
+                    =====================================
+                      for Perl version 5.000 and higher
+
+     Copyright (c) 1995, 1996, 1997 by Steffen Beyer. All rights reserved.
+     This package is free software; you can redistribute it and/or modify
+     it under the same terms as Perl itself.
+
+
+                             ==================
+                                 Complexity
+                             ==================
+
+     This document provides an analysis of the complexity of the methods
+     implemented in the C library ("BitVector.c") of this package (which
+     is the core of the "Bit::Vector" module).
+
+     Although achieving the best possible efficiency was a major issue
+     in the development of this package, beware that using bit vectors
+     may not be the most efficient way to solve your problem!
+
+     See the "Kruskal" module in this distribution (and its associated
+     man page) for an example where this is true!
+
+     This complexity analysis is provided here in order to give you the
+     necessary information to carefully choose the most appropriate al-
+     gorithm for your problem.
+
+
+Table of methods and their complexities:
+----------------------------------------
+
+In the following, "n" is the number of bits in your bit vector,
+and "b" is the number of bits in a machine word on your system.
+
+(If the number of bits in your bit vector is not a multiple of "b",
+set "n" to the next greater multiple of "b" here!)
+
+Numbers followed by a right parenthesis (to the right of the
+following table) refer to the "Footnotes" section below.
+
+Names in angle brackets "<<...>>" in the following table refer to
+Perl programs to calculate the respective average case complexity
+as shown in the section "Average case studies" below.
+
+Note that the values given below should be read as "O( ... )"!
+
+(The function "O()" (= "of the order of") is a special convention in
+complexity theory which abstracts from constant terms and factors.
+For a mathematically accurate definition, see the relevant literature
+of complexity theory!)
+
+
+                         best         average      worst
+                         case         case         case
+
+    new                  n/b          n/b          n/b         0)
+    DESTROY              1            1            1           1)
+    Size                 1            1            1
+    Resize               1            (n/b+1)/2    n/b         2)
+    Empty                n/b          n/b          n/b
+    Fill                 n/b          n/b          n/b
+    Flip                 n/b          n/b          n/b
+    Interval_Empty       1            <<Range>>    n/b
+    Interval_Fill        1            <<Range>>    n/b
+    Interval_Flip        1            <<Range>>    n/b
+    Interval_Scan_inc    1            ?            n/b+2b      3)
+    Interval_Scan_dec    1            ?            n/b+2b      3)
+    Bit_Off              1            1            1
+    Bit_On               1            1            1
+    bit_flip             1            1            1
+    bit_test             1            1            1
+    Norm                 n/b          <<Norm>>     n/b+n       4)
+    Min                  1            <<MinMax>>   n/b+b       5)
+    Max                  1            <<MinMax>>   n/b+b       5)
+    Union                n/b          n/b          n/b
+    Intersection         n/b          n/b          n/b
+    Difference           n/b          n/b          n/b
+    ExclusiveOr          n/b          n/b          n/b
+    Complement           n/b          n/b          n/b
+    equal                1            <<Sweep>>    n/b         6)
+    subset               1            <<Subset>>   n/b         6)
+    lexorder             1            <<Sweep>>    n/b         7)
+    Compare              1            <<Sweep>>    n/b         7)
+    Copy                 n/b          n/b          n/b
+    rotate_left          n/b          n/b          n/b
+    rotate_right         n/b          n/b          n/b
+    shift_left           n/b          n/b          n/b
+    shift_right          n/b          n/b          n/b
+    Move_Left          --- see special section below ---
+    Move_Right         --- see special section below ---
+    increment            1            <<Sweep>>    n/b         8)
+    decrement            1            <<Sweep>>    n/b         8)
+    to_String            n/b+n/4      n/b+n/4      n/b+n/4     9)
+    from_string        --- see special section below ---
+
+
+Footnotes:
+----------
+
+0) "new": Complexity is n/b here because a bit vector is always initialized
+   so that all bits are cleared (set to the "off" state). The complexity
+   associated with the allocation of memory is NOT taken into account here.
+
+1) "DESTROY": The complexity associated with the de-allocation of memory
+   is NOT taken into account here.
+
+2) "Resize": "n" is the number of bits in the NEW bit vector here.
+   "best case" is when the new bit vector is smaller than the old bit
+   vector. "worst case" is when the new bit vector is larger than the
+   old one, in which case the new bit vector has to be initialized and
+   the old bit vector has to be copied to the new one. "average case"
+   assumes that half of the time the new bit vector is larger, half
+   of the time it is smaller than the old bit vector. Note that the
+   complexity associated with the allocation and de-allocation of
+   memory is NOT taken into account here.
+
+3) "Interval_Scan_inc", "Interval_Scan_dec": In principle these two methods
+   perform the same function as "Min" and "Max", respectively, but they do
+   so TWICE: Once to find the beginning of a block of set bits, and once to
+   find the end of that block of set bits. In contrast to "Min" and "Max",
+   however, they can start their search at an arbitrary bit in the bit vector,
+   whereas "Min" and "Max" always start at the beginning (least significant
+   bit) and the end (most significant bit) of the given bit vector, respec-
+   tively.
+
+   The complexity is n/b for an empty bit vector, i.e., when all bits are
+   cleared (set to the "off" state).
+
+   No average case analysis is provided here because an analytical formula
+   is very hard to find for this pair of methods, and because a brute-force
+   approach (by generating all possible values for a bit vector of a given
+   length and calculating the complexity for all possible starting points)
+   is prohibitively time-consuming.
+
+4) "Norm": "worst case" is when the bit vector is full, i.e., when all
+   bits are set to the "on" state. "best case" is when the bit vector
+   is empty, i.e., when all bits are cleared (set to the "off" state).
+
+5) "Min", "Max": "best case" is when the first (= least significant) bit
+   (in the case of "Min") or the last (= most significant) bit (in the
+   case of "Max") is set. "worst case" is when ONLY the last (= most
+   significant) bit (in the case of "Min") or ONLY the first (= least
+   significant) bit (in the case of "Max") is set. The algorithm has
+   complexity n/b for a completely empty bit vector.
+
+6) "equal", "subset": "best case" is when the condition is false at
+   the first word. "worst case" is when the condition is true or if
+   the two bit vectors only differ at the last word.
+
+7) "lexorder", "Compare": "best case" is when the two bit vectors differ
+   at the first word. "worst case" is when the two bit vectors differ at
+   the last word or not at all.
+
+8) "increment", "decrement": "best case" is when no carry-over accurs
+   from the first to the second word. "worst case" is when a carry-over
+   occurs in every word or every except the last word, so that the
+   carry-over has to propagate through the whole bit vector.
+
+9) "to_String": Complexity is n/b plus n/4 here because each word of the
+   bit vector has to be fetched and then written one (hexadecimal) charac-
+   ter (one byte) at a time (and each hexadecimal digit is worth 4 bits!).
+
+
+Methods "Move_Left" and "Move_Right":
+-------------------------------------
+
+Note that these methods are far more efficient than calling "shift_left()"
+or "shift_right()" the desired number of times!
+
+For the sake of simplicity, we will assume here that "n" (the number of
+bits in your bit vector) and "b" (the number of bits in a machine word
+on your system) are both powers of two.
+
+Shifting your bit vector by "k" bits to the left or right then has the
+following complexity:
+
+                      (n div b)    if    k >= n
+    ((k mod b) + 1) * (n div b)    if    k >= b  and  1 <= k < n
+                  k * (n div b)    if    k <  b  and  1 <= k < n
+                              0    if    k == 0
+
+For k >= b and k < n, the complexity is as stated above because the two
+methods "Move_Left" and "Move_Right" perform (k mod b) bitwise shifts
+(by calling the methods "shift_left()" and "shift_right()" that number
+of times) plus (k div b) wordwise shifts.
+
+The bitwise shifts have a complexity of (n div b) each, whereas the (k div b)
+wordwise shifts can be executed in a single sweep through the bit vector,
+i.e., they can be achieved by ((n div b) - (k div b)) word copy operations
+plus (k div b) word assignment operations with zero.
+
+Taken together the word copy and word assignment operations give a total
+complexity of (n div b). The sum of the two terms (for bitwise and for
+wordwise shifts) yields the formula above.
+
+Note the trade-off between the two factors in the resulting formula: The
+size of a machine word, "b", should be as small as possible to minimize
+the factor ((k mod b) + 1), whereas in order to minimize the factor
+(n div b), "b" should be as large as possible.
+
+This is in contrast with all other methods in this module whose complexity
+is generally proportional to (n div b) (or which is 1, for some).
+
+For k >= 1 and k < b, the methods "shift_left()" and "shift_right()" are
+simply called the desired number of times, each call having a complexity
+of (n div b).
+
+For k >= n, the complexity is (n div b) because this is the same as setting
+all bits to zero (i.e., to the "off" state).
+
+Actually, the method "Empty()" gets called internally every time when k >= n
+is detected. This is to avoid unnecessary extra calls of the two methods
+"shift_left()" and "shift_right()" which would occur whenever (k mod b)
+wasn't zero.
+
+For an "average case" analysis, see the program "<<Move>>" in the section
+"Average case studies" below. Note that this program assumes an evenly
+distributed stochastic variable, i.e., it assigns the same probability
+to all possible values of "k" (from 1 to "n")!
+
+Finally, note that the formula given above is topped by "n". Here's the
+proof:
+
+          ((  k   mod b) + 1) * (n div b)
+    <=    (((b-1) mod b) + 1) * (n div b)
+    ==    ( (b-1)        + 1) * (n div b)
+    ==    (  b              ) * (n div b)
+    ==    n
+
+(provided that "n" is a multiple of "b", which we may safely assume here
+because we said earlier that "n" and "b" were both powers of two!)
+
+(If "n" is initially smaller than "b", we set "n" equal to "b" here because
+we said in the beginning that we would set "n" to the next greater multiple
+of "b" if "n" wasn't a multiple of "b" yet!)
+
+(Note that it is trivial to show that the other parts of the formula given
+above are also topped by "n"!)
+
+This is a reasonable complexity for this type of problem: Think of it
+as copying every single of the "n" bits over the required distance of
+"k" (which gives (n-k) bit copy operations) and setting the remaining
+"k" bits to zero.
+
+
+Method "from_string":
+---------------------
+
+The complexity of this method is determined by the formula
+
+    (n div b) +     l        if    0 <= 4 * l <= n
+    (n div b) + (n div 4)    if         4 * l >  n
+
+where "l" is the number of bytes in (i.e., the length of) the input
+string.
+
+(This formula assumes that "n" is a multiple of "b" and that "b" is
+a power of two which is divisible by 4!)
+
+When the length "l" of the input string times 4 (every byte in the input
+string (= one hexadecimal character) is worth 4 bits!) is less than or
+equal to "n", the complexity is "l" plus (n div b) because every byte has
+to be read and shifted to its appropriate location in a word (hence the
+term "l"!), then that word has to be copied to its correct location in
+the bit vector (hence the term (n div b)!).
+
+If the length "l" of the input string is less than (n div 4), i.e., if the
+input string is shorter than what is needed to fill the given bit vector
+(i.e., if it would leave some of the bits in the bit vector undefined),
+or if an invalid character is detected after "l" valid hexadecimal digits,
+then the remaining words in the bit vector are set to zero. This is another
+reason for the term (n div b) in the formula above.
+
+If the length "l" of the input string is greater than (n div 4), i.e., if
+there are more input characters than are needed to fill the given bit vector,
+then the superfluous characters are simply ignored. This results in the
+term (n div 4) as the number of bytes being processed, as stated in the
+formula above.
+
+Note that no average case analysis is provided for this method for the
+following two reasons:
+
+First, it is unrealistic to assume an even distribution for all values
+of "l".
+
+It is also very difficult to assign a realistic probability to all values
+of "l" greater than (n div 4).
+
+Second, the formula given above is very simple, so it is extremely easy
+to write a program yourself which sums up the complexities for each value
+of "l", multiplying each value with the probability you choose to assign
+to it (you could use an array, for instance, to store these probability
+values).
+
+
+Average case studies:
+---------------------
+
+For values of "n" not too large, the average case complexity of the
+methods Interval_Empty, Interval_Fill, Interval_Flip, Norm, Min, Max,
+equal, lexorder, Compare, increment, decrement, subset, Move_Left
+and Move_Right can be calculated with the following Perl subroutines
+(note the terms "2**$n" and even "2**(2*$n)" below which limit the
+computable complexities!) according to the formula:
+
+    E[X]  =  SUM{ i=1..n } i * p(i)
+
+(where 1..n are the possible values the stochastic variable X can assume,
+p(i) is the probability of X having the value i and E[X] is the average
+outcome of X)
+
+Note that the following programs all assume an evenly distributed stochastic
+variable, i.e., they assign the same probability to every possible combination
+of set/cleared bits of a given bit vector!
+
+The result is almost constant n/3b for Interval_Empty, Interval_Fill and
+Interval_Flip, more or less close to n for Norm, vaguely in the range n/2b
+to n/b for Min and Max, close to 1 for equal, lexorder, Compare, increment,
+decrement and subset and approximately n/2 for Move_Left and Move_Right.
+
+    <<Range>> :
+
+    sub average_case     # methods "Interval_Empty", "Interval_Fill"
+    {                    #          and "Interval_Flip"
+        my($n,$b) = @_;
+        my($k,$s,$t);
+
+        $k = int($n / $b);
+        if (($k * $b) < $n) { $n = ++$k * $b; }
+        $s = $n * ( $n * ($n + 3 * $b) + $b * (3 - $b) ) / (6 * $b);
+        $t = $n * ($n + 1) / 2;
+        return($s / $t);
+    }
+
+    <<Norm>> :
+
+    sub average_case     # method "Norm"
+    {
+        my($n,$b) = @_;
+        my($i,@j,$c,$k,$l,$p,$s,$sum);
+
+        $k = int($n / $b);
+        if (($k * $b) < $n) { $n = ++$k * $b; }
+        $sum = 0;
+        for ( $i = $k; $i >= 1; --$i )
+        {
+            $j[$i] = 0;
+        }
+        $c = 0;
+        while (! $c)
+        {
+            $p = 1;
+            $s = $k;
+            for ( $i = $k; $i >= 1; --$i )
+            {
+                $l = $j[$i];
+                $s += $l;
+                if ($l >= 1) { --$l; }
+                $p *= 2**$l;
+            }
+            $sum += $s * $p;
+            $c = 1;
+            for ( $i = $k; ($i >= 1) && $c; --$i )
+            {
+                if ($c = (++$j[$i] > $b)) { $j[$i] = 0; }
+            }
+        }
+        return($sum / 2**$n);
+    }
+
+    <<MinMax>> :
+
+    sub average_case     # methods "Min" and "Max"
+    {
+        my($n,$b) = @_;
+        my($i,$j,$k,$l,$o,$p,$sum);
+
+        $k = int($n / $b);
+        if (($k * $b) < $n) { $n = ++$k * $b; }
+        $sum = $k;
+        for ( $l = 2; $l <= ($k+$b); ++$l )
+        {
+            $o = $l - 2;
+            if ($o > $k - 1) { $o = $k - 1; }
+            $p = 0;
+            for ( $i = 0; $i <= $o; ++$i )
+            {
+                $j = $l - $i - 1;
+                if ($j <= $b)
+                {
+                    $p += 2**($n-$i*$b-$j);
+                }
+            }
+            $sum += $l * $p;
+        }
+        return($sum / 2**$n);
+    }
+
+    <<Sweep>> :
+
+    sub average_case     # methods "equal", "lexorder", "Compare",
+    {                    #         "increment" and "decrement"
+        my($n,$b) = @_;
+        my($i,$k,$t1,$t2,$sum);
+
+        $k = int($n / $b);
+        if (($k * $b) < $n) { $n = ++$k * $b; }
+        $t1 = 0;
+        $t2 = 0;
+        $sum = 0;
+        for ( $i = $k; $i >= 1; --$i )
+        {
+            $t1 = 2**(($k-$i+1)*$b);
+            $sum += ($t1 - $t2) * $i;
+            $t2 = $t1;
+        }
+        return($sum / 2**$n);
+    }
+
+    sub average_case     # alternative program
+    {
+        my($n,$b) = @_;
+        my($i,$k,$sum);
+
+        $k = int($n / $b);
+        if (($k * $b) < $n) { $n = ++$k * $b; }
+        $sum = 0;
+        for ( $i = 1; $i <= $k; $i++ )
+        {
+            $sum += (2 ** ($b * ($k - $i))) * $i;
+        }
+        $sum *= (2 ** $b) - 1;
+        $sum += $k;
+        return($sum / 2**$n);
+    }
+
+    <<Subset>> :
+
+    sub average_case     # method "subset"
+    {
+        my($n,$b) = @_;
+        my($i,$j,$k,$l,$s,$t1,$t2,$sum);
+
+        $k = int($n / $b);
+        if (($k * $b) < $n) { $n = ++$k * $b; }
+        $t1 = 0;
+        $t2 = 0;
+        $sum = 0;
+        for ( $i = $k; $i >= 1; --$i )
+        {
+            $s = 0;
+            $l = ($i - 1) * $b;
+            for ( $j = 0; $j <= $l; ++$j )
+            {
+                $s += 2**$j * &binomial($l,$j);
+            }
+            $t1 = $s * 2**(2*($n-$l));
+            $sum += ($t1 - $t2) * $i;
+            $t2 = $t1;
+        }
+        return($sum / 2**(2*$n));
+    }
+
+    sub binomial
+    {
+        my($n,$k) = @_;
+        my($prod) = 1;
+        my($j) = 0;
+
+        if (($n <= 0) || ($k <= 0) || ($n <= $k)) { return(1); }
+        if ($k > $n - $k) { $k = $n - $k; }
+        while ($j < $k)
+        {
+            $prod *= $n--;
+            $prod /= ++$j;
+        }
+        return(int($prod + 0.5));
+    }
+
+    <<Move>> :
+
+    sub average_case     # methods "Move_Left" and "Move_Right"
+    {
+        my($n,$b) = @_;
+        my($k,$sum);
+
+        $k = int($n / $b);
+        if (($k * $b) < $n) { $n = ++$k * $b; }
+        $sum = 1; # accounts for $k == $n
+        for ( $k = 1; $k < $n; $k++ )
+        {
+            if ($k < $b)
+            {
+                $sum += $k;
+            }
+            else
+            {
+                $sum += ($k % $b) + 1;
+            }
+        }
+        return($sum / $b); # = (sum * n/b) / n
+    }
+
+

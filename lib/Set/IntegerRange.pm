@@ -16,7 +16,7 @@ require Exporter;
 
 @EXPORT_OK = qw();
 
-$VERSION = '4.0';
+$VERSION = '4.1';
 
 use Carp;
 
@@ -85,6 +85,43 @@ sub new
     }
 }
 
+sub Resize
+{
+    croak "Usage: \$set->Resize(\$lower,\$upper);"
+      if (@_ != 3);
+
+    my($object,$new_lower,$new_upper) = @_;
+    my($old_lower,$old_upper) = ($object->[1],$object->[2]);
+    my($diff);
+
+    if ($new_lower <= $new_upper)
+    {
+        $diff = $new_lower - $old_lower;
+        if ($diff == 0)
+        {
+            $object->[0]->Resize($new_upper-$new_lower+1);
+        }
+        else
+        {
+            if ($diff > 0)
+            {
+                $object->[0]->Move_Right($diff);
+                $object->[0]->Resize($new_upper-$new_lower+1);
+            }
+            else
+            {
+                $object->[0]->Resize($new_upper-$new_lower+1);
+                $object->[0]->Move_Left(-$diff);
+            }
+        }
+        ($object->[1],$object->[2]) = ($new_lower,$new_upper);
+    }
+    else
+    {
+        croak "Set::IntegerRange::Resize(): lower > upper boundary";
+    }
+}
+
 sub Size
 {
     croak "Usage: (\$lower,\$upper) = \$set->Size();"
@@ -93,6 +130,16 @@ sub Size
     my($object) = @_;
 
     return( $object->[1], $object->[2] );
+}
+
+sub BitVector
+{
+    croak "Usage: \$set->BitVector->any_Bit_Vector_method();"
+      if (@_ != 1);
+
+    my($object) = @_;
+
+    return( $object->[0] );
 }
 
 sub Empty
@@ -127,62 +174,110 @@ sub Flip
 
 sub Interval_Empty
 {
-    croak "Usage: \$set->Interval_Empty(\$lower,\$upper);"
+    croak "Usage: \$set->Interval_Empty(\$min,\$max);"
       if (@_ != 3);
 
-    my($object,$lower,$upper) = @_;
-    my($min,$max) = ($object->[1],$object->[2]);
+    my($object,$min,$max) = @_;
+    my($lower,$upper) = ($object->[1],$object->[2]);
 
-    croak "Set::IntegerRange::Interval_Empty(): lower index out of range"
-      if (($lower < $min) || ($lower > $max));
+    croak "Set::IntegerRange::Interval_Empty(): minimum index out of range"
+      if (($min < $lower) || ($min > $upper));
 
-    croak "Set::IntegerRange::Interval_Empty(): upper index out of range"
-      if (($upper < $min) || ($upper > $max));
+    croak "Set::IntegerRange::Interval_Empty(): maximum index out of range"
+      if (($max < $lower) || ($max > $upper));
 
-    croak "Set::IntegerRange::Interval_Empty(): lower > upper index"
-      if ($lower > $upper);
+    croak "Set::IntegerRange::Interval_Empty(): minimum > maximum index"
+      if ($min > $max);
 
-    $object->[0]->Interval_Empty($lower-$min,$upper-$min);
+    $object->[0]->Interval_Empty($min-$lower,$max-$lower);
 }
 
 sub Interval_Fill
 {
-    croak "Usage: \$set->Interval_Fill(\$lower,\$upper);"
+    croak "Usage: \$set->Interval_Fill(\$min,\$max);"
       if (@_ != 3);
 
-    my($object,$lower,$upper) = @_;
-    my($min,$max) = ($object->[1],$object->[2]);
+    my($object,$min,$max) = @_;
+    my($lower,$upper) = ($object->[1],$object->[2]);
 
-    croak "Set::IntegerRange::Interval_Fill(): lower index out of range"
-      if (($lower < $min) || ($lower > $max));
+    croak "Set::IntegerRange::Interval_Fill(): minimum index out of range"
+      if (($min < $lower) || ($min > $upper));
 
-    croak "Set::IntegerRange::Interval_Fill(): upper index out of range"
-      if (($upper < $min) || ($upper > $max));
+    croak "Set::IntegerRange::Interval_Fill(): maximum index out of range"
+      if (($max < $lower) || ($max > $upper));
 
-    croak "Set::IntegerRange::Interval_Fill(): lower > upper index"
-      if ($lower > $upper);
+    croak "Set::IntegerRange::Interval_Fill(): minimum > maximum index"
+      if ($min > $max);
 
-    $object->[0]->Interval_Fill($lower-$min,$upper-$min);
+    $object->[0]->Interval_Fill($min-$lower,$max-$lower);
 }
 
 sub Interval_Flip
 {
-    croak "Usage: \$set->Interval_Flip(\$lower,\$upper);"
+    croak "Usage: \$set->Interval_Flip(\$min,\$max);"
       if (@_ != 3);
 
-    my($object,$lower,$upper) = @_;
-    my($min,$max) = ($object->[1],$object->[2]);
+    my($object,$min,$max) = @_;
+    my($lower,$upper) = ($object->[1],$object->[2]);
 
-    croak "Set::IntegerRange::Interval_Flip(): lower index out of range"
-      if (($lower < $min) || ($lower > $max));
+    croak "Set::IntegerRange::Interval_Flip(): minimum index out of range"
+      if (($min < $lower) || ($min > $upper));
 
-    croak "Set::IntegerRange::Interval_Flip(): upper index out of range"
-      if (($upper < $min) || ($upper > $max));
+    croak "Set::IntegerRange::Interval_Flip(): maximum index out of range"
+      if (($max < $lower) || ($max > $upper));
 
-    croak "Set::IntegerRange::Interval_Flip(): lower > upper index"
-      if ($lower > $upper);
+    croak "Set::IntegerRange::Interval_Flip(): minimum > maximum index"
+      if ($min > $max);
 
-    $object->[0]->Interval_Flip($lower-$min,$upper-$min);
+    $object->[0]->Interval_Flip($min-$lower,$max-$lower);
+}
+
+sub Interval_Scan_inc
+{
+    croak "Usage: (\$min,\$max) = \$set->Interval_Scan_inc(\$start);"
+      if (@_ != 2);
+
+    my($object,$start) = @_;
+    my($lower,$upper) = ($object->[1],$object->[2]);
+    my($min,$max);
+
+    croak "Set::IntegerRange::Interval_Scan_inc(): start index out of range"
+      if (($start < $lower) || ($start > $upper));
+
+    if (($min,$max) = $object->[0]->Interval_Scan_inc($start-$lower))
+    {
+        $min += $lower;
+        $max += $lower;
+        return($min,$max);
+    }
+    else
+    {
+        return();
+    }
+}
+
+sub Interval_Scan_dec
+{
+    croak "Usage: (\$min,\$max) = \$set->Interval_Scan_dec(\$start);"
+      if (@_ != 2);
+
+    my($object,$start) = @_;
+    my($lower,$upper) = ($object->[1],$object->[2]);
+    my($min,$max);
+
+    croak "Set::IntegerRange::Interval_Scan_dec(): start index out of range"
+      if (($start < $lower) || ($start > $upper));
+
+    if (($min,$max) = $object->[0]->Interval_Scan_dec($start-$lower))
+    {
+        $min += $lower;
+        $max += $lower;
+        return($min,$max);
+    }
+    else
+    {
+        return();
+    }
 }
 
 sub Bit_Off
@@ -1159,314 +1254,220 @@ Easy manipulation of sets of integers (arbitrary intervals)
 
 =head2 METHODS
 
-Version
+  Version
+      $version = $Set::IntegerRange::VERSION;
 
-    $version = $Set::IntegerRange::VERSION;
+  new
+      $set = new Set::IntegerRange($lower,$upper);
+      $set = Set::IntegerRange->new($lower,$upper);
+      $set = $any_set->new($lower,$upper);
 
-new
+  Resize
+      $set->Resize($lower,$upper);
 
-    $set = new Set::IntegerRange($lower,$upper);
+  Size
+      ($lower,$upper) = $set->Size();
 
-    $set = Set::IntegerRange->new($lower,$upper);
+  Empty
+      $set->Empty();
 
-    $set = $any_set->new($lower,$upper);
+  Fill
+      $set->Fill();
 
-Size
+  Flip
+      $set->Flip();
 
-    ($lower,$upper) = $set->Size();
+  Interval_Empty
+      $set->Interval_Empty($lower,$upper);
+      $set->Empty_Interval($lower,$upper); # (deprecated)
 
-Empty
+  Interval_Fill
+      $set->Interval_Fill($lower,$upper);
+      $set->Fill_Interval($lower,$upper);  # (deprecated)
 
-    $set->Empty();
+  Interval_Flip
+      $set->Interval_Flip($lower,$upper);
+      $set->Flip_Interval($lower,$upper);  # (deprecated)
 
-Fill
+  Interval_Scan_inc
+      while (($min,$max) = $set->Interval_Scan_inc($start))
 
-    $set->Fill();
+  Interval_Scan_dec
+      while (($min,$max) = $set->Interval_Scan_dec($start))
 
-Flip
+  Bit_Off
+      $set->Bit_Off($index);
+      $set->Delete($index);                # (deprecated)
 
-    $set->Flip();
+  Bit_On
+      $set->Bit_On($index);
+      $set->Insert($index);                # (deprecated)
 
-Interval_Empty
+  bit_flip
+      $bit = $set->bit_flip($index);
+      if ($set->bit_flip($index))
+      $bit = $set->flip($index);           # (deprecated)
+      if ($set->flip($index))              # (deprecated)
 
-    $set->Interval_Empty($lower,$upper);
+  bit_test
+      $bit = $set->bit_test($index);
+      if ($set->bit_test($index))
+      $bit = $set->contains($index);
+      if ($set->contains($index))
+      $bit = $set->in($index);             # (deprecated)
+      if ($set->in($index))                # (deprecated)
 
-    $set->Empty_Interval($lower,$upper); # (deprecated)
+  Norm
+      $norm = $set->Norm();
 
-Interval_Fill
+  Min
+      $min = $set->Min();
 
-    $set->Interval_Fill($lower,$upper);
+  Max
+      $max = $set->Max();
 
-    $set->Fill_Interval($lower,$upper);  # (deprecated)
+  Union
+      $set1->Union($set2,$set3);           # in-place is possible!
 
-Interval_Flip
+  Intersection
+      $set1->Intersection($set2,$set3);    # in-place is possible!
 
-    $set->Interval_Flip($lower,$upper);
+  Difference
+      $set1->Difference($set2,$set3);      # in-place is possible!
 
-    $set->Flip_Interval($lower,$upper);  # (deprecated)
+  ExclusiveOr
+      $set1->ExclusiveOr($set2,$set3);     # in-place is possible!
 
-Bit_Off
+  Complement
+      $set1->Complement($set2);            # in-place is possible!
 
-    $set->Bit_Off($index);
+  equal
+      if ($set1->equal($set2))
 
-    $set->Delete($index);                # (deprecated)
+  subset
+      if ($set1->subset($set2))
+      if ($set1->inclusion($set2))         # (deprecated)
 
-Bit_On
+  lexorder
+      if ($set1->lexorder($set2))
 
-    $set->Bit_On($index);
+  Compare
+      $cmp = $set1->Compare($set2);
 
-    $set->Insert($index);                # (deprecated)
+  Copy
+      $set1->Copy($set2);
 
-bit_flip
+  Shadow
+      $other_set = $some_set->Shadow();
 
-    $bit = $set->bit_flip($index);
+  Clone
+      $twin_set = $some_set->Clone();
 
-    if ($set->bit_flip($index))
+  to_ASCII
+      $string = $set->to_ASCII();          # e.g., "-8..-5,-1..2,4,6..9"
 
-    $bit = $set->flip($index);           # (deprecated)
+  from_ASCII
+      eval { $set->from_ASCII($string); };
 
-    if ($set->flip($index))              # (deprecated)
+  to_String
+      $string = $set->to_String();         # e.g., "0007AF1E"
 
-bit_test
+  from_String
+      eval { $set->from_String($string); };
 
-    $bit = $set->bit_test($index);
-
-    if ($set->bit_test($index))
-
-    $bit = $set->contains($index);
-
-    if ($set->contains($index))
-
-    $bit = $set->in($index);             # (deprecated)
-
-    if ($set->in($index))                # (deprecated)
-
-Norm
-
-    $norm = $set->Norm();
-
-Min
-
-    $min = $set->Min();
-
-Max
-
-    $max = $set->Max();
-
-Union
-
-    $set1->Union($set2,$set3);           # in-place is possible!
-
-Intersection
-
-    $set1->Intersection($set2,$set3);    # in-place is possible!
-
-Difference
-
-    $set1->Difference($set2,$set3);      # in-place is possible!
-
-ExclusiveOr
-
-    $set1->ExclusiveOr($set2,$set3);     # in-place is possible!
-
-Complement
-
-    $set1->Complement($set2);            # in-place is possible!
-
-equal
-
-    if ($set1->equal($set2))
-
-subset
-
-    if ($set1->subset($set2))
-
-    if ($set1->inclusion($set2))         # (deprecated)
-
-lexorder
-
-    if ($set1->lexorder($set2))
-
-Compare
-
-    $cmp = $set1->Compare($set2);
-
-Copy
-
-    $set1->Copy($set2);
-
-Shadow
-
-    $other_set = $some_set->Shadow();
-
-Clone
-
-    $twin_set = $some_set->Clone();
-
-to_ASCII
-
-    $string = $set->to_ASCII();          # e.g., "-8..-5,-1..2,4,6..9"
-
-from_ASCII
-
-    eval { $set->from_ASCII($string); };
-
-to_String
-
-    $string = $set->to_String();         # e.g., "0007AF1E"
-
-from_String
-
-    eval { $set->from_String($string); };
+  BitVector
+      $set->BitVector->any_Bit_Vector_method();
 
 =head2 OVERLOADED OPERATORS
 
-    # "$index" is a number or a Perl scalar variable containing a
-    # number which represents the set containing only that element:
-
-Emptyness
-
-    if ($set) # if not empty
-
-    if (! $set) # if empty
-
-    unless ($set) # if empty
-
-Equality
-
-    if ($set1 == $set2)
-
-    if ($set1 != $set2)
-
-    if ($set == $index)
-
-    if ($set != $index)
-
-Lexical Comparison
-
-    $cmp = $set1 cmp $set2;
-
-    if ($set1 lt $set2)
-
-    if ($set1 le $set2)
-
-    if ($set1 gt $set2)
-
-    if ($set1 ge $set2)
-
-    if ($set1 eq $set2)
-
-    if ($set1 ne $set2)
-
-    $cmp = $set cmp $index;
-
-    if ($set lt $index)
-
-    if ($set le $index)
-
-    if ($set gt $index)
-
-    if ($set ge $index)
-
-    if ($set eq $index)
-
-    if ($set ne $index)
-
-String Conversion
-
-    $string = "$set";
-
-    print "\$set = '$set'\n";
-
-Union
-
-    $set1 = $set2 + $set3;
-
-    $set1 += $set2;
-
-    $set1 = $set2 | $set3;
-
-    $set1 |= $set2;
-
-    $set1 = $set2 + $index;
-
-    $set += $index;
-
-    $set1 = $set2 | $index;
-
-    $set |= $index;
-
-Intersection
-
-    $set1 = $set2 * $set3;
-
-    $set1 *= $set2;
-
-    $set1 = $set2 & $set3;
-
-    $set1 &= $set2;
-
-    $set1 = $set2 * $index;
-
-    $set *= $index;
-
-    $set1 = $set2 & $index;
-
-    $set &= $index;
-
-Difference
-
-    $set1 = $set2 - $set3;
-
-    $set1 -= $set2;
-
-    $set1 = $set2 - $set1;
-
-    $set1 = $set2 - $index;
-
-    $set1 = $index - $set2;
-
-    $set -= $index;
-
-ExclusiveOr
-
-    $set1 = $set2 ^ $set3;
-
-    $set1 ^= $set2;
-
-    $set1 = $set2 ^ $index;
-
-    $set ^= $index;
-
-Complement
-
-    $set1 = -$set2;
-
-    $set1 = ~$set2;
-
-    $set = -$set;
-
-    $set = ~$set;
-
-Subset Relationship
-
-    if ($set1 <= $set2)
-
-True Subset Relationship
-
-    if ($set1 < $set2)
-
-Superset Relationship
-
-    if ($set1 >= $set2)
-
-True Superset Relationship
-
-    if ($set1 > $set2)
-
-Norm
-
-    $norm = abs($set);
+      # "$index" is a number or a Perl scalar variable containing a
+      # number which represents the set containing only that element:
+
+  Emptyness
+      if ($set) # if not empty
+      if (! $set) # if empty
+      unless ($set) # if empty
+
+  Equality
+      if ($set1 == $set2)
+      if ($set1 != $set2)
+      if ($set == $index)
+      if ($set != $index)
+
+  Lexical Comparison
+      $cmp = $set1 cmp $set2;
+      if ($set1 lt $set2)
+      if ($set1 le $set2)
+      if ($set1 gt $set2)
+      if ($set1 ge $set2)
+      if ($set1 eq $set2)
+      if ($set1 ne $set2)
+      $cmp = $set cmp $index;
+      if ($set lt $index)
+      if ($set le $index)
+      if ($set gt $index)
+      if ($set ge $index)
+      if ($set eq $index)
+      if ($set ne $index)
+
+  String Conversion
+      $string = "$set";
+      print "\$set = '$set'\n";
+
+  Union
+      $set1 = $set2 + $set3;
+      $set1 += $set2;
+      $set1 = $set2 | $set3;
+      $set1 |= $set2;
+      $set1 = $set2 + $index;
+      $set += $index;
+      $set1 = $set2 | $index;
+      $set |= $index;
+
+  Intersection
+      $set1 = $set2 * $set3;
+      $set1 *= $set2;
+      $set1 = $set2 & $set3;
+      $set1 &= $set2;
+      $set1 = $set2 * $index;
+      $set *= $index;
+      $set1 = $set2 & $index;
+      $set &= $index;
+
+  Difference
+      $set1 = $set2 - $set3;
+      $set1 -= $set2;
+      $set1 = $set2 - $set1;
+      $set1 = $set2 - $index;
+      $set1 = $index - $set2;
+      $set -= $index;
+
+  ExclusiveOr
+      $set1 = $set2 ^ $set3;
+      $set1 ^= $set2;
+      $set1 = $set2 ^ $index;
+      $set ^= $index;
+
+  Complement
+      $set1 = -$set2;
+      $set1 = ~$set2;
+      $set = -$set;
+      $set = ~$set;
+
+  Subset Relationship
+      if ($set1 <= $set2)
+
+  True Subset Relationship
+      if ($set1 < $set2)
+
+  Superset Relationship
+      if ($set1 >= $set2)
+
+  True Superset Relationship
+      if ($set1 > $set2)
+
+  Norm
+      $norm = abs($set);
 
 =head1 DESCRIPTION
 
@@ -1484,7 +1485,7 @@ Graph::Kruskal(3).
 
 =head1 VERSION
 
-This man page documents "Set::IntegerRange" version 4.0.
+This man page documents "Set::IntegerRange" version 4.1.
 
 =head1 AUTHOR
 

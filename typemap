@@ -1,12 +1,12 @@
 ################################################################
 #
-#  Typemap for module "Bit::Vector" version 4.0
+#  Typemap for module "Bit::Vector" version 4.1
 #
 #  Copyright (c) 1995, 1996, 1997 by Steffen Beyer. All rights reserved.
 #  This package is free software; you can redistribute it and/or modify
 #  it under the same terms as Perl itself.
 #
-#  Last modified 22-Mar-1997
+#  Last modified 28-Apr-1997
 #
 ################################################################
 

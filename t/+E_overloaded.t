@@ -17,6 +17,8 @@ $operator_list{'-='}  = 1;
 $operator_list{'*='}  = 1;
 $operator_list{'&='}  = 1;
 $operator_list{'^='}  = 1;
+$operator_list{'<<='} = 1;
+$operator_list{'>>='} = 1;
 
 $operator_list{'+'}   = 2;
 $operator_list{'|'}   = 2;
@@ -41,7 +43,7 @@ $operator_list{'le'}  = 2;
 $operator_list{'gt'}  = 2;
 $operator_list{'ge'}  = 2;
 
-print "1..553\n";
+print "1..15645\n";
 
 $n = 1;
 
@@ -481,7 +483,25 @@ unless ($set)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-$set++;
+if (++$set)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+if (abs($set) == 1)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+if ($set->Min() == 0)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+if ($set->Max() == 0)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+if ($set)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+
+if (++$set)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
 if (abs($set) == 1)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
@@ -495,7 +515,57 @@ if ($set)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-$set--;
+if (++$set)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+if (abs($set) == 2)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+if ($set->Min() == 0)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+if ($set->Max() == 1)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+if ($set)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+
+if (--$set)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+if (abs($set) == 1)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+if ($set->Min() == 1)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+if ($set->Max() == 1)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+if ($set)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+
+if (--$set)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+if (abs($set) == 1)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+if ($set->Min() == 0)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+if ($set->Max() == 0)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+if ($set)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+
+unless (--$set)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
 if (abs($set) == 0)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
@@ -506,6 +576,78 @@ if ($set->Max() < 0)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 unless ($set)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+
+if (--$set)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+if (abs($set) == 500)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+if ($set->Min() == 0)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+if ($set->Max() == 499)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+if ($set)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+
+unless (++$set)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+if (abs($set) == 0)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+if ($set->Min() >= 500)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+if ($set->Max() < 0)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+unless ($set)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+
+$set->Empty();
+unless ($set++)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+
+$set->Empty();
+if (++$set)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+
+$set->Empty();
+unless ($set--)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+
+$set->Empty();
+if (--$set)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+
+$set->Empty();
+if (($set++)->Norm() == 0)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+
+$set->Empty();
+if ((++$set)->Norm() == 1)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+
+$set->Empty();
+if (($set--)->Norm() == 0)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+
+$set->Empty();
+if ((--$set)->Norm() == 500)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
@@ -761,7 +903,7 @@ if ($even ge $odd)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-# parameter checks:
+# wrong parameter checks:
 
 $set = Bit::Vector->new(500);
 
@@ -812,6 +954,42 @@ foreach $operator (keys %operator_list)
     &test_fake($parms);
 }
 
+# bit shift operator tests:
+
+foreach $bits (0,1,2,3,4,16,32,61,97,256,257,499,512)
+{
+    $shift = ($primes << $bits);
+    &verify($bits);
+    $shift = $primes->Clone();
+    $shift <<= $bits;
+    &verify($bits);
+    $shift = ($primes >> $bits);
+    &verify(-$bits);
+    $shift = $primes->Clone();
+    $shift >>= $bits;
+    &verify(-$bits);
+}
+
+eval { $shift = (0 << $primes); };
+if ($@ =~ /^Bit::Vector '<<': wrong argument type/)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+
+eval { $shift = (1 << $primes); };
+if ($@ =~ /^Bit::Vector '<<': wrong argument type/)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+
+eval { $shift = (0 >> $primes); };
+if ($@ =~ /^Bit::Vector '>>': wrong argument type/)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+
+eval { $shift = (1 >> $primes); };
+if ($@ =~ /^Bit::Vector '>>': wrong argument type/)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+
 exit;
 
 sub test_fake
@@ -829,7 +1007,7 @@ sub test_fake
         $action = "\$set $operator \$fake";
         eval "$action";
         if ($@ =~ /$message/)
-        {print "ok $n\n";} else {print "not ok $n(69,$@)\n";}
+        {print "ok $n\n";} else {print "not ok $n\n";}
         $n++;
     }
     elsif ($parms == 2)
@@ -839,15 +1017,45 @@ sub test_fake
         $action = "\$temp = \$set $operator \$fake";
         eval "$action";
         if ($@ =~ /$message/)
-        {print "ok $n\n";} else {print "not ok $n(70,$@)\n";}
+        {print "ok $n\n";} else {print "not ok $n\n";}
         $n++;
         $action = "\$temp = \$fake $operator \$set";
         eval "$action";
         if ($@ =~ /$message/)
-        {print "ok $n\n";} else {print "not ok $n(71,$@)\n";}
+        {print "ok $n\n";} else {print "not ok $n\n";}
         $n++;
     }
     else { }
+}
+
+sub verify
+{
+    my($offset) = @_;
+    my($i,$j);
+
+    for ( $i = 0; $i <= $limit; $i++ )
+    {
+        if ($primes->contains($i))
+        {
+            $j = $i + $offset;
+            if (($j >= 0) && ($j <= $limit))
+            {
+                if ($shift->contains($j))
+                {print "ok $n\n";} else {print "not ok $n\n";}
+                $n++;
+            }
+        }
+        if ($shift->contains($i))
+        {
+            $j = $i - $offset;
+            if (($j >= 0) && ($j <= $limit))
+            {
+                if ($primes->contains($j))
+                {print "ok $n\n";} else {print "not ok $n\n";}
+                $n++;
+            }
+        }
+    }
 }
 
 __END__

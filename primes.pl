@@ -5,7 +5,7 @@ use vars qw($limit $set $start $stop $min $max $norm $i $j);
 
 use Bit::Vector;
 
-print "\n***** Calculating Prime Numbers - The Seave Of Erathostenes *****\n";
+print "\n***** Calculating Prime Numbers - The Sieve Of Erathostenes *****\n";
 
 $limit = 0;
 
@@ -15,8 +15,7 @@ if (-t STDIN)
     {
         print "\nPlease enter an upper limit (>15): ";
         $limit = <STDIN>;
-        chop($limit) while ($limit =~ /\n$/);
-        $limit = 0 if (($limit eq "") || ($limit =~ /\D/));
+        if ($limit =~ /^\s*(\d+)\s*$/) { $limit = $1; } else { $limit = 0; }
     }
     print "\n";
 }

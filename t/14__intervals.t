@@ -9,9 +9,11 @@ use Set::IntegerRange;
 #   $set->Interval_Empty($lower,$upper);
 #   $set->Interval_Fill($lower,$upper);
 #   $set->Interval_Flip($lower,$upper);
+#   ($min,$max) = $set->Interval_Scan_inc($start);
+#   ($min,$max) = $set->Interval_Scan_dec($start);
 # ======================================================================
 
-print "1..456\n";
+print "1..532\n";
 
 $lim = 16384;
 
@@ -88,47 +90,67 @@ test_set_clr(-255,255);        test_flip(-255,255);
 test_set_clr(-$lim,$lim-1);    test_flip(-$lim,$lim-1);
 
 eval { $set->Interval_Empty(-$lim-1,$lim-1); };
-if ($@ =~ /Set::IntegerRange::Interval_Empty\(\): lower index out of range/)
-{print "ok $n\n";} else {print "not ok $n(16,$@)\n";}
+if ($@ =~ /Set::IntegerRange::Interval_Empty\(\): minimum index out of range/)
+{print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
 eval { $set->Interval_Fill(-$lim-1,$lim-1); };
-if ($@ =~ /Set::IntegerRange::Interval_Fill\(\): lower index out of range/)
+if ($@ =~ /Set::IntegerRange::Interval_Fill\(\): minimum index out of range/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
 eval { $set->Interval_Flip(-$lim-1,$lim-1); };
-if ($@ =~ /Set::IntegerRange::Interval_Flip\(\): lower index out of range/)
+if ($@ =~ /Set::IntegerRange::Interval_Flip\(\): minimum index out of range/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
 eval { $set->Interval_Empty(-$lim,$lim); };
-if ($@ =~ /Set::IntegerRange::Interval_Empty\(\): upper index out of range/)
+if ($@ =~ /Set::IntegerRange::Interval_Empty\(\): maximum index out of range/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
 eval { $set->Interval_Fill(-$lim,$lim); };
-if ($@ =~ /Set::IntegerRange::Interval_Fill\(\): upper index out of range/)
+if ($@ =~ /Set::IntegerRange::Interval_Fill\(\): maximum index out of range/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
 eval { $set->Interval_Flip(-$lim,$lim); };
-if ($@ =~ /Set::IntegerRange::Interval_Flip\(\): upper index out of range/)
+if ($@ =~ /Set::IntegerRange::Interval_Flip\(\): maximum index out of range/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
 eval { $set->Interval_Empty(1,-1); };
-if ($@ =~ /Set::IntegerRange::Interval_Empty\(\): lower > upper index/)
+if ($@ =~ /Set::IntegerRange::Interval_Empty\(\): minimum > maximum index/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
 eval { $set->Interval_Fill(1,-1); };
-if ($@ =~ /Set::IntegerRange::Interval_Fill\(\): lower > upper index/)
+if ($@ =~ /Set::IntegerRange::Interval_Fill\(\): minimum > maximum index/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
 eval { $set->Interval_Flip(1,-1); };
-if ($@ =~ /Set::IntegerRange::Interval_Flip\(\): lower > upper index/)
+if ($@ =~ /Set::IntegerRange::Interval_Flip\(\): minimum > maximum index/)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+
+eval { ($min,$max) = $set->Interval_Scan_inc(-$lim-1); };
+if ($@ =~ /Set::IntegerRange::Interval_Scan_inc\(\): start index out of range/)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+
+eval { ($min,$max) = $set->Interval_Scan_dec(-$lim-1); };
+if ($@ =~ /Set::IntegerRange::Interval_Scan_dec\(\): start index out of range/)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+
+eval { ($min,$max) = $set->Interval_Scan_inc($lim); };
+if ($@ =~ /Set::IntegerRange::Interval_Scan_inc\(\): start index out of range/)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+
+eval { ($min,$max) = $set->Interval_Scan_dec($lim); };
+if ($@ =~ /Set::IntegerRange::Interval_Scan_dec\(\): start index out of range/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
@@ -143,10 +165,14 @@ sub test_set_clr
     if ($set->Norm() == $span)
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if ($set->Min() == $lower)
+    if (($min,$max) = $set->Interval_Scan_inc(-$lim))
+    {print "ok $n\n";} else {print "not ok $n\n";
+      $min = $set->Min(); $max = $set->Max(); }
+    $n++;
+    if ($min == $lower)
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if ($set->Max() == $upper)
+    if ($max == $upper)
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
 
@@ -171,10 +197,14 @@ sub test_flip
     if ($set->Norm() == $span)
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if ($set->Min() == $lower)
+    if (($min,$max) = $set->Interval_Scan_dec($lim-1))
+    {print "ok $n\n";} else {print "not ok $n\n";
+      $min = $set->Min(); $max = $set->Max(); }
+    $n++;
+    if ($min == $lower)
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if ($set->Max() == $upper)
+    if ($max == $upper)
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
 

@@ -17,7 +17,7 @@ require DynaLoader;
 
 @EXPORT_OK = qw();
 
-$VERSION = '4.0';
+$VERSION = '4.1';
 
 bootstrap Bit::Vector $VERSION;
 
@@ -30,22 +30,24 @@ use overload
     'bool' => '_boolean',
        '!' => '_not_boolean',
      'abs' => '_norm',
+      '++' => '_increment',
+      '--' => '_decrement',
        '+' => '_union',
        '|' => '_union',                # alternative for '+'
        '-' => '_difference',
        '*' => '_intersection',
        '&' => '_intersection',         # alternative for '*'
        '^' => '_exclusive_or',
-      '<<' => '_shift_left',
-      '>>' => '_shift_right',
+      '<<' => '_move_left',
+      '>>' => '_move_right',
       '+=' => '_assign_union',
       '|=' => '_assign_union',         # alternative for '+='
       '-=' => '_assign_difference',
       '*=' => '_assign_intersection',
       '&=' => '_assign_intersection',  # alternative for '*='
       '^=' => '_assign_exclusive_or',
-     '<<=' => '_assign_shift_left',
-     '>>=' => '_assign_shift_right',
+     '<<=' => '_assign_move_left',
+     '>>=' => '_assign_move_right',
       '==' => '_equal',
       '!=' => '_not_equal',
        '<' => '_true_sub_set',
@@ -233,6 +235,22 @@ sub _norm
     return( $object->Norm() );
 }
 
+sub _increment
+{
+    my($object,$argument,$flag) = @_;
+#   my($name) = "'++'"; #&_trace($name,$object,$argument,$flag);
+
+    return( $object->increment() );
+}
+
+sub _decrement
+{
+    my($object,$argument,$flag) = @_;
+#   my($name) = "'--'"; #&_trace($name,$object,$argument,$flag);
+
+    return( $object->decrement() );
+}
+
 sub _union
 {
     my($object,$argument,$flag) = @_;
@@ -412,20 +430,31 @@ sub _exclusive_or
     }
 }
 
-sub _shift_left
+sub _move_left
 {
     my($object,$argument,$flag) = @_;
     my($name) = "'<<'"; #&_trace($name,$object,$argument,$flag);
+    my($result);
 
     if ((defined $argument) && !(ref($argument)))
     {
         if (defined $flag)
         {
-            return( $object->shift_left($argument) );
+            unless ($flag)
+            {
+                $result = $object->new($object->Size());
+                $result->Copy($object);
+                $result->Move_Left($argument);
+                return($result);
+            }
+            else
+            {
+                croak "Bit::Vector $name: wrong argument type";
+            }
         }
         else
         {
-            $object->shift_left($argument);
+            $object->Move_Left($argument);
             return($object);
         }
     }
@@ -435,20 +464,31 @@ sub _shift_left
     }
 }
 
-sub _shift_right
+sub _move_right
 {
     my($object,$argument,$flag) = @_;
     my($name) = "'>>'"; #&_trace($name,$object,$argument,$flag);
+    my($result);
 
     if ((defined $argument) && !(ref($argument)))
     {
         if (defined $flag)
         {
-            return( $object->shift_right($argument) );
+            unless ($flag)
+            {
+                $result = $object->new($object->Size());
+                $result->Copy($object);
+                $result->Move_Right($argument);
+                return($result);
+            }
+            else
+            {
+                croak "Bit::Vector $name: wrong argument type";
+            }
         }
         else
         {
-            $object->shift_right($argument);
+            $object->Move_Right($argument);
             return($object);
         }
     }
@@ -490,20 +530,20 @@ sub _assign_exclusive_or
     return( &_exclusive_or($object,$argument,undef) );
 }
 
-sub _assign_shift_left
+sub _assign_move_left
 {
     my($object,$argument,$flag) = @_;
 #   my($name) = "'<<='"; #&_trace($name,$object,$argument,$flag);
 
-    return( &_shift_left($object,$argument,undef) );
+    return( &_move_left($object,$argument,undef) );
 }
 
-sub _assign_shift_right
+sub _assign_move_right
 {
     my($object,$argument,$flag) = @_;
 #   my($name) = "'>>='"; #&_trace($name,$object,$argument,$flag);
 
-    return( &_shift_right($object,$argument,undef) );
+    return( &_move_right($object,$argument,undef) );
 }
 
 sub _equal
@@ -747,6 +787,10 @@ their underlying data type.
 Provides overloaded arithmetic and relational operators for maximum
 comfort.
 
+For an analysis of the time complexity of the methods implemented in
+this module, please refer to the file "COMPLEXITY" in the "Bit::Vector"
+distribution directory!
+
 =head1 SYNOPSIS
 
 =head2 METHODS IMPLEMENTED IN C (fastest)
@@ -834,6 +878,18 @@ comfort.
 
   shift_right
       $carry_out = $vector->shift_right($carry_in);
+
+  Move_Left
+      $vector->Move_Left($bits);
+
+  Move_Right
+      $vector->Move_Right($bits);
+
+  increment
+      $carry = $vector->increment();
+
+  decrement
+      $carry = $vector->decrement();
 
   to_String
       $string = $vector->to_String();    # e.g., "A08A28AC"
@@ -929,19 +985,21 @@ comfort.
       if ($vector eq $index)
       if ($vector ne $index)
 
-  Shift Register
-      $carry_out = $vector << $carry_in;
-      $carry_out = $vector >> $carry_in;
-      $carry_out = $carry_in >> $vector;
-      $vector <<= $carry_in;
-      $vector >>= $carry_in;
+  Move Left
+      $vector1 = $vector2 << $bits;
+      $vector <<= $bits;
 
-  Rotate Register
-      $carry_out = $vector << $vector->bit_test($vector->Size()-1);
-      $carry_out = $vector >> $vector->bit_test(0);
-      $carry_out = $vector->bit_test(0) >> $vector;
-      $vector <<= $vector->bit_test($vector->Size()-1);
-      $vector >>= $vector->bit_test(0);
+  Move Right
+      $vector1 = $vector2 >> $bits;
+      $vector >>= $bits;
+
+  Increment
+      ++$vector;
+      $vector++;
+
+  Decrement
+      --$vector;
+      $vector--;
 
   String Conversion
       $string = "$vector";
@@ -1023,7 +1081,7 @@ Boolean return values
 Boolean return values in this class are always a numerical (!)
 zero ("0") for "false" and a numerical (!) one ("1") for "true".
 
-This means that you may use the methods of this class with boolean
+This means that you can use the methods of this class with boolean
 return values as the conditional expression in "if", "unless" and
 "while" statements.
 
@@ -1462,6 +1520,110 @@ significant bit (MSB) is the bit with index "C<$vector-E<gt>Size()-1>".
 
 =item *
 
+C<$vector-E<gt>Move_Left($bits);>
+
+Shifts the given bit vector left by "$bits" bits, i.e., inserts "$bits"
+new bits at the lower end (least significant bit) of the bit vector,
+moving all other bits up by "$bits" places, thereby losing the "$bits"
+most significant bits.
+
+The inserted new bits are all cleared (set to the "off" state).
+
+This method does nothing if "$bits" is equal to zero.
+
+Beware that the whole bit vector is cleared WITHOUT WARNING if "$bits"
+is greater than or equal to the size of the given bit vector!
+
+Beware also that if you specify a negative number for "$bits", it will be
+interpreted as a large positive number due to its internal 2's complement
+binary representation, which will probably empty your bit vector!
+
+In fact this method is equivalent to
+
+  for ( $i = 0; $i < $bits; $i++ ) { $vector->shift_left(0); }
+
+except that it is much more efficient (for "$bits" greater than or
+equal to the number of bits in a machine word on your system) than
+this straightforward approach.
+
+=item *
+
+C<$vector-E<gt>Move_Right($bits);>
+
+Shifts the given bit vector right by "$bits" bits, i.e., deletes the
+"$bits" least significant bits of the bit vector, moving all other bits
+down by "$bits" places, thereby creating "$bits" new bits at the upper
+end (most significant bit) of the bit vector.
+
+These new bits are all cleared (set to the "off" state).
+
+This method does nothing if "$bits" is equal to zero.
+
+Beware that the whole bit vector is cleared WITHOUT WARNING if "$bits"
+is greater than or equal to the size of the given bit vector!
+
+Beware also that if you specify a negative number for "$bits", it will be
+interpreted as a large positive number due to its internal 2's complement
+binary representation, which will probably empty your bit vector!
+
+In fact this method is equivalent to
+
+  for ( $i = 0; $i < $bits; $i++ ) { $vector->shift_right(0); }
+
+except that it is much more efficient (for "$bits" greater than or
+equal to the number of bits in a machine word on your system) than
+this straightforward approach.
+
+=item *
+
+C<$carry = $vector-E<gt>increment();>
+
+This method is crucial for generating all possible patterns of set
+and cleared bits for a given bit vector in an ordered fashion, a
+feature needed in many applications to cycle through all possible
+values a bit vector of the given length can assume.
+
+The method increments the given bit vector as though it was a large
+(positive) number in binary representation.
+
+The least significant bit (LSB) of this binary number
+is the bit with index "C<0>", the most significant bit
+(MSB) is the bit with index "C<$vector-E<gt>Size()-1>".
+
+This method returns "true" ("1") if a carry-over occurred, i.e.,
+if the bit vector was completely filled with set bits before this
+operation took place (the bit vector will contain only cleared bits
+after this operation in that case) and "false" ("0") otherwise.
+
+This can be used as the terminating condition in a "while" loop,
+for instance.
+
+=item *
+
+C<$carry = $vector-E<gt>decrement();>
+
+This method is crucial for generating all possible patterns of set
+and cleared bits for a given bit vector in an ordered fashion, a
+feature needed in many applications to cycle through all possible
+values a bit vector of the given length can assume.
+
+The method decrements the given bit vector as though it was a large
+(positive) number in binary representation.
+
+The least significant bit (LSB) of this binary number
+is the bit with index "C<0>", the most significant bit
+(MSB) is the bit with index "C<$vector-E<gt>Size()-1>".
+
+This method returns "true" ("1") if a carry-over occurred, i.e.,
+if the bit vector was completely filled with cleared bits before
+this operation took place (the bit vector will contain only set bits
+after this operation in that case) and "false" ("0") otherwise.
+
+This can be used as the terminating condition in a "while" loop,
+for instance.
+
+=item *
+
 C<$string = $vector-E<gt>to_String();>
 
 Returns a hexadecimal string representing the given bit vector.
@@ -1887,53 +2049,33 @@ ends much earlier than in a string comparison.
 
 =item *
 
-Shift Register
+Move Left
 
-You need to say
+In its first form, C<$vector1 = $vector2 E<lt>E<lt> $bits;>, creates
+a new vector of the same size as "$vector2", copies the contents of
+"$vector2" to it, then shifts this new vector left by the indicated
+number of bits and finally returns a reference to this new vector.
 
-  $carry_out = $vector << $carry_in;
-  $carry_out = $vector >> $carry_in;
+Note that an exception will be raised if you swap the two arguments
+of this operator.
 
-or
-
-  $vector <<= $carry_in;
-  $vector >>= $carry_in;
-
-in order to shift a bit vector in either direction using the
-overloaded operators "C<E<lt>E<lt>>" and "C<E<gt>E<gt>>".
-
-Since both operators are implemented as being commutative (i.e.,
-you may swap the two arguments without influencing the result),
-you can also say
-
-  $carry_out = $carry_in >> $vector;
-
-which is probably more intuitive.
+In its second form, C<$vector E<lt>E<lt>= $bits;>, shifts the given
+vector "$vector" left by the indicated number of bits.
 
 =item *
 
-Rotate Register
+Move Right
 
-You need to say
+In its first form, C<$vector1 = $vector2 E<gt>E<gt> $bits;>, creates
+a new vector of the same size as "$vector2", copies the contents of
+"$vector2" to it, then shifts this new vector right by the indicated
+number of bits and finally returns a reference to this new vector.
 
-  $carry_out = $vector << $vector->bit_test($vector->Size()-1);
-  $carry_out = $vector >> $vector->bit_test(0);
+Note that an exception will be raised if you swap the two arguments
+of this operator.
 
-or
-
-  $vector <<= $vector->bit_test($vector->Size()-1);
-  $vector >>= $vector->bit_test(0);
-
-in order to rotate a bit vector in either direction using the
-overloaded operators "C<E<lt>E<lt>>" and "C<E<gt>E<gt>>".
-
-Since both operators are implemented as being commutative (i.e.,
-you may swap the two arguments without influencing the result),
-you can also say
-
-  $carry_out = $vector->bit_test(0) >> $vector;
-
-which is probably more intuitive.
+In its second form, C<$vector E<gt>E<gt>= $bits;>, shifts the given
+vector "$vector" right by the indicated number of bits.
 
 =item *
 
@@ -2122,7 +2264,7 @@ algorithm for minimal spanning trees in graphs.
 (See the module "Graph::Kruskal" and L<Graph::Kruskal(3)> in this
 distribution.)
 
-Another famous algorithm using bit vectors is the "Seave of Erathostenes"
+Another famous algorithm using bit vectors is the "Sieve of Erathostenes"
 for calculating prime numbers, which is included here as a demo program
 (see the file "primes.pl" in this distribution).
 
@@ -2183,7 +2325,7 @@ perltoot(1), perlxs(1), perlxstut(1), perlguts(1), overload(3).
 
 =head1 VERSION
 
-This man page documents "Bit::Vector" version 4.0.
+This man page documents "Bit::Vector" version 4.1.
 
 =head1 AUTHOR
 

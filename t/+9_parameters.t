@@ -44,6 +44,8 @@ $method_list{'flip'}              = 2 + $numeric + $special;
 $method_list{'bit_test'}          = 2 + $numeric + $special;
 $method_list{'contains'}          = 2 + $numeric + $special;
 $method_list{'in'}                = 2 + $numeric + $special;
+$method_list{'increment'}         = 1;
+$method_list{'decrement'}         = 1;
 $method_list{'Norm'}              = 1;
 $method_list{'Min'}               = 1;
 $method_list{'Max'}               = 1;
@@ -62,10 +64,12 @@ $method_list{'rotate_left'}       = 1;
 $method_list{'rotate_right'}      = 1;
 $method_list{'shift_left'}        = 2 + $numeric;
 $method_list{'shift_right'}       = 2 + $numeric;
+$method_list{'Move_Left'}         = 2 + $numeric;
+$method_list{'Move_Right'}        = 2 + $numeric;
 $method_list{'to_String'}         = 1;
 $method_list{'from_string'}       = 2 + $numeric;
 
-print "1..1187\n";
+print "1..1225\n";
 
 $n = 1;
 

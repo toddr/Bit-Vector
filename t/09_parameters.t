@@ -275,7 +275,7 @@ foreach $method (keys %method_list)
         if ($i != $parms)
         {
             if ($@ =~ /^Usage: (?:[^:]+::[^:]+::)?[^:]+\([\w\$,]*\)/)
-            {print "ok $n\n";} else {print "not ok $n(44,$@)\n";}
+            {print "ok $n\n";} else {print "not ok $n\n";}
             $n++;
         }
         else
