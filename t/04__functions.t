@@ -129,5 +129,7 @@ if ($max == int($lim/2))
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
+1;
+
 __END__
 

@@ -1,0 +1,67 @@
+
+*** Tallinn:MacPerl_Src:perl:ext:Bit-Vector-5.6-Dev:t:30_overloaded.t	Sun Mar  7 15:42:12 1999
+--- Tallinn:MacPerl_Src:perl:ext:Bit-Vector-5.6-bin-1-MacOS:t:30_overloaded.t	Sun Mar  7 16:16:00 1999
+***************
+*** 971,973 ****
+  eval { $shift = (0 << $primes); };
+! if ($@ =~ /^# Bit::Vector \"<<\": reversed operands error/)
+  {print "ok $n\n";} else {print "not ok $n\n";}
+--- 971,973 ----
+  eval { $shift = (0 << $primes); };
+! if ($@ =~ /^Bit::Vector \"<<\": reversed operands error/)
+  {print "ok $n\n";} else {print "not ok $n\n";}
+***************
+*** 976,978 ****
+  eval { $shift = (1 << $primes); };
+! if ($@ =~ /^# Bit::Vector \"<<\": reversed operands error/)
+  {print "ok $n\n";} else {print "not ok $n\n";}
+--- 976,978 ----
+  eval { $shift = (1 << $primes); };
+! if ($@ =~ /^Bit::Vector \"<<\": reversed operands error/)
+  {print "ok $n\n";} else {print "not ok $n\n";}
+***************
+*** 981,983 ****
+  eval { $shift = (0 >> $primes); };
+! if ($@ =~ /^# Bit::Vector \">>\": reversed operands error/)
+  {print "ok $n\n";} else {print "not ok $n\n";}
+--- 981,983 ----
+  eval { $shift = (0 >> $primes); };
+! if ($@ =~ /^Bit::Vector \">>\": reversed operands error/)
+  {print "ok $n\n";} else {print "not ok $n\n";}
+***************
+*** 986,988 ****
+  eval { $shift = (1 >> $primes); };
+! if ($@ =~ /^# Bit::Vector \">>\": reversed operands error/)
+  {print "ok $n\n";} else {print "not ok $n\n";}
+--- 986,988 ----
+  eval { $shift = (1 >> $primes); };
+! if ($@ =~ /^Bit::Vector \">>\": reversed operands error/)
+  {print "ok $n\n";} else {print "not ok $n\n";}
+***************
+*** 991,993 ****
+  eval { $shift = (0 x $primes); };
+! if ($@ =~ /^# Bit::Vector \"x\": reversed operands error/)
+  {print "ok $n\n";} else {print "not ok $n\n";}
+--- 991,993 ----
+  eval { $shift = (0 x $primes); };
+! if ($@ =~ /^Bit::Vector \"x\": reversed operands error/)
+  {print "ok $n\n";} else {print "not ok $n\n";}
+***************
+*** 996,998 ****
+  eval { $shift = (1 x $primes); };
+! if ($@ =~ /^# Bit::Vector \"x\": reversed operands error/)
+  {print "ok $n\n";} else {print "not ok $n\n";}
+--- 996,998 ----
+  eval { $shift = (1 x $primes); };
+! if ($@ =~ /^Bit::Vector \"x\": reversed operands error/)
+  {print "ok $n\n";} else {print "not ok $n\n";}
+***************
+*** 1000,1002 ****
+  
+! 1;
+  
+--- 1000,1002 ----
+  
+! exit;
+  
+

@@ -1,0 +1,1180 @@
+
+*** Tallinn:MacPerl_Src:perl:ext:Bit-Vector-5.6-Dev:BitVector.c	Sun Mar  7 12:41:27 1999
+--- Tallinn:MacPerl_Src:perl:ext:Bit-Vector-5.6-bin-1-MacOS:BitVector.c	Sun Mar  7 16:15:59 1999
+***************
+*** 52,54 ****
+  
+! wordptr BitVector_Create(N_int bits, booltype clear);              /* malloc  */
+  
+--- 52,54 ----
+  
+! wordptr BitVector_Create(N_int bits, boolean clear);              /* malloc  */
+  
+***************
+*** 87,91 ****
+  
+! booltype BitVector_interval_scan_inc(wordptr addr, N_int start,
+                                      N_intptr min, N_intptr max);
+! booltype BitVector_interval_scan_dec(wordptr addr, N_int start,
+                                      N_intptr min, N_intptr max);
+--- 87,91 ----
+  
+! boolean BitVector_interval_scan_inc(wordptr addr, N_int start,
+                                      N_intptr min, N_intptr max);
+! boolean BitVector_interval_scan_dec(wordptr addr, N_int start,
+                                      N_intptr min, N_intptr max);
+***************
+*** 101,106 ****
+  
+! booltype BitVector_is_empty         (wordptr addr);          /* X == {} ?     */
+! booltype BitVector_is_full          (wordptr addr);          /* X == ~{} ?    */
+  
+! booltype BitVector_equal            (wordptr X, wordptr Y);  /* X == Y ?      */
+  Z_int   BitVector_Lexicompare      (wordptr X, wordptr Y);  /* X <,=,> Y ?   */
+--- 101,106 ----
+  
+! boolean BitVector_is_empty         (wordptr addr);          /* X == {} ?     */
+! boolean BitVector_is_full          (wordptr addr);          /* X == ~{} ?    */
+  
+! boolean BitVector_equal            (wordptr X, wordptr Y);  /* X == Y ?      */
+  Z_int   BitVector_Lexicompare      (wordptr X, wordptr Y);  /* X <,=,> Y ?   */
+***************
+*** 128,134 ****
+  void    BitVector_Bit_On  (wordptr addr, N_int index);      /* X = X + {x}   */
+! booltype BitVector_bit_flip(wordptr addr, N_int index);  /* X=(X+{x})\(X*{x}) */
+  
+! booltype BitVector_bit_test(wordptr addr, N_int index);      /* {x} in X ?    */
+  
+! void    BitVector_Bit_Copy(wordptr addr, N_int index, booltype bit);
+  
+--- 128,134 ----
+  void    BitVector_Bit_On  (wordptr addr, N_int index);      /* X = X + {x}   */
+! boolean BitVector_bit_flip(wordptr addr, N_int index);  /* X=(X+{x})\(X*{x}) */
+  
+! boolean BitVector_bit_test(wordptr addr, N_int index);      /* {x} in X ?    */
+  
+! void    BitVector_Bit_Copy(wordptr addr, N_int index, boolean bit);
+  
+***************
+*** 136,145 ****
+  
+! void    BitVector_LSB         (wordptr addr, booltype bit);
+! void    BitVector_MSB         (wordptr addr, booltype bit);
+! booltype BitVector_lsb         (wordptr addr);
+! booltype BitVector_msb         (wordptr addr);
+! booltype BitVector_rotate_left (wordptr addr);
+! booltype BitVector_rotate_right(wordptr addr);
+! booltype BitVector_shift_left  (wordptr addr, booltype carry_in);
+! booltype BitVector_shift_right (wordptr addr, booltype carry_in);
+  void    BitVector_Move_Left   (wordptr addr, N_int bits);
+--- 136,145 ----
+  
+! void    BitVector_LSB         (wordptr addr, boolean bit);
+! void    BitVector_MSB         (wordptr addr, boolean bit);
+! boolean BitVector_lsb         (wordptr addr);
+! boolean BitVector_msb         (wordptr addr);
+! boolean BitVector_rotate_left (wordptr addr);
+! boolean BitVector_rotate_right(wordptr addr);
+! boolean BitVector_shift_left  (wordptr addr, boolean carry_in);
+! boolean BitVector_shift_right (wordptr addr, boolean carry_in);
+  void    BitVector_Move_Left   (wordptr addr, N_int bits);
+***************
+*** 150,154 ****
+  void    BitVector_Insert      (wordptr addr, N_int offset, N_int count,
+!                                booltype clear);
+  void    BitVector_Delete      (wordptr addr, N_int offset, N_int count,
+!                                booltype clear);
+  
+--- 150,154 ----
+  void    BitVector_Insert      (wordptr addr, N_int offset, N_int count,
+!                                boolean clear);
+  void    BitVector_Delete      (wordptr addr, N_int offset, N_int count,
+!                                boolean clear);
+  
+***************
+*** 156,162 ****
+  
+! booltype BitVector_increment   (wordptr addr);               /* X++           */
+! booltype BitVector_decrement   (wordptr addr);               /* X--           */
+  
+! booltype BitVector_add     (wordptr X, wordptr Y, wordptr Z, booltype carry);
+! booltype BitVector_subtract(wordptr X, wordptr Y, wordptr Z, booltype carry);
+  void    BitVector_Negate  (wordptr X, wordptr Y);
+--- 156,162 ----
+  
+! boolean BitVector_increment   (wordptr addr);               /* X++           */
+! boolean BitVector_decrement   (wordptr addr);               /* X--           */
+  
+! boolean BitVector_add     (wordptr X, wordptr Y, wordptr Z, boolean carry);
+! boolean BitVector_subtract(wordptr X, wordptr Y, wordptr Z, boolean carry);
+  void    BitVector_Negate  (wordptr X, wordptr Y);
+***************
+*** 181,185 ****
+  void    BitVector_Word_Insert (wordptr addr, N_int offset, N_int count,
+!                                booltype clear);
+  void    BitVector_Word_Delete (wordptr addr, N_int offset, N_int count,
+!                                booltype clear);
+  
+--- 181,185 ----
+  void    BitVector_Word_Insert (wordptr addr, N_int offset, N_int count,
+!                                boolean clear);
+  void    BitVector_Word_Delete (wordptr addr, N_int offset, N_int count,
+!                                boolean clear);
+  
+***************
+*** 202,204 ****
+  
+! booltype Set_subset      (wordptr X, wordptr Y);             /* X subset Y ?  */
+  
+--- 202,204 ----
+  
+! boolean Set_subset      (wordptr X, wordptr Y);             /* X subset Y ?  */
+  
+***************
+*** 208,210 ****
+  
+! /* ===> matrix-of-booltypes operations: */
+  
+--- 208,210 ----
+  
+! /* ===> matrix-of-booleans operations: */
+  
+***************
+*** 329,331 ****
+  static void BIT_VECTOR_ins_words(wordptr addr, N_word total, N_word count,
+!                                  booltype clear)
+  {
+--- 329,331 ----
+  static void BIT_VECTOR_ins_words(wordptr addr, N_word total, N_word count,
+!                                  boolean clear)
+  {
+***************
+*** 343,345 ****
+  static void BIT_VECTOR_del_words(wordptr addr, N_word total, N_word count,
+!                                  booltype clear)
+  {
+--- 343,345 ----
+  static void BIT_VECTOR_del_words(wordptr addr, N_word total, N_word count,
+!                                  boolean clear)
+  {
+***************
+*** 518,520 ****
+  
+! wordptr BitVector_Create(N_int bits, booltype clear)         /* malloc        */
+  {
+--- 518,520 ----
+  
+! wordptr BitVector_Create(N_int bits, boolean clear)         /* malloc        */
+  {
+***************
+*** 546,548 ****
+  {
+!     return( BitVector_Create(bits_(addr),trueval) );
+  }
+--- 546,548 ----
+  {
+!     return( BitVector_Create(bits_(addr),true) );
+  }
+***************
+*** 555,557 ****
+      bits = bits_(addr);
+!     twin = BitVector_Create(bits,falseval);
+      if ((twin != NULL) and (bits > 0))
+--- 555,557 ----
+      bits = bits_(addr);
+!     twin = BitVector_Create(bits,false);
+      if ((twin != NULL) and (bits > 0))
+***************
+*** 573,575 ****
+      bitsZ = bitsX + bitsY;
+!     Z = BitVector_Create(bitsZ,falseval);
+      if ((Z != NULL) and (bitsZ > 0))
+--- 573,575 ----
+      bitsZ = bitsX + bitsY;
+!     Z = BitVector_Create(bitsZ,false);
+      if ((Z != NULL) and (bitsZ > 0))
+***************
+*** 907,909 ****
+  
+! booltype BitVector_interval_scan_inc(wordptr addr, N_int start,
+                                      N_intptr min, N_intptr max)
+--- 907,909 ----
+  
+! boolean BitVector_interval_scan_inc(wordptr addr, N_int start,
+                                      N_intptr min, N_intptr max)
+***************
+*** 915,919 ****
+      N_word  value;
+!     booltype empty;
+  
+!     if ((size == 0) or (start >= bits_(addr))) return(falseval);
+  
+--- 915,919 ----
+      N_word  value;
+!     boolean empty;
+  
+!     if ((size == 0) or (start >= bits_(addr))) return(false);
+  
+***************
+*** 939,941 ****
+              offset++;
+!             empty = trueval;
+              while (empty and (--size > 0))
+--- 939,941 ----
+              offset++;
+!             empty = true;
+              while (empty and (--size > 0))
+***************
+*** 942,946 ****
+              {
+!                 if (value = *addr++) empty = falseval; else offset++;
+              }
+!             if (empty) return(falseval);
+          }
+--- 942,946 ----
+              {
+!                 if (value = *addr++) empty = false; else offset++;
+              }
+!             if (empty) return(false);
+          }
+***************
+*** 964,966 ****
+          offset++;
+!         empty = trueval;
+          while (empty and (--size > 0))
+--- 964,966 ----
+          offset++;
+!         empty = true;
+          while (empty and (--size > 0))
+***************
+*** 967,969 ****
+          {
+!             if (value = NOT *addr++) empty = falseval; else offset++;
+          }
+--- 967,969 ----
+          {
+!             if (value = NOT *addr++) empty = false; else offset++;
+          }
+***************
+*** 978,980 ****
+      *max = --start;
+!     return(trueval);
+  }
+--- 978,980 ----
+      *max = --start;
+!     return(true);
+  }
+***************
+*** 981,983 ****
+  
+! booltype BitVector_interval_scan_dec(wordptr addr, N_int start,
+                                      N_intptr min, N_intptr max)
+--- 981,983 ----
+  
+! boolean BitVector_interval_scan_dec(wordptr addr, N_int start,
+                                      N_intptr min, N_intptr max)
+***************
+*** 989,993 ****
+      N_word value;
+!     booltype empty;
+  
+!     if ((size == 0) or (start >= bits_(addr))) return(falseval);
+  
+--- 989,993 ----
+      N_word value;
+!     boolean empty;
+  
+!     if ((size == 0) or (start >= bits_(addr))) return(false);
+  
+***************
+*** 998,1000 ****
+  
+!     if (offset >= size) return(falseval);
+  
+--- 998,1000 ----
+  
+!     if (offset >= size) return(false);
+  
+***************
+*** 1015,1017 ****
+              offset--;
+!             empty = trueval;
+              while (empty and (--size > 0))
+--- 1015,1017 ----
+              offset--;
+!             empty = true;
+              while (empty and (--size > 0))
+***************
+*** 1018,1022 ****
+              {
+!                 if (value = *addr--) empty = falseval; else offset--;
+              }
+!             if (empty) return(falseval);
+          }
+--- 1018,1022 ----
+              {
+!                 if (value = *addr--) empty = false; else offset--;
+              }
+!             if (empty) return(false);
+          }
+***************
+*** 1040,1042 ****
+          offset--;
+!         empty = trueval;
+          while (empty and (--size > 0))
+--- 1040,1042 ----
+          offset--;
+!         empty = true;
+          while (empty and (--size > 0))
+***************
+*** 1043,1045 ****
+          {
+!             if (value = NOT *addr--) empty = falseval; else offset--;
+          }
+--- 1043,1045 ----
+          {
+!             if (value = NOT *addr--) empty = false; else offset--;
+          }
+***************
+*** 1054,1056 ****
+      *min = start;
+!     return(trueval);
+  }
+--- 1054,1056 ----
+      *min = start;
+!     return(true);
+  }
+***************
+*** 1086,1089 ****
+      N_word  select;
+!     booltype ascending;
+!     booltype notfirst;
+      wordptr Z = X;
+--- 1086,1089 ----
+      N_word  select;
+!     boolean ascending;
+!     boolean notfirst;
+      wordptr Z = X;
+***************
+*** 1123,1126 ****
+          X += t_base;
+!         notfirst = falseval;
+!         while (trueval)
+          {
+--- 1123,1126 ----
+          X += t_base;
+!         notfirst = false;
+!         while (true)
+          {
+***************
+*** 1220,1222 ****
+              }
+!             notfirst = trueval;
+              if (s_bits > t_bits)
+--- 1220,1222 ----
+              }
+!             notfirst = true;
+              if (s_bits > t_bits)
+***************
+*** 1305,1307 ****
+                  if (Ylength > 0) BitVector_Interval_Copy(X,Y,Xoffset,Yoffset,Ylength);
+!                 if (limit < Xbits) BitVector_Delete(X,Xoffset+Ylength,diff,falseval);
+                  if ((X = BitVector_Resize(X,Xbits-diff)) == NULL) return(NULL);
+--- 1305,1307 ----
+                  if (Ylength > 0) BitVector_Interval_Copy(X,Y,Xoffset,Yoffset,Ylength);
+!                 if (limit < Xbits) BitVector_Delete(X,Xoffset+Ylength,diff,false);
+                  if ((X = BitVector_Resize(X,Xbits-diff)) == NULL) return(NULL);
+***************
+*** 1314,1316 ****
+                      if ((X = BitVector_Resize(X,Xbits+diff)) == NULL) return(NULL);
+!                     if (limit < Xbits) BitVector_Insert(X,limit,diff,falseval);
+                      BitVector_Interval_Copy(X,Y,Xoffset,Yoffset,Ylength);
+--- 1314,1316 ----
+                      if ((X = BitVector_Resize(X,Xbits+diff)) == NULL) return(NULL);
+!                     if (limit < Xbits) BitVector_Insert(X,limit,diff,false);
+                      BitVector_Interval_Copy(X,Y,Xoffset,Yoffset,Ylength);
+***************
+*** 1326,1328 ****
+                      {
+!                         BitVector_Insert(X,limit,diff,falseval);
+                          if ((Yoffset+Ylength) <= limit)
+--- 1326,1328 ----
+                      {
+!                         BitVector_Insert(X,limit,diff,false);
+                          if ((Yoffset+Ylength) <= limit)
+***************
+*** 1356,1358 ****
+  
+! booltype BitVector_is_empty(wordptr addr)                    /* X == {} ?     */
+  {
+--- 1356,1358 ----
+  
+! boolean BitVector_is_empty(wordptr addr)                    /* X == {} ?     */
+  {
+***************
+*** 1359,1361 ****
+      N_word  size = size_(addr);
+!     booltype r = trueval;
+  
+--- 1359,1361 ----
+      N_word  size = size_(addr);
+!     boolean r = true;
+  
+***************
+*** 1369,1371 ****
+  
+! booltype BitVector_is_full(wordptr addr)                     /* X == ~{} ?    */
+  {
+--- 1369,1371 ----
+  
+! boolean BitVector_is_full(wordptr addr)                     /* X == ~{} ?    */
+  {
+***************
+*** 1373,1375 ****
+      N_word  mask = mask_(addr);
+!     booltype r = falseval;
+      wordptr last;
+--- 1373,1375 ----
+      N_word  mask = mask_(addr);
+!     boolean r = false;
+      wordptr last;
+***************
+*** 1378,1380 ****
+      {
+!         r = trueval;
+          last = addr + size - 1;
+--- 1378,1380 ----
+      {
+!         r = true;
+          last = addr + size - 1;
+***************
+*** 1387,1389 ****
+  
+! booltype BitVector_equal(wordptr X, wordptr Y)               /* X == Y ?      */
+  {
+--- 1387,1389 ----
+  
+! boolean BitVector_equal(wordptr X, wordptr Y)               /* X == Y ?      */
+  {
+***************
+*** 1391,1393 ****
+      N_word  mask = mask_(X);
+!     booltype r = falseval;
+  
+--- 1391,1393 ----
+      N_word  mask = mask_(X);
+!     boolean r = false;
+  
+***************
+*** 1395,1397 ****
+      {
+!         r = trueval;
+          if (size > 0)
+--- 1395,1397 ----
+      {
+!         r = true;
+          if (size > 0)
+***************
+*** 1411,1413 ****
+      N_word  size  = size_(X);
+!     booltype r = trueval;
+  
+--- 1411,1413 ----
+      N_word  size  = size_(X);
+!     boolean r = true;
+  
+***************
+*** 1440,1442 ****
+      N_word  sign;
+!     booltype r = trueval;
+  
+--- 1440,1442 ----
+      N_word  sign;
+!     boolean r = true;
+  
+***************
+*** 1507,1509 ****
+      N_word  mask = mask_(addr);
+!     booltype ok = trueval;
+      N_word  length;
+--- 1507,1509 ----
+      N_word  mask = mask_(addr);
+!     boolean ok = true;
+      N_word  length;
+***************
+*** 1578,1580 ****
+      N_word  mask = mask_(addr);
+!     booltype ok = trueval;
+      N_word  length;
+--- 1578,1580 ----
+      N_word  mask = mask_(addr);
+!     boolean ok = true;
+      N_word  length;
+***************
+*** 1602,1604 ****
+                      default:
+!                         ok = falseval;
+                          break;
+--- 1602,1604 ----
+                      default:
+!                         ok = false;
+                          break;
+***************
+*** 1622,1624 ****
+      N_word  r;
+!     booltype loop;
+      charptr result;
+--- 1622,1624 ----
+      N_word  r;
+!     boolean loop;
+      charptr result;
+***************
+*** 1646,1648 ****
+      {
+!         quot = BitVector_Create(bits,falseval);
+          if (quot == NULL)
+--- 1646,1648 ----
+      {
+!         quot = BitVector_Create(bits,false);
+          if (quot == NULL)
+***************
+*** 1652,1654 ****
+          }
+!         rest = BitVector_Create(bits,falseval);
+          if (rest == NULL)
+--- 1652,1654 ----
+          }
+!         rest = BitVector_Create(bits,false);
+          if (rest == NULL)
+***************
+*** 1659,1661 ****
+          }
+!         temp = BitVector_Create(bits,falseval);
+          if (temp == NULL)
+--- 1659,1661 ----
+          }
+!         temp = BitVector_Create(bits,false);
+          if (temp == NULL)
+***************
+*** 1667,1669 ****
+          }
+!         base = BitVector_Create(bits,trueval);
+          if (base == NULL)
+--- 1667,1669 ----
+          }
+!         base = BitVector_Create(bits,true);
+          if (base == NULL)
+***************
+*** 1733,1737 ****
+      N_word  mask = mask_(addr);
+!     booltype init = (bits > BITS);
+!     booltype minus;
+!     booltype shift;
+      wordptr term;
+--- 1733,1737 ----
+      N_word  mask = mask_(addr);
+!     boolean init = (bits > BITS);
+!     boolean minus;
+!     boolean shift;
+      wordptr term;
+***************
+*** 1762,1764 ****
+          string += length;
+!         term = BitVector_Create(BITS,falseval);
+          if (term == NULL)
+--- 1762,1764 ----
+          string += length;
+!         term = BitVector_Create(BITS,false);
+          if (term == NULL)
+***************
+*** 1767,1769 ****
+          }
+!         base = BitVector_Create(BITS,falseval);
+          if (base == NULL)
+--- 1767,1769 ----
+          }
+!         base = BitVector_Create(BITS,false);
+          if (base == NULL)
+***************
+*** 1788,1790 ****
+          }
+!         temp = BitVector_Create(bits,falseval);
+          if (temp == NULL)
+--- 1788,1790 ----
+          }
+!         temp = BitVector_Create(bits,false);
+          if (temp == NULL)
+***************
+*** 1801,1803 ****
+          *base = EXP10;
+!         shift = falseval;
+          while ((not error) and (length > 0))
+--- 1801,1803 ----
+          *base = EXP10;
+!         shift = false;
+          while ((not error) and (length > 0))
+***************
+*** 1850,1852 ****
+                              *rank = *base;
+!                             shift = trueval;
+                          }
+--- 1850,1852 ----
+                              *rank = *base;
+!                             shift = true;
+                          }
+***************
+*** 1883,1885 ****
+      charptr target;
+!     booltype comma;
+  
+--- 1883,1885 ----
+      charptr target;
+!     boolean comma;
+  
+***************
+*** 1910,1912 ****
+      start = 0;
+!     comma = falseval;
+      target = string;
+--- 1910,1912 ----
+      start = 0;
+!     comma = false;
+      target = string;
+***************
+*** 1935,1937 ****
+          }
+!         comma = trueval;
+      }
+--- 1935,1937 ----
+          }
+!         comma = true;
+      }
+***************
+*** 2063,2065 ****
+  
+! booltype BitVector_bit_flip(wordptr addr, N_int index)   /* X=(X+{x})\(X*{x}) */
+  {
+--- 2063,2065 ----
+  
+! boolean BitVector_bit_flip(wordptr addr, N_int index)   /* X=(X+{x})\(X*{x}) */
+  {
+***************
+*** 2068,2070 ****
+      if (index < bits_(addr)) return( BIT_VECTOR_FLP_BIT(addr,index,mask) );
+!     else                     return( falseval );
+  }
+--- 2068,2070 ----
+      if (index < bits_(addr)) return( BIT_VECTOR_FLP_BIT(addr,index,mask) );
+!     else                     return( false );
+  }
+***************
+*** 2071,2073 ****
+  
+! booltype BitVector_bit_test(wordptr addr, N_int index)       /* {x} in X ?    */
+  {
+--- 2071,2073 ----
+  
+! boolean BitVector_bit_test(wordptr addr, N_int index)       /* {x} in X ?    */
+  {
+***************
+*** 2074,2076 ****
+      if (index < bits_(addr)) return( BIT_VECTOR_TST_BIT(addr,index) );
+!     else                     return( falseval );
+  }
+--- 2074,2076 ----
+      if (index < bits_(addr)) return( BIT_VECTOR_TST_BIT(addr,index) );
+!     else                     return( false );
+  }
+***************
+*** 2077,2079 ****
+  
+! void BitVector_Bit_Copy(wordptr addr, N_int index, booltype bit)
+  {
+--- 2077,2079 ----
+  
+! void BitVector_Bit_Copy(wordptr addr, N_int index, boolean bit)
+  {
+***************
+*** 2086,2088 ****
+  
+! void BitVector_LSB(wordptr addr, booltype bit)
+  {
+--- 2086,2088 ----
+  
+! void BitVector_LSB(wordptr addr, boolean bit)
+  {
+***************
+*** 2095,2097 ****
+  
+! void BitVector_MSB(wordptr addr, booltype bit)
+  {
+--- 2095,2097 ----
+  
+! void BitVector_MSB(wordptr addr, boolean bit)
+  {
+***************
+*** 2107,2109 ****
+  
+! booltype BitVector_lsb(wordptr addr)
+  {
+--- 2107,2109 ----
+  
+! boolean BitVector_lsb(wordptr addr)
+  {
+***************
+*** 2110,2112 ****
+      if (size_(addr) > 0) return( (*addr AND LSB) != 0 );
+!     else                 return( falseval );
+  }
+--- 2110,2112 ----
+      if (size_(addr) > 0) return( (*addr AND LSB) != 0 );
+!     else                 return( false );
+  }
+***************
+*** 2113,2115 ****
+  
+! booltype BitVector_msb(wordptr addr)
+  {
+--- 2113,2115 ----
+  
+! boolean BitVector_msb(wordptr addr)
+  {
+***************
+*** 2121,2123 ****
+      else
+!         return( falseval );
+  }
+--- 2121,2123 ----
+      else
+!         return( false );
+  }
+***************
+*** 2124,2126 ****
+  
+! booltype BitVector_rotate_left(wordptr addr)
+  {
+--- 2124,2126 ----
+  
+! boolean BitVector_rotate_left(wordptr addr)
+  {
+***************
+*** 2129,2132 ****
+      N_word  msb;
+!     booltype carry_in;
+!     booltype carry_out = falseval;
+  
+--- 2129,2132 ----
+      N_word  msb;
+!     boolean carry_in;
+!     boolean carry_out = false;
+  
+***************
+*** 2152,2154 ****
+  
+! booltype BitVector_rotate_right(wordptr addr)
+  {
+--- 2152,2154 ----
+  
+! boolean BitVector_rotate_right(wordptr addr)
+  {
+***************
+*** 2157,2160 ****
+      N_word  msb;
+!     booltype carry_in;
+!     booltype carry_out = falseval;
+  
+--- 2157,2160 ----
+      N_word  msb;
+!     boolean carry_in;
+!     boolean carry_out = false;
+  
+***************
+*** 2184,2186 ****
+  
+! booltype BitVector_shift_left(wordptr addr, booltype carry_in)
+  {
+--- 2184,2186 ----
+  
+! boolean BitVector_shift_left(wordptr addr, boolean carry_in)
+  {
+***************
+*** 2189,2191 ****
+      N_word  msb;
+!     booltype carry_out = carry_in;
+  
+--- 2189,2191 ----
+      N_word  msb;
+!     boolean carry_out = carry_in;
+  
+***************
+*** 2210,2212 ****
+  
+! booltype BitVector_shift_right(wordptr addr, booltype carry_in)
+  {
+--- 2210,2212 ----
+  
+! boolean BitVector_shift_right(wordptr addr, boolean carry_in)
+  {
+***************
+*** 2215,2217 ****
+      N_word  msb;
+!     booltype carry_out = carry_in;
+  
+--- 2215,2217 ----
+      N_word  msb;
+!     boolean carry_out = carry_in;
+  
+***************
+*** 2253,2255 ****
+              while (count-- > 0) BitVector_shift_left(addr,0);
+!             BitVector_Word_Insert(addr,0,words,trueval);
+          }
+--- 2253,2255 ----
+              while (count-- > 0) BitVector_shift_left(addr,0);
+!             BitVector_Word_Insert(addr,0,words,true);
+          }
+***************
+*** 2271,2273 ****
+              while (count-- > 0) BitVector_shift_right(addr,0);
+!             BitVector_Word_Delete(addr,0,words,trueval);
+          }
+--- 2271,2273 ----
+              while (count-- > 0) BitVector_shift_right(addr,0);
+!             BitVector_Word_Delete(addr,0,words,true);
+          }
+***************
+*** 2276,2278 ****
+  
+! void BitVector_Insert(wordptr addr, N_int offset, N_int count, booltype clear)
+  {
+--- 2276,2278 ----
+  
+! void BitVector_Insert(wordptr addr, N_int offset, N_int count, boolean clear)
+  {
+***************
+*** 2293,2295 ****
+  
+! void BitVector_Delete(wordptr addr, N_int offset, N_int count, booltype clear)
+  {
+--- 2293,2295 ----
+  
+! void BitVector_Delete(wordptr addr, N_int offset, N_int count, boolean clear)
+  {
+***************
+*** 2310,2312 ****
+  
+! booltype BitVector_increment(wordptr addr)                   /* X++           */
+  {
+--- 2310,2312 ----
+  
+! boolean BitVector_increment(wordptr addr)                   /* X++           */
+  {
+***************
+*** 2315,2317 ****
+      wordptr last  = addr + size - 1;
+!     booltype carry = trueval;
+  
+--- 2315,2317 ----
+      wordptr last  = addr + size - 1;
+!     boolean carry = true;
+  
+***************
+*** 2329,2331 ****
+  
+! booltype BitVector_decrement(wordptr addr)                   /* X--           */
+  {
+--- 2329,2331 ----
+  
+! boolean BitVector_decrement(wordptr addr)                   /* X--           */
+  {
+***************
+*** 2334,2336 ****
+      wordptr last  = addr + size - 1;
+!     booltype carry = trueval;
+  
+--- 2334,2336 ----
+      wordptr last  = addr + size - 1;
+!     boolean carry = true;
+  
+***************
+*** 2349,2351 ****
+  
+! booltype BitVector_add(wordptr X, wordptr Y, wordptr Z, booltype carry)
+  {
+--- 2349,2351 ----
+  
+! boolean BitVector_add(wordptr X, wordptr Y, wordptr Z, boolean carry)
+  {
+***************
+*** 2377,2379 ****
+  
+! booltype BitVector_subtract(wordptr X, wordptr Y, wordptr Z, booltype carry)
+  {
+--- 2377,2379 ----
+  
+! boolean BitVector_subtract(wordptr X, wordptr Y, wordptr Z, boolean carry)
+  {
+***************
+*** 2411,2413 ****
+      N_word  mask  = mask_(X);
+!     booltype carry = trueval;
+  
+--- 2411,2413 ----
+      N_word  mask  = mask_(X);
+!     boolean carry = true;
+  
+***************
+*** 2445,2447 ****
+      wordptr last = addr + size - 1;
+!     booltype r    = trueval;
+  
+--- 2445,2447 ----
+      wordptr last = addr + size - 1;
+!     boolean r    = true;
+  
+***************
+*** 2465,2467 ****
+      N_int   count;
+!     booltype ok = trueval;
+  
+--- 2465,2467 ----
+      N_int   count;
+!     boolean ok = true;
+  
+***************
+*** 2503,2508 ****
+      wordptr ptr_z;
+!     booltype sgn_x;
+!     booltype sgn_y;
+!     booltype sgn_z;
+!     booltype zero;
+      wordptr A;
+--- 2503,2508 ----
+      wordptr ptr_z;
+!     boolean sgn_x;
+!     boolean sgn_y;
+!     boolean sgn_z;
+!     boolean zero;
+      wordptr A;
+***************
+*** 2527,2531 ****
+      {
+!         A = BitVector_Create(bit_y,falseval);
+          if (A == NULL) return(ErrCode_Null);
+!         B = BitVector_Create(bit_z,falseval);
+          if (B == NULL) { BitVector_Destroy(A); return(ErrCode_Null); }
+--- 2527,2531 ----
+      {
+!         A = BitVector_Create(bit_y,false);
+          if (A == NULL) return(ErrCode_Null);
+!         B = BitVector_Create(bit_z,false);
+          if (B == NULL) { BitVector_Destroy(A); return(ErrCode_Null); }
+***************
+*** 2541,2543 ****
+          ptr_z = B + size;
+!         zero = trueval;
+          while (zero and (size-- > 0))
+--- 2541,2543 ----
+          ptr_z = B + size;
+!         zero = true;
+          while (zero and (size-- > 0))
+***************
+*** 2580,2583 ****
+      N_word  bits  = bits_(Q);
+!     booltype carry = falseval;
+!     booltype valid = trueval; /* flags wether valid rest is in R (t) or X (f) */
+  
+--- 2580,2583 ----
+      N_word  bits  = bits_(Q);
+!     boolean carry = false;
+!     boolean valid = true; /* flags wether valid rest is in R (t) or X (f) */
+  
+***************
+*** 2615,2617 ****
+                  carry = not BitVector_subtract(X,R,Y,0);
+!                 if (carry) valid = falseval;
+              }
+--- 2615,2617 ----
+                  carry = not BitVector_subtract(X,R,Y,0);
+!                 if (carry) valid = false;
+              }
+***************
+*** 2621,2623 ****
+                  carry = not BitVector_subtract(R,X,Y,0);
+!                 if (carry) valid = trueval;
+              }
+--- 2621,2623 ----
+                  carry = not BitVector_subtract(R,X,Y,0);
+!                 if (carry) valid = true;
+              }
+***************
+*** 2637,2641 ****
+      N_word  msb = (mask AND NOT (mask >> 1));
+!     booltype sgn_q;
+!     booltype sgn_x;
+!     booltype sgn_y;
+      wordptr A;
+--- 2637,2641 ----
+      N_word  msb = (mask AND NOT (mask >> 1));
+!     boolean sgn_q;
+!     boolean sgn_x;
+!     boolean sgn_y;
+      wordptr A;
+***************
+*** 2670,2674 ****
+      {
+!         A = BitVector_Create(bits,falseval);
+          if (A == NULL) return(ErrCode_Null);
+!         B = BitVector_Create(bits,falseval);
+          if (B == NULL) { BitVector_Destroy(A); return(ErrCode_Null); }
+--- 2670,2674 ----
+      {
+!         A = BitVector_Create(bits,false);
+          if (A == NULL) return(ErrCode_Null);
+!         B = BitVector_Create(bits,false);
+          if (B == NULL) { BitVector_Destroy(A); return(ErrCode_Null); }
+***************
+*** 2717,2719 ****
+  
+!     Q = BitVector_Create(bits,falseval);
+      if (Q == NULL)
+--- 2717,2719 ----
+  
+!     Q = BitVector_Create(bits,false);
+      if (Q == NULL)
+***************
+*** 2722,2724 ****
+      }
+!     R = BitVector_Create(bits,falseval);
+      if (R == NULL)
+--- 2722,2724 ----
+      }
+!     R = BitVector_Create(bits,false);
+      if (R == NULL)
+***************
+*** 2728,2730 ****
+      }
+!     A = BitVector_Create(bits,falseval);
+      if (A == NULL)
+--- 2728,2730 ----
+      }
+!     A = BitVector_Create(bits,false);
+      if (A == NULL)
+***************
+*** 2735,2737 ****
+      }
+!     B = BitVector_Create(bits,falseval);
+      if (B == NULL)
+--- 2735,2737 ----
+      }
+!     B = BitVector_Create(bits,false);
+      if (B == NULL)
+***************
+*** 2845,2847 ****
+  void BitVector_Word_Insert(wordptr addr, N_int offset, N_int count,
+!                            booltype clear)
+  {
+--- 2845,2847 ----
+  void BitVector_Word_Insert(wordptr addr, N_int offset, N_int count,
+!                            boolean clear)
+  {
+***************
+*** 2861,2863 ****
+  void BitVector_Word_Delete(wordptr addr, N_int offset, N_int count,
+!                            booltype clear)
+  {
+--- 2861,2863 ----
+  void BitVector_Word_Delete(wordptr addr, N_int offset, N_int count,
+!                            boolean clear)
+  {
+***************
+*** 3019,3021 ****
+  
+! booltype Set_subset(wordptr X, wordptr Y)                    /* X subset Y ?  */
+  {
+--- 3019,3021 ----
+  
+! boolean Set_subset(wordptr X, wordptr Y)                    /* X subset Y ?  */
+  {
+***************
+*** 3022,3024 ****
+      N_word size = size_(X);
+!     booltype r = falseval;
+  
+--- 3022,3024 ----
+      N_word size = size_(X);
+!     boolean r = false;
+  
+***************
+*** 3026,3028 ****
+      {
+!         r = trueval;
+          while (r and (size-- > 0)) r = ((*X++ AND NOT *Y++) == 0);
+--- 3026,3028 ----
+      {
+!         r = true;
+          while (r and (size-- > 0)) r = ((*X++ AND NOT *Y++) == 0);
+***************
+*** 3052,3054 ****
+  {
+!     booltype empty = trueval;
+      N_word  size  = size_(addr);
+--- 3052,3054 ----
+  {
+!     boolean empty = true;
+      N_word  size  = size_(addr);
+***************
+*** 3059,3061 ****
+      {
+!         if (c = *addr++) empty = falseval; else i++;
+      }
+--- 3059,3061 ----
+      {
+!         if (c = *addr++) empty = false; else i++;
+      }
+***************
+*** 3073,3075 ****
+  {
+!     booltype empty = trueval;
+      N_word  size  = size_(addr);
+--- 3073,3075 ----
+  {
+!     boolean empty = true;
+      N_word  size  = size_(addr);
+***************
+*** 3081,3083 ****
+      {
+!         if (c = *addr--) empty = falseval; else i--;
+      }
+--- 3081,3083 ----
+      {
+!         if (c = *addr--) empty = false; else i--;
+      }
+***************
+*** 3094,3096 ****
+      /**********************************/
+!     /* matrix-of-booltypes operations: */
+      /**********************************/
+--- 3094,3096 ----
+      /**********************************/
+!     /* matrix-of-booleans operations: */
+      /**********************************/
+***************
+*** 3193,3195 ****
+      N_word  termj;
+!     booltype swap;
+  
+--- 3193,3195 ----
+      N_word  termj;
+!     boolean swap;
+  
+***************
+*** 3273,3275 ****
+  /*    Version 4.1  30.06.97  Added word-ins/del, move-left/right, inc/dec.   */
+! /*    Version 4.0  23.04.97  Rewrite. Added bit shift and booltype. matrix ops.  */
+  /*    Version 3.2  04.02.97  Added interval methods.                         */
+--- 3273,3275 ----
+  /*    Version 4.1  30.06.97  Added word-ins/del, move-left/right, inc/dec.   */
+! /*    Version 4.0  23.04.97  Rewrite. Added bit shift and bool. matrix ops.  */
+  /*    Version 3.2  04.02.97  Added interval methods.                         */
+

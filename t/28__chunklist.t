@@ -61,5 +61,7 @@ for ( $bits = 1; $bits <= $longbits; $bits++ )
     $n++;
 }
 
+1;
+
 __END__
 

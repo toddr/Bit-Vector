@@ -229,7 +229,7 @@ PPCODE:
 
     if ( BIT_VECTOR_SCALAR(bits,N_int,size) )
     {
-        if ((address = BitVector_Create(size,true)) != NULL)
+        if ((address = BitVector_Create(size,trueval)) != NULL)
         {
             handle = newSViv((IV)address);
             reference = sv_bless(sv_2mortal(newRV(handle)),
@@ -262,7 +262,7 @@ PPCODE:
     {
         if ( BIT_VECTOR_STRING(string,pointer) )
         {
-            if ((address = BitVector_Create(size,false)) != NULL)
+            if ((address = BitVector_Create(size,falseval)) != NULL)
             {
                 if (code = BitVector_from_Hex(address,pointer))
                 {
@@ -305,7 +305,7 @@ PPCODE:
     {
         if ( BIT_VECTOR_STRING(string,pointer) )
         {
-            if ((address = BitVector_Create(size,false)) != NULL)
+            if ((address = BitVector_Create(size,falseval)) != NULL)
             {
                 if (code = BitVector_from_Bin(address,pointer))
                 {
@@ -348,7 +348,7 @@ PPCODE:
     {
         if ( BIT_VECTOR_STRING(string,pointer) )
         {
-            if ((address = BitVector_Create(size,false)) != NULL)
+            if ((address = BitVector_Create(size,falseval)) != NULL)
             {
                 if (code = BitVector_from_Dec(address,pointer))
                 {
@@ -391,7 +391,7 @@ PPCODE:
     {
         if ( BIT_VECTOR_STRING(string,pointer) )
         {
-            if ((address = BitVector_Create(size,false)) != NULL)
+            if ((address = BitVector_Create(size,falseval)) != NULL)
             {
                 if (code = BitVector_from_Enum(address,pointer))
                 {
@@ -524,7 +524,7 @@ PPCODE:
         else if ((index != 0) or SvROK(Xref))
           BIT_VECTOR_OBJECT_ERROR("Concat_List");
     }
-    if ((address = BitVector_Create(bits,false)) != NULL)
+    if ((address = BitVector_Create(bits,falseval)) != NULL)
     {
         offset = 0;
         index = items;
@@ -993,7 +993,7 @@ CODE:
 }
 
 
-boolean
+booltype
 BitVector_is_empty(reference)
 BitVector_Object	reference
 CODE:
@@ -1011,7 +1011,7 @@ OUTPUT:
 RETVAL
 
 
-boolean
+booltype
 BitVector_is_full(reference)
 BitVector_Object	reference
 CODE:
@@ -1029,7 +1029,7 @@ OUTPUT:
 RETVAL
 
 
-boolean
+booltype
 BitVector_equal(Xref,Yref)
 BitVector_Object	Xref
 BitVector_Object	Yref
@@ -1367,7 +1367,7 @@ CODE:
 }
 
 
-boolean
+booltype
 BitVector_bit_flip(reference,index)
 BitVector_Object	reference
 BitVector_Scalar	index
@@ -1397,7 +1397,7 @@ OUTPUT:
 RETVAL
 
 
-boolean
+booltype
 BitVector_bit_test(reference,index)
 BitVector_Object	reference
 BitVector_Scalar	index
@@ -1438,12 +1438,12 @@ CODE:
     BitVector_Handle  handle;
     BitVector_Address address;
     N_int idx;
-    boolean b;
+    booltype b;
 
     if ( BIT_VECTOR_OBJECT(reference,handle,address) )
     {
         if ( BIT_VECTOR_SCALAR(index,N_int,idx) &&
-             BIT_VECTOR_SCALAR(bit,boolean,b) )
+             BIT_VECTOR_SCALAR(bit,booltype,b) )
         {
             if (idx < bits_(address))
             {
@@ -1465,11 +1465,11 @@ CODE:
 {
     BitVector_Handle  handle;
     BitVector_Address address;
-    boolean b;
+    booltype b;
 
     if ( BIT_VECTOR_OBJECT(reference,handle,address) )
     {
-        if ( BIT_VECTOR_SCALAR(bit,boolean,b) )
+        if ( BIT_VECTOR_SCALAR(bit,booltype,b) )
         {
             BitVector_LSB(address,b);
         }
@@ -1487,11 +1487,11 @@ CODE:
 {
     BitVector_Handle  handle;
     BitVector_Address address;
-    boolean b;
+    booltype b;
 
     if ( BIT_VECTOR_OBJECT(reference,handle,address) )
     {
-        if ( BIT_VECTOR_SCALAR(bit,boolean,b) )
+        if ( BIT_VECTOR_SCALAR(bit,booltype,b) )
         {
             BitVector_MSB(address,b);
         }
@@ -1501,7 +1501,7 @@ CODE:
 }
 
 
-boolean
+booltype
 BitVector_lsb(reference)
 BitVector_Object	reference
 CODE:
@@ -1519,7 +1519,7 @@ OUTPUT:
 RETVAL
 
 
-boolean
+booltype
 BitVector_msb(reference)
 BitVector_Object	reference
 CODE:
@@ -1537,7 +1537,7 @@ OUTPUT:
 RETVAL
 
 
-boolean
+booltype
 BitVector_rotate_left(reference)
 BitVector_Object	reference
 CODE:
@@ -1555,7 +1555,7 @@ OUTPUT:
 RETVAL
 
 
-boolean
+booltype
 BitVector_rotate_right(reference)
 BitVector_Object	reference
 CODE:
@@ -1573,7 +1573,7 @@ OUTPUT:
 RETVAL
 
 
-boolean
+booltype
 BitVector_shift_left(reference,carry)
 BitVector_Object	reference
 BitVector_Scalar	carry
@@ -1581,11 +1581,11 @@ CODE:
 {
     BitVector_Handle  handle;
     BitVector_Address address;
-    boolean c;
+    booltype c;
 
     if ( BIT_VECTOR_OBJECT(reference,handle,address) )
     {
-        if ( BIT_VECTOR_SCALAR(carry,boolean,c) )
+        if ( BIT_VECTOR_SCALAR(carry,booltype,c) )
         {
             RETVAL = BitVector_shift_left(address,c);
         }
@@ -1597,7 +1597,7 @@ OUTPUT:
 RETVAL
 
 
-boolean
+booltype
 BitVector_shift_right(reference,carry)
 BitVector_Object	reference
 BitVector_Scalar	carry
@@ -1605,11 +1605,11 @@ CODE:
 {
     BitVector_Handle  handle;
     BitVector_Address address;
-    boolean c;
+    booltype c;
 
     if ( BIT_VECTOR_OBJECT(reference,handle,address) )
     {
-        if ( BIT_VECTOR_SCALAR(carry,boolean,c) )
+        if ( BIT_VECTOR_SCALAR(carry,booltype,c) )
         {
             RETVAL = BitVector_shift_right(address,c);
         }
@@ -1684,7 +1684,7 @@ CODE:
         {
             if (off < bits_(address))
             {
-                BitVector_Insert(address,off,cnt,true);
+                BitVector_Insert(address,off,cnt,trueval);
             }
             else BIT_VECTOR_OFFSET_ERROR("Insert");
         }
@@ -1713,7 +1713,7 @@ CODE:
         {
             if (off < bits_(address))
             {
-                BitVector_Delete(address,off,cnt,true);
+                BitVector_Delete(address,off,cnt,trueval);
             }
             else BIT_VECTOR_OFFSET_ERROR("Delete");
         }
@@ -1723,7 +1723,7 @@ CODE:
 }
 
 
-boolean
+booltype
 BitVector_increment(reference)
 BitVector_Object	reference
 CODE:
@@ -1741,7 +1741,7 @@ OUTPUT:
 RETVAL
 
 
-boolean
+booltype
 BitVector_decrement(reference)
 BitVector_Object	reference
 CODE:
@@ -1759,7 +1759,7 @@ OUTPUT:
 RETVAL
 
 
-boolean
+booltype
 BitVector_add(Xref,Yref,Zref,carry)
 BitVector_Object	Xref
 BitVector_Object	Yref
@@ -1773,13 +1773,13 @@ CODE:
     BitVector_Address Yadr;
     BitVector_Handle  Zhdl;
     BitVector_Address Zadr;
-    boolean c;
+    booltype c;
 
     if ( BIT_VECTOR_OBJECT(Xref,Xhdl,Xadr) &&
          BIT_VECTOR_OBJECT(Yref,Yhdl,Yadr) &&
          BIT_VECTOR_OBJECT(Zref,Zhdl,Zadr) )
     {
-        if ( BIT_VECTOR_SCALAR(carry,boolean,c) )
+        if ( BIT_VECTOR_SCALAR(carry,booltype,c) )
         {
             if ((bits_(Xadr) == bits_(Yadr)) and (bits_(Xadr) == bits_(Zadr)))
             {
@@ -1795,7 +1795,7 @@ OUTPUT:
 RETVAL
 
 
-boolean
+booltype
 BitVector_subtract(Xref,Yref,Zref,carry)
 BitVector_Object	Xref
 BitVector_Object	Yref
@@ -1809,13 +1809,13 @@ CODE:
     BitVector_Address Yadr;
     BitVector_Handle  Zhdl;
     BitVector_Address Zadr;
-    boolean c;
+    booltype c;
 
     if ( BIT_VECTOR_OBJECT(Xref,Xhdl,Xadr) &&
          BIT_VECTOR_OBJECT(Yref,Yhdl,Yadr) &&
          BIT_VECTOR_OBJECT(Zref,Zhdl,Zadr) )
     {
-        if ( BIT_VECTOR_SCALAR(carry,boolean,c) )
+        if ( BIT_VECTOR_SCALAR(carry,booltype,c) )
         {
             if ((bits_(Xadr) == bits_(Yadr)) and (bits_(Xadr) == bits_(Zadr)))
             {
@@ -2209,7 +2209,7 @@ CODE:
         {
             if (off < size_(address))
             {
-                BitVector_Word_Insert(address,off,cnt,true);
+                BitVector_Word_Insert(address,off,cnt,trueval);
             }
             else BIT_VECTOR_OFFSET_ERROR("Word_Insert");
         }
@@ -2238,7 +2238,7 @@ CODE:
         {
             if (off < size_(address))
             {
-                BitVector_Word_Delete(address,off,cnt,true);
+                BitVector_Word_Delete(address,off,cnt,trueval);
             }
             else BIT_VECTOR_OFFSET_ERROR("Word_Delete");
         }
@@ -2745,7 +2745,7 @@ CODE:
 }
 
 
-boolean
+booltype
 Set_subset(Xref,Yref)
 BitVector_Object	Xref
 BitVector_Object	Yref

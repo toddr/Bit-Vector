@@ -1,0 +1,13 @@
+
+*** Tallinn:MacPerl_Src:perl:ext:Bit-Vector-5.6-Dev:typemap	Sun Mar  7 12:39:31 1999
+--- Tallinn:MacPerl_Src:perl:ext:Bit-Vector-5.6-bin-1-MacOS:typemap	Sun Mar  7 16:16:07 1999
+***************
+*** 19,21 ****
+  Z_long	T_IV
+! booltype	T_IV
+  BitVector_Object	T_SV
+--- 19,21 ----
+  Z_long	T_IV
+! boolean	T_IV
+  BitVector_Object	T_SV
+

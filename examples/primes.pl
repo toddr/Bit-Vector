@@ -17,23 +17,7 @@ use Bit::Vector;
 
 print "\n***** Calculating Prime Numbers - The Sieve Of Erathostenes *****\n";
 
-$limit = 0;
-
-if (-t STDIN)
-{
-    while ($limit < 16)
-    {
-        print "\nPlease enter an upper limit (>15): ";
-        $limit = <STDIN>;
-        if ($limit =~ /^\s*(\d+)\s*$/) { $limit = $1; } else { $limit = 0; }
-    }
-    print "\n";
-}
-else
-{
-    $limit = 100;
-    print "\nRunning in batch mode - using $limit as upper limit.\n\n";
-}
+$limit = $ARGV[0];
 
 $set = Bit::Vector->new($limit+1);
 
@@ -75,30 +59,7 @@ exit;
 
 sub print_elapsed_time
 {
-    my($flag) = 0;
-    my($sec,$min,$hour,$year,$yday) = (gmtime($stop - $start))[0,1,2,5,7];
-    $year -= 70;
-    print "Elapsed time: ";
-    if ($year > 0)
-    {
-        printf("%d year%s ", $year, ($year!=1)?"s":"");
-        $flag = 1;
-    }
-    if (($yday > 0) || $flag)
-    {
-        printf("%d day%s ", $yday, ($yday!=1)?"s":"");
-        $flag = 1;
-    }
-    if (($hour > 0) || $flag)
-    {
-        printf("%d hour%s ", $hour, ($hour!=1)?"s":"");
-        $flag = 1;
-    }
-    if (($min > 0) || $flag)
-    {
-        printf("%d minute%s ", $min, ($min!=1)?"s":"");
-    }
-    printf("%d second%s.\n\n", $sec, ($sec!=1)?"s":"");
+	print "Elapsed time = ", ($stop-$start), " seconds\n";
 }
 
 __END__

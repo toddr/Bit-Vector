@@ -53,7 +53,7 @@ for ( $b = 1; $b <= $bits; ++$b )
     $n++;
 }
 
-exit;
+1;
 
 sub binomial
 {

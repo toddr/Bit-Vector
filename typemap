@@ -17,7 +17,7 @@ N_int	T_IV
 N_long	T_IV
 Z_int	T_IV
 Z_long	T_IV
-boolean	T_IV
+booltype	T_IV
 BitVector_Object	T_SV
 BitVector_Scalar	T_SV
 

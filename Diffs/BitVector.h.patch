@@ -1,0 +1,151 @@
+
+*** Tallinn:MacPerl_Src:perl:ext:Bit-Vector-5.6-Dev:BitVector.h	Sun Mar  7 12:38:33 1999
+--- Tallinn:MacPerl_Src:perl:ext:Bit-Vector-5.6-bin-1-MacOS:BitVector.h	Sun Mar  7 16:16:04 1999
+***************
+*** 52,54 ****
+  
+! wordptr BitVector_Create(N_int bits, booltype clear);              /* malloc  */
+  
+--- 52,54 ----
+  
+! wordptr BitVector_Create(N_int bits, boolean clear);              /* malloc  */
+  
+***************
+*** 87,91 ****
+  
+! booltype BitVector_interval_scan_inc(wordptr addr, N_int start,
+                                      N_intptr min, N_intptr max);
+! booltype BitVector_interval_scan_dec(wordptr addr, N_int start,
+                                      N_intptr min, N_intptr max);
+--- 87,91 ----
+  
+! boolean BitVector_interval_scan_inc(wordptr addr, N_int start,
+                                      N_intptr min, N_intptr max);
+! boolean BitVector_interval_scan_dec(wordptr addr, N_int start,
+                                      N_intptr min, N_intptr max);
+***************
+*** 101,106 ****
+  
+! booltype BitVector_is_empty         (wordptr addr);          /* X == {} ?     */
+! booltype BitVector_is_full          (wordptr addr);          /* X == ~{} ?    */
+  
+! booltype BitVector_equal            (wordptr X, wordptr Y);  /* X == Y ?      */
+  Z_int   BitVector_Lexicompare      (wordptr X, wordptr Y);  /* X <,=,> Y ?   */
+--- 101,106 ----
+  
+! boolean BitVector_is_empty         (wordptr addr);          /* X == {} ?     */
+! boolean BitVector_is_full          (wordptr addr);          /* X == ~{} ?    */
+  
+! boolean BitVector_equal            (wordptr X, wordptr Y);  /* X == Y ?      */
+  Z_int   BitVector_Lexicompare      (wordptr X, wordptr Y);  /* X <,=,> Y ?   */
+***************
+*** 128,134 ****
+  void    BitVector_Bit_On  (wordptr addr, N_int index);      /* X = X + {x}   */
+! booltype BitVector_bit_flip(wordptr addr, N_int index);  /* X=(X+{x})\(X*{x}) */
+  
+! booltype BitVector_bit_test(wordptr addr, N_int index);      /* {x} in X ?    */
+  
+! void    BitVector_Bit_Copy(wordptr addr, N_int index, booltype bit);
+  
+--- 128,134 ----
+  void    BitVector_Bit_On  (wordptr addr, N_int index);      /* X = X + {x}   */
+! boolean BitVector_bit_flip(wordptr addr, N_int index);  /* X=(X+{x})\(X*{x}) */
+  
+! boolean BitVector_bit_test(wordptr addr, N_int index);      /* {x} in X ?    */
+  
+! void    BitVector_Bit_Copy(wordptr addr, N_int index, boolean bit);
+  
+***************
+*** 136,145 ****
+  
+! void    BitVector_LSB         (wordptr addr, booltype bit);
+! void    BitVector_MSB         (wordptr addr, booltype bit);
+! booltype BitVector_lsb         (wordptr addr);
+! booltype BitVector_msb         (wordptr addr);
+! booltype BitVector_rotate_left (wordptr addr);
+! booltype BitVector_rotate_right(wordptr addr);
+! booltype BitVector_shift_left  (wordptr addr, booltype carry_in);
+! booltype BitVector_shift_right (wordptr addr, booltype carry_in);
+  void    BitVector_Move_Left   (wordptr addr, N_int bits);
+--- 136,145 ----
+  
+! void    BitVector_LSB         (wordptr addr, boolean bit);
+! void    BitVector_MSB         (wordptr addr, boolean bit);
+! boolean BitVector_lsb         (wordptr addr);
+! boolean BitVector_msb         (wordptr addr);
+! boolean BitVector_rotate_left (wordptr addr);
+! boolean BitVector_rotate_right(wordptr addr);
+! boolean BitVector_shift_left  (wordptr addr, boolean carry_in);
+! boolean BitVector_shift_right (wordptr addr, boolean carry_in);
+  void    BitVector_Move_Left   (wordptr addr, N_int bits);
+***************
+*** 150,154 ****
+  void    BitVector_Insert      (wordptr addr, N_int offset, N_int count,
+!                                booltype clear);
+  void    BitVector_Delete      (wordptr addr, N_int offset, N_int count,
+!                                booltype clear);
+  
+--- 150,154 ----
+  void    BitVector_Insert      (wordptr addr, N_int offset, N_int count,
+!                                boolean clear);
+  void    BitVector_Delete      (wordptr addr, N_int offset, N_int count,
+!                                boolean clear);
+  
+***************
+*** 156,162 ****
+  
+! booltype BitVector_increment   (wordptr addr);               /* X++           */
+! booltype BitVector_decrement   (wordptr addr);               /* X--           */
+  
+! booltype BitVector_add     (wordptr X, wordptr Y, wordptr Z, booltype carry);
+! booltype BitVector_subtract(wordptr X, wordptr Y, wordptr Z, booltype carry);
+  void    BitVector_Negate  (wordptr X, wordptr Y);
+--- 156,162 ----
+  
+! boolean BitVector_increment   (wordptr addr);               /* X++           */
+! boolean BitVector_decrement   (wordptr addr);               /* X--           */
+  
+! boolean BitVector_add     (wordptr X, wordptr Y, wordptr Z, boolean carry);
+! boolean BitVector_subtract(wordptr X, wordptr Y, wordptr Z, boolean carry);
+  void    BitVector_Negate  (wordptr X, wordptr Y);
+***************
+*** 181,185 ****
+  void    BitVector_Word_Insert (wordptr addr, N_int offset, N_int count,
+!                                booltype clear);
+  void    BitVector_Word_Delete (wordptr addr, N_int offset, N_int count,
+!                                booltype clear);
+  
+--- 181,185 ----
+  void    BitVector_Word_Insert (wordptr addr, N_int offset, N_int count,
+!                                boolean clear);
+  void    BitVector_Word_Delete (wordptr addr, N_int offset, N_int count,
+!                                boolean clear);
+  
+***************
+*** 202,204 ****
+  
+! booltype Set_subset      (wordptr X, wordptr Y);             /* X subset Y ?  */
+  
+--- 202,204 ----
+  
+! boolean Set_subset      (wordptr X, wordptr Y);             /* X subset Y ?  */
+  
+***************
+*** 208,210 ****
+  
+! /* ===> matrix-of-booltypes operations: */
+  
+--- 208,210 ----
+  
+! /* ===> matrix-of-booleans operations: */
+  
+***************
+*** 246,248 ****
+  /*    Version 4.1  30.06.97  Added word-ins/del, move-left/right, inc/dec.   */
+! /*    Version 4.0  23.04.97  Rewrite. Added bit shift and booltype. matrix ops.  */
+  /*    Version 3.2  04.02.97  Added interval methods.                         */
+--- 246,248 ----
+  /*    Version 4.1  30.06.97  Added word-ins/del, move-left/right, inc/dec.   */
+! /*    Version 4.0  23.04.97  Rewrite. Added bit shift and bool. matrix ops.  */
+  /*    Version 3.2  04.02.97  Added interval methods.                         */
+

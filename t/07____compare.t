@@ -177,5 +177,7 @@ if ($set4->Lexicompare($set4) == 0)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
+1;
+
 __END__
 

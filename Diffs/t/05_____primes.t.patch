@@ -1,0 +1,11 @@
+
+*** Tallinn:MacPerl_Src:perl:ext:Bit-Vector-5.6-bin-1-MacOS:t:05_____primes.t	Sun Mar  7 16:16:01 1999
+--- Tallinn:MacPerl_Src:perl:ext:Bit-Vector-5.6-Dev:t:05_____primes.t	Sun Mar  7 18:00:21 1999
+***************
+*** 258,259 ****
+--- 258,261 ----
+  
++ 1;
++ 
+  __END__
+

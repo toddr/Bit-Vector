@@ -129,7 +129,7 @@ if ($vec->is_full())
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-exit;
+1;
 
 sub hexadecimal
 {

@@ -1,0 +1,13 @@
+
+*** Tallinn:MacPerl_Src:perl:ext:Bit-Vector-5.6-Dev:t:03_operations.t	Sun Mar  7 14:58:41 1999
+--- Tallinn:MacPerl_Src:perl:ext:Bit-Vector-5.6-bin-1-MacOS:t:03_operations.t	Sun Mar  7 16:16:00 1999
+***************
+*** 63,65 ****
+  
+! 1;
+  
+--- 63,65 ----
+  
+! exit;
+  
+

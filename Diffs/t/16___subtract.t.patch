@@ -1,0 +1,13 @@
+
+*** Tallinn:MacPerl_Src:perl:ext:Bit-Vector-5.6-Dev:t:16___subtract.t	Sun Mar  7 15:16:45 1999
+--- Tallinn:MacPerl_Src:perl:ext:Bit-Vector-5.6-bin-1-MacOS:t:16___subtract.t	Sun Mar  7 16:16:03 1999
+***************
+*** 131,133 ****
+  
+! 1;
+  
+--- 131,133 ----
+  
+! exit;
+  
+

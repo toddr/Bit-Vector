@@ -79,7 +79,8 @@ typedef  Z_longword         *Z_longwordptr;
 #undef  TRUE
 #define TRUE        (0==0)
 
-typedef enum { false = FALSE , true = TRUE } boolean;
+/* typedef enum { false = FALSE , true = TRUE } boolean; */
+typedef enum { falseval=0 , trueval } booltype;
 
 #define and         &&      /* logical (boolean) operators: lower case */
 #define or          ||

@@ -61,7 +61,7 @@ $set2->Flip();
 
 &test;
 
-exit;
+1;
 
 sub test
 {

@@ -1,0 +1,11 @@
+
+*** Tallinn:MacPerl_Src:perl:ext:Bit-Vector-5.6-bin-1-MacOS:t:02____destroy.t	Sun Mar  7 16:16:00 1999
+--- Tallinn:MacPerl_Src:perl:ext:Bit-Vector-5.6-Dev:t:02____destroy.t	Sun Mar  7 17:52:02 1999
+***************
+*** 76,77 ****
+--- 76,79 ----
+  
++ 1;
++ 
+  __END__
+

@@ -256,5 +256,7 @@ if ($set2->equal($set3))
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
+1;
+
 __END__
 

@@ -1,0 +1,41 @@
+
+*** Tallinn:MacPerl_Src:perl:ext:Bit-Vector-5.6-Dev:t:00____version.t	Sun Mar  7 15:35:02 1999
+--- Tallinn:MacPerl_Src:perl:ext:Bit-Vector-5.6-bin-1-MacOS:t:00____version.t	Sun Mar  7 16:16:03 1999
+***************
+*** 45,47 ****
+  eval { Bit::Vector->Version(0); };
+! if ($@ =~ /^# Usage: Bit::Vector->Version()/)
+  {print "ok $n\n";} else {print "not ok $n\n";}
+--- 45,47 ----
+  eval { Bit::Vector->Version(0); };
+! if ($@ =~ /^Usage: Bit::Vector->Version()/)
+  {print "ok $n\n";} else {print "not ok $n\n";}
+***************
+*** 49,51 ****
+  eval { Bit::Vector->Word_Bits(0); };
+! if ($@ =~ /^# Usage: Bit::Vector->Word_Bits()/)
+  {print "ok $n\n";} else {print "not ok $n\n";}
+--- 49,51 ----
+  eval { Bit::Vector->Word_Bits(0); };
+! if ($@ =~ /^Usage: Bit::Vector->Word_Bits()/)
+  {print "ok $n\n";} else {print "not ok $n\n";}
+***************
+*** 53,55 ****
+  eval { Bit::Vector->Long_Bits(0); };
+! if ($@ =~ /^# Usage: Bit::Vector->Long_Bits()/)
+  {print "ok $n\n";} else {print "not ok $n\n";}
+--- 53,55 ----
+  eval { Bit::Vector->Long_Bits(0); };
+! if ($@ =~ /^Usage: Bit::Vector->Long_Bits()/)
+  {print "ok $n\n";} else {print "not ok $n\n";}
+***************
+*** 57,60 ****
+  
+- 1;
+- 
+  __END__
+--- 57,59 ----
+  
+  __END__
++ 
+

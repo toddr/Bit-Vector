@@ -1,3 +1,119 @@
+Sunday, March 7, 1999
+
+This is the Bit::Vector module with shared libraries compiled for MacPerl.  
+Shared libraries run only on PPC and CFM68K versions, not non-CFM 68K 
+versions.
+
+Installation.
+
+If you're reading this you may have downloaded with a browser, and Stuffit 
+Expander helpfully unpacked everything for you.  This is actually not so 
+good, as many of your files probably still have the wrong line-ends.
+
+If you've got the RAM and easy access to the Internet, consider using 
+CPAN.pm (the Mac version) for future MacPerl installations.  But for this 
+one here, the best thing to do is drop the original '.tgz' file onto one of 
+Chris Nandor's utility scripts: 'installme.plx' if you're doing OK on RAM, 
+and 'untarzipme.plx' if not.
+
+After using only 'untarzipme.plx', install the files in ':blib:lib' into 
+your 'site_perl' folder; that, after all, is what it is meant for -
+
+    {MACPERL}site_perl:Bit:Vector.pm
+    {MACPERL}site_perl:MacCFM68K:auto:Bit:Vector:Vector
+    {MACPERL}site_perl:MacPPC:auto:Bit:Vector:Vector
+
+Also read the original README.txt file for this distribution, included below.
+(With special attention to the "What does it do" and "Example Applications" 
+sections; try to ignore everything else).
+
+This is my first distribution where I'm rationalizing where files go. The 
+'bindist.convention' page on CPAN has guides for naming an overall binary 
+distribution, and suggestions for the Readme file, but all bets are off, 
+seemingly, as to the organization of a binary.
+
+It seems to make the most sense to me that, since this is a binary for Mac 
+users, the distribution is ready to go right out of the box. What I mean by 
+that is, someone with Codewarrior MPW can use the MPPE build procedure 
+right from the gitgo.
+
+The original files, if changes were made, are in folder 'Original_Files'. 
+For extra reference, I've diffed everything, and you can find the patches 
+(if you want to consider them that) in folder 'Diffs'.
+
+Technical Notes. There are no separate notes for this distribution. That's 
+why I included the diffs, if you're bloody-minded and want to see what was 
+changed. :-)
+
+Testing.  The 't' files have been tested using both the MacPerl application 
+and the MPW perl tool.  When testing before installation, use the -I switch 
+(perl tool in MPW) or Edit>Preferences (MacPerl app) to add ':blib:lib' to 
+your path, and make sure it precedes all others.
+
+I also tested Math::MatrixBool against this, since it 'uses' Bit::Vector.
+
+I strongly recommend not running the tests as scripts. Between the various 
+'t' tests there are 67,211 subtests, each resulting in a line of output. I 
+included a little script, 'test_harness.plx', which in conjunction with 
+the MPW Shell gives you some capability to test en masse. On Unix this is a 
+lot easier. You can use the script with the MP app, but at this stage, 
+because of subroutine redefines, you should run tests one-by-one as 
+one-liners. But still use my script, or something better, unless you want 
+to see thousands of lines of output.
+
+Here's a test run on MPW:
+
+For tfile In `Files :t:Å.t`
+	perl -I ':blib:lib' test_harness.plx {tfile}
+End
+
+__END__
+
+:t:00____version.t.....ok
+Files = 1, Tests = 10, (10/0) (OK/NOK)
+:t:01________new.t.....ok
+Files = 1, Tests = 131, (131/0) (OK/NOK)
+:t:02____destroy.t.....ok
+Files = 1, Tests = 15, (15/0) (OK/NOK)
+:t:03_operations.t.....ok
+Files = 1, Tests = 232, (232/0) (OK/NOK)
+:t:04__functions.t.....ok
+Files = 1, Tests = 21, (21/0) (OK/NOK)
+:t:05_____primes.t.....ok
+Files = 1, Tests = 2008, (2008/0) (OK/NOK)
+:t:06_____subset.t.....ok
+Files = 1, Tests = 6, (6/0) (OK/NOK)
+:t:07____compare.t.....ok
+Files = 1, Tests = 50, (50/0) (OK/NOK)
+:t:08_____resize.t.....ok
+Files = 1, Tests = 57, (57/0) (OK/NOK)
+:t:09_parameters.t.....ok
+Files = 1, Tests = 920, (920/0) (OK/NOK)
+:t:10__intervals.t.....ok
+Files = 1, Tests = 4024, (4024/0) (OK/NOK)
+:t:11______shift.t.....ok
+Files = 1, Tests = 36416, (36416/0) (OK/NOK)
+:t:12_____string.t.....ok
+Files = 1, Tests = 192, (192/0) (OK/NOK)
+:t:13__increment.t.....ok
+Files = 1, Tests = 5296, (5296/0) (OK/NOK)
+:t:14______empty.t.....ok
+Files = 1, Tests = 40, (40/0) (OK/NOK)
+:t:15________add.t.....ok
+Files = 1, Tests = 1001, (1001/0) (OK/NOK)
+:t:16___subtract.t.....ok
+Files = 1, Tests = 1001, (1001/0) (OK/NOK)
+:t:28__chunklist.t.....ok
+Files = 1, Tests = 96, (96/0) (OK/NOK)
+:t:30_overloaded.t.....ok
+Files = 1, Tests = 15695, (15695/0) (OK/NOK)
+
+*****
+
+Arved Sandstrom          mailto:Arved_37@chebucto.ns.ca
+
+*****
+
                     =====================================
                       Package "Bit::Vector" Version 5.6
                     =====================================

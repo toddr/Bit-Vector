@@ -150,7 +150,7 @@ foreach $method (keys %method_list)
         {print "ok $n\n";} else {print "not ok $n\n";}
         $n++;
         $action = "\$dummy = ${prefix}::${method}(\$dummy,\$dummy);";
-        $message = "^Usage: ${prefix}->${method}\\(\\)";
+        $message = "^# Usage: ${prefix}->${method}\\(\\)";
         eval "$action";
         if ($@ =~ /$message/)
         {print "ok $n\n";} else {print "not ok $n\n";}
@@ -159,7 +159,7 @@ foreach $method (keys %method_list)
     else
     {
         $action = "${prefix}::${method}(\@parameter_list);";
-        $leadin = "${prefix}::${method}\\(\\): ";
+        $leadin = "# ${prefix}::${method}\\(\\): ";
         foreach $bits (1024)
         {
             &init_objects();
@@ -190,7 +190,7 @@ foreach $method (keys %method_list)
             }
             if ($limited)
             {
-                $message = "Usage: (?:${prefix}::)?${method}\\([a-zA-Z_,]+\\)";
+                $message = "# Usage: (?:${prefix}::)?${method}\\([a-zA-Z_,]+\\)";
                 &refresh();
                 pop(@parameter_list);
                 eval "$action";
@@ -498,6 +498,8 @@ sub init_values
     push(@{$wrong_values[12]}, \$global);
     push(@{$error_message[12]}, "item is not a (?:string|scalar)");
 }
+
+1;
 
 __END__
 

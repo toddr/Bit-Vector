@@ -50,7 +50,7 @@ charptr BitVector_Version    (void);               /* returns version string */
 N_int   BitVector_Word_Bits  (void);    /* returns # of bits in machine word */
 N_int   BitVector_Long_Bits  (void);   /* returns # of bits in unsigned long */
 
-wordptr BitVector_Create(N_int bits, boolean clear);              /* malloc  */
+wordptr BitVector_Create(N_int bits, booltype clear);              /* malloc  */
 
 /* ===> OBJECT METHODS: <=== */
 
@@ -85,9 +85,9 @@ void    BitVector_Interval_Fill    (wordptr addr, N_int lower, N_int upper);
 void    BitVector_Interval_Flip    (wordptr addr, N_int lower, N_int upper);
 void    BitVector_Interval_Reverse (wordptr addr, N_int lower, N_int upper);
 
-boolean BitVector_interval_scan_inc(wordptr addr, N_int start,
+booltype BitVector_interval_scan_inc(wordptr addr, N_int start,
                                     N_intptr min, N_intptr max);
-boolean BitVector_interval_scan_dec(wordptr addr, N_int start,
+booltype BitVector_interval_scan_dec(wordptr addr, N_int start,
                                     N_intptr min, N_intptr max);
 
 void    BitVector_Interval_Copy    (wordptr X, wordptr Y, N_int Xoffset,
@@ -99,10 +99,10 @@ wordptr BitVector_Interval_Substitute(wordptr X, wordptr Y,
 
 /* ===> bit vector test functions: */
 
-boolean BitVector_is_empty         (wordptr addr);          /* X == {} ?     */
-boolean BitVector_is_full          (wordptr addr);          /* X == ~{} ?    */
+booltype BitVector_is_empty         (wordptr addr);          /* X == {} ?     */
+booltype BitVector_is_full          (wordptr addr);          /* X == ~{} ?    */
 
-boolean BitVector_equal            (wordptr X, wordptr Y);  /* X == Y ?      */
+booltype BitVector_equal            (wordptr X, wordptr Y);  /* X == Y ?      */
 Z_int   BitVector_Lexicompare      (wordptr X, wordptr Y);  /* X <,=,> Y ?   */
 Z_int   BitVector_Compare          (wordptr X, wordptr Y);  /* X <,=,> Y ?   */
 
@@ -126,39 +126,39 @@ void    BitVector_Dispose (charptr string);
 
 void    BitVector_Bit_Off (wordptr addr, N_int index);      /* X = X \ {x}   */
 void    BitVector_Bit_On  (wordptr addr, N_int index);      /* X = X + {x}   */
-boolean BitVector_bit_flip(wordptr addr, N_int index);  /* X=(X+{x})\(X*{x}) */
+booltype BitVector_bit_flip(wordptr addr, N_int index);  /* X=(X+{x})\(X*{x}) */
 
-boolean BitVector_bit_test(wordptr addr, N_int index);      /* {x} in X ?    */
+booltype BitVector_bit_test(wordptr addr, N_int index);      /* {x} in X ?    */
 
-void    BitVector_Bit_Copy(wordptr addr, N_int index, boolean bit);
+void    BitVector_Bit_Copy(wordptr addr, N_int index, booltype bit);
 
 /* ===> bit vector bit shift & rotate functions: */
 
-void    BitVector_LSB         (wordptr addr, boolean bit);
-void    BitVector_MSB         (wordptr addr, boolean bit);
-boolean BitVector_lsb         (wordptr addr);
-boolean BitVector_msb         (wordptr addr);
-boolean BitVector_rotate_left (wordptr addr);
-boolean BitVector_rotate_right(wordptr addr);
-boolean BitVector_shift_left  (wordptr addr, boolean carry_in);
-boolean BitVector_shift_right (wordptr addr, boolean carry_in);
+void    BitVector_LSB         (wordptr addr, booltype bit);
+void    BitVector_MSB         (wordptr addr, booltype bit);
+booltype BitVector_lsb         (wordptr addr);
+booltype BitVector_msb         (wordptr addr);
+booltype BitVector_rotate_left (wordptr addr);
+booltype BitVector_rotate_right(wordptr addr);
+booltype BitVector_shift_left  (wordptr addr, booltype carry_in);
+booltype BitVector_shift_right (wordptr addr, booltype carry_in);
 void    BitVector_Move_Left   (wordptr addr, N_int bits);
 void    BitVector_Move_Right  (wordptr addr, N_int bits);
 
 /* ===> bit vector insert/delete bits: */
 
 void    BitVector_Insert      (wordptr addr, N_int offset, N_int count,
-                               boolean clear);
+                               booltype clear);
 void    BitVector_Delete      (wordptr addr, N_int offset, N_int count,
-                               boolean clear);
+                               booltype clear);
 
 /* ===> bit vector arithmetic: */
 
-boolean BitVector_increment   (wordptr addr);               /* X++           */
-boolean BitVector_decrement   (wordptr addr);               /* X--           */
+booltype BitVector_increment   (wordptr addr);               /* X++           */
+booltype BitVector_decrement   (wordptr addr);               /* X--           */
 
-boolean BitVector_add     (wordptr X, wordptr Y, wordptr Z, boolean carry);
-boolean BitVector_subtract(wordptr X, wordptr Y, wordptr Z, boolean carry);
+booltype BitVector_add     (wordptr X, wordptr Y, wordptr Z, booltype carry);
+booltype BitVector_subtract(wordptr X, wordptr Y, wordptr Z, booltype carry);
 void    BitVector_Negate  (wordptr X, wordptr Y);
 void    BitVector_Absolute(wordptr X, wordptr Y);
 Z_int   BitVector_Sign    (wordptr addr);
@@ -179,9 +179,9 @@ void    BitVector_Word_Store  (wordptr addr, N_int offset, N_int value);
 N_int   BitVector_Word_Read   (wordptr addr, N_int offset);
 
 void    BitVector_Word_Insert (wordptr addr, N_int offset, N_int count,
-                               boolean clear);
+                               booltype clear);
 void    BitVector_Word_Delete (wordptr addr, N_int offset, N_int count,
-                               boolean clear);
+                               booltype clear);
 
 /* ===> arbitrary size chunk functions: */
 
@@ -200,13 +200,13 @@ void    Set_Complement  (wordptr X, wordptr Y);             /* X = ~Y        */
 
 /* ===> set functions: */
 
-boolean Set_subset      (wordptr X, wordptr Y);             /* X subset Y ?  */
+booltype Set_subset      (wordptr X, wordptr Y);             /* X subset Y ?  */
 
 N_int   Set_Norm        (wordptr addr);                     /* = | X |       */
 Z_long  Set_Min         (wordptr addr);                     /* = min(X)      */
 Z_long  Set_Max         (wordptr addr);                     /* = max(X)      */
 
-/* ===> matrix-of-booleans operations: */
+/* ===> matrix-of-booltypes operations: */
 
 void    Matrix_Multiplication(wordptr X, N_int rowsX, N_int colsX,
                               wordptr Y, N_int rowsY, N_int colsY,
@@ -244,7 +244,7 @@ void    Matrix_Transpose     (wordptr X, N_int rowsX, N_int colsX,
 /*    Version 5.0  01.03.98  Major additions and rewrite.                    */
 /*    Version 4.2  16.07.97  Added is_empty, is_full.                        */
 /*    Version 4.1  30.06.97  Added word-ins/del, move-left/right, inc/dec.   */
-/*    Version 4.0  23.04.97  Rewrite. Added bit shift and bool. matrix ops.  */
+/*    Version 4.0  23.04.97  Rewrite. Added bit shift and booltype. matrix ops.  */
 /*    Version 3.2  04.02.97  Added interval methods.                         */
 /*    Version 3.1  21.01.97  Fixed bug on 64 bit machines.                   */
 /*    Version 3.0  12.01.97  Added flip.                                     */

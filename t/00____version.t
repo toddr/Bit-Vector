@@ -43,17 +43,18 @@ if (Bit::Vector->Long_Bits() >= 32)
 $n++;
 
 eval { Bit::Vector->Version(0); };
-if ($@ =~ /^Usage: Bit::Vector->Version()/)
+if ($@ =~ /^# Usage: Bit::Vector->Version()/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 eval { Bit::Vector->Word_Bits(0); };
-if ($@ =~ /^Usage: Bit::Vector->Word_Bits()/)
+if ($@ =~ /^# Usage: Bit::Vector->Word_Bits()/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 eval { Bit::Vector->Long_Bits(0); };
-if ($@ =~ /^Usage: Bit::Vector->Long_Bits()/)
+if ($@ =~ /^# Usage: Bit::Vector->Long_Bits()/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-__END__
+1;
 
+__END__

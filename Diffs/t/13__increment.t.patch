@@ -1,0 +1,13 @@
+
+*** Tallinn:MacPerl_Src:perl:ext:Bit-Vector-5.6-Dev:t:13__increment.t	Sun Mar  7 15:15:36 1999
+--- Tallinn:MacPerl_Src:perl:ext:Bit-Vector-5.6-bin-1-MacOS:t:13__increment.t	Sun Mar  7 16:16:03 1999
+***************
+*** 113,115 ****
+  
+! 1;
+  
+--- 113,115 ----
+  
+! exit;
+  
+
