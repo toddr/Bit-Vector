@@ -73,8 +73,8 @@ This module is useful for a large range of different tasks:
       O(1) or O(n/b), where "b" is the number of bits in a machine word
       on your system.)
 
-  -  for using shift registers of arbitrary length (for example for
-     cyclic redundancy checksums),
+  -  for shift registers of arbitrary length (for example for cyclic
+     redundancy checksums),
 
   -  to calculate "look-ahead", "first" and "follow" character sets
      for parsers and compiler-compilers,
@@ -88,6 +88,10 @@ This module is useful for a large range of different tasks:
   -  for "big integer" arithmetic with arbitrarily large integers,
 
   -  for manipulations of chunks of bits of arbitrary size,
+
+  -  for bitwise processing of audio CD wave files,
+
+  -  to convert formats of data files,
 
 and more.
 
@@ -123,36 +127,37 @@ average waste of unused bits in the last word.
 The range of available methods is exceptionally large for this kind of library;
 in detail:
 
-Version()                from_Hex()               Divide()
-Word_Bits()              to_Bin()                 GCD()
-Long_Bits()              from_Bin()               Block_Store()
-new()                    to_Dec()                 Block_Read()
-Shadow()                 from_Dec()               Word_Size()
-Clone()                  to_Enum()                Word_Store()
-Concat()                 from_Enum()              Word_Read()
-Concat_List()            Bit_Off()                Word_List_Store()
-Size()                   Bit_On()                 Word_List_Read()
-Resize()                 bit_flip()               Word_Insert()
-Copy()                   bit_test()               Word_Delete()
-Empty()                  Bit_Copy()               Chunk_Store()
-Fill()                   lsb()                    Chunk_Read()
-Flip()                   msb()                    Chunk_List_Store()
-Primes()                 rotate_left()            Chunk_List_Read()
-Reverse()                rotate_right()           Index_List_Remove()
-Interval_Empty()         shift_left()             Index_List_Store()
-Interval_Fill()          shift_right()            Index_List_Read()
-Interval_Flip()          Move_Left()              Union()
-Interval_Reverse()       Move_Right()             Intersection()
-Interval_Scan_inc()      Insert()                 Difference()
-Interval_Scan_dec()      Delete()                 ExclusiveOr()
-Interval_Copy()          increment()              Complement()
-Interval_Substitute()    decrement()              subset()
-is_empty()               add()                    Norm()
-is_full()                subtract()               Min()
-equal()                  Negate()                 Max()
-Lexicompare()            Absolute()               Multiplication()
-Compare()                Sign()                   Closure()
-to_Hex()                 Multiply()               Transpose()
+Version()                to_Bin()                 Divide()
+Word_Bits()              from_Bin()               GCD()
+Long_Bits()              to_Dec()                 Block_Store()
+new()                    from_Dec()               Block_Read()
+Shadow()                 to_Enum()                Word_Size()
+Clone()                  from_Enum()              Word_Store()
+Concat()                 Bit_Off()                Word_Read()
+Concat_List()            Bit_On()                 Word_List_Store()
+Size()                   bit_flip()               Word_List_Read()
+Resize()                 bit_test()               Word_Insert()
+Copy()                   Bit_Copy()               Word_Delete()
+Empty()                  LSB()                    Chunk_Store()
+Fill()                   MSB()                    Chunk_Read()
+Flip()                   lsb()                    Chunk_List_Store()
+Primes()                 msb()                    Chunk_List_Read()
+Reverse()                rotate_left()            Index_List_Remove()
+Interval_Empty()         rotate_right()           Index_List_Store()
+Interval_Fill()          shift_left()             Index_List_Read()
+Interval_Flip()          shift_right()            Union()
+Interval_Reverse()       Move_Left()              Intersection()
+Interval_Scan_inc()      Move_Right()             Difference()
+Interval_Scan_dec()      Insert()                 ExclusiveOr()
+Interval_Copy()          Delete()                 Complement()
+Interval_Substitute()    increment()              subset()
+is_empty()               decrement()              Norm()
+is_full()                add()                    Min()
+equal()                  subtract()               Max()
+Lexicompare()            Negate()                 Multiplication()
+Compare()                Absolute()               Closure()
+to_Hex()                 Sign()                   Transpose()
+from_Hex()               Multiply()
 
 
 Important note:

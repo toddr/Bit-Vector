@@ -27,13 +27,13 @@ typedef enum
 
         ErrCode_Null,     /* unable to allocate memory                       */
 
-        ErrCode_Size,     /* bit vector size mismatch error                  */
+        ErrCode_Indx,     /* index out of range                              */
+        ErrCode_Ordr,     /* minimum > maximum index                         */
+        ErrCode_Size,     /* bit vector size mismatch                        */
+        ErrCode_Pars,     /* input string syntax error                       */
+        ErrCode_Ovfl,     /* numeric overflow error                          */
         ErrCode_Same,     /* operands must be distinct                       */
-        ErrCode_Zero,     /* division by zero attempted                      */
-        ErrCode_Ovfl,     /* numerical overflow error                        */
-        ErrCode_Pars,     /* syntax error in input string                    */
-        ErrCode_Indx,     /* index out of range error                        */
-        ErrCode_Ordr      /* lower > upper index                             */
+        ErrCode_Zero      /* division by zero error                          */
     } ErrCode;
 
 /* ===> MISCELLANEOUS: <=== */
@@ -134,6 +134,8 @@ void    BitVector_Bit_Copy(wordptr addr, N_int index, boolean bit);
 
 /* ===> bit vector bit shift & rotate functions: */
 
+void    BitVector_LSB         (wordptr addr, boolean bit);
+void    BitVector_MSB         (wordptr addr, boolean bit);
 boolean BitVector_lsb         (wordptr addr);
 boolean BitVector_msb         (wordptr addr);
 boolean BitVector_rotate_left (wordptr addr);
@@ -233,7 +235,7 @@ void    Matrix_Transpose     (wordptr X, N_int rowsX, N_int colsX,
 /*  VERSION HISTORY:                                                         */
 /*****************************************************************************/
 /*                                                                           */
-/*    25.02.98    Version 5.0                                                */
+/*    01.03.98    Version 5.0                                                */
 /*    16.07.97    Version 4.2  added is_empty, is_full                       */
 /*    30.06.97    Version 4.1  added word-ins/del, move-left/right, inc/dec  */
 /*    14.04.97    Version 4.0                                                */

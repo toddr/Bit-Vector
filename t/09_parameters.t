@@ -11,8 +11,7 @@ use Bit::Vector;
 
 $prefix = 'Bit::Vector';
 
-#print "1..888\n";
-print "1..886\n";
+print "1..900\n";
 
 $n = 1;
 
@@ -78,6 +77,8 @@ $method_list{'Bit_On'}              = [ 0, 2 ];
 $method_list{'bit_flip'}            = [ 0, 2 ];
 $method_list{'bit_test'}            = [ 0, 2 ];
 $method_list{'Bit_Copy'}            = [ 0, 2, 7 ];
+$method_list{'LSB'}                 = [ 0, 7 ];
+$method_list{'MSB'}                 = [ 0, 7 ];
 $method_list{'lsb'}                 = [ 0 ];
 $method_list{'msb'}                 = [ 0 ];
 $method_list{'rotate_left'}         = [ 0 ];

@@ -27,13 +27,13 @@ typedef enum
 
         ErrCode_Null,     /* unable to allocate memory                       */
 
-        ErrCode_Size,     /* bit vector size mismatch error                  */
+        ErrCode_Indx,     /* index out of range                              */
+        ErrCode_Ordr,     /* minimum > maximum index                         */
+        ErrCode_Size,     /* bit vector size mismatch                        */
+        ErrCode_Pars,     /* input string syntax error                       */
+        ErrCode_Ovfl,     /* numeric overflow error                          */
         ErrCode_Same,     /* operands must be distinct                       */
-        ErrCode_Zero,     /* division by zero attempted                      */
-        ErrCode_Ovfl,     /* numerical overflow error                        */
-        ErrCode_Pars,     /* syntax error in input string                    */
-        ErrCode_Indx,     /* index out of range error                        */
-        ErrCode_Ordr      /* lower > upper index                             */
+        ErrCode_Zero      /* division by zero error                          */
     } ErrCode;
 
 /* ===> MISCELLANEOUS: <=== */
@@ -134,6 +134,8 @@ void    BitVector_Bit_Copy(wordptr addr, N_int index, boolean bit);
 
 /* ===> bit vector bit shift & rotate functions: */
 
+void    BitVector_LSB         (wordptr addr, boolean bit);
+void    BitVector_MSB         (wordptr addr, boolean bit);
 boolean BitVector_lsb         (wordptr addr);
 boolean BitVector_msb         (wordptr addr);
 boolean BitVector_rotate_left (wordptr addr);
@@ -1272,28 +1274,81 @@ wordptr BitVector_Interval_Substitute(wordptr X, wordptr Y,
 {
     N_word Xbits = bits_(X);
     N_word Ybits = bits_(Y);
+    N_word limit;
     N_word diff;
 
     if ((Xoffset <= Xbits) and (Yoffset <= Ybits))
     {
-        if ((Xoffset + Xlength) > Xbits) Xlength = Xbits - Xoffset;
-        if ((Yoffset + Ylength) > Ybits) Ylength = Ybits - Yoffset;
-        if (Xlength != Ylength)
+        limit = Xoffset + Xlength;
+        if (limit > Xbits)
+        {
+            limit = Xbits;
+            Xlength = Xbits - Xoffset;
+        }
+        if ((Yoffset + Ylength) > Ybits)
+        {
+            Ylength = Ybits - Yoffset;
+        }
+        if (Xlength == Ylength)
+        {
+            if ((Ylength > 0) and ((X != Y) or (Xoffset != Yoffset)))
+            {
+                BitVector_Interval_Copy(X,Y,Xoffset,Yoffset,Ylength);
+            }
+        }
+        else /* Xlength != Ylength */
         {
             if (Xlength > Ylength)
             {
                 diff = Xlength - Ylength;
-                if ((Xoffset + Xlength) < Xbits) BitVector_Delete(X,Xoffset,diff,false);
+                if (Ylength > 0) BitVector_Interval_Copy(X,Y,Xoffset,Yoffset,Ylength);
+                if (limit < Xbits) BitVector_Delete(X,Xoffset+Ylength,diff,false);
                 if ((X = BitVector_Resize(X,Xbits-diff)) == NULL) return(NULL);
             }
-            else
+            else /* Ylength > Xlength  ==>  Ylength > 0 */
             {
                 diff = Ylength - Xlength;
-                if ((X = BitVector_Resize(X,Xbits+diff)) == NULL) return(NULL);
-                if ((Xoffset + Xlength) < Xbits) BitVector_Insert(X,Xoffset,diff,false);
+                if (X != Y)
+                {
+                    if ((X = BitVector_Resize(X,Xbits+diff)) == NULL) return(NULL);
+                    if (limit < Xbits) BitVector_Insert(X,limit,diff,false);
+                    BitVector_Interval_Copy(X,Y,Xoffset,Yoffset,Ylength);
+                }
+                else /* in-place */
+                {
+                    if ((Y = X = BitVector_Resize(X,Xbits+diff)) == NULL) return(NULL);
+                    if (limit >= Xbits)
+                    {
+                        BitVector_Interval_Copy(X,Y,Xoffset,Yoffset,Ylength);
+                    }
+                    else /* limit < Xbits */
+                    {
+                        BitVector_Insert(X,limit,diff,false);
+                        if ((Yoffset+Ylength) <= limit)
+                        {
+                            BitVector_Interval_Copy(X,Y,Xoffset,Yoffset,Ylength);
+                        }
+                        else /* overlaps or lies above critical area */
+                        {
+                            if (limit <= Yoffset)
+                            {
+                                Yoffset += diff;
+                                BitVector_Interval_Copy(X,Y,Xoffset,Yoffset,Ylength);
+                            }
+                            else /* Yoffset < limit */
+                            {
+                                Xlength = limit - Yoffset;
+                                BitVector_Interval_Copy(X,Y,Xoffset,Yoffset,Xlength);
+                                Yoffset = Xoffset + Ylength; /* = limit + diff */
+                                Xoffset += Xlength;
+                                Ylength -= Xlength;
+                                BitVector_Interval_Copy(X,Y,Xoffset,Yoffset,Ylength);
+                            }
+                        }
+                    }
+                }
             }
         }
-        if (Ylength > 0) BitVector_Interval_Copy(X,Y,Xoffset,Yoffset,Ylength);
     }
     return(X);
 }
@@ -1626,7 +1681,15 @@ charptr BitVector_to_Dec(wordptr addr)
             if (loop)
             {
                 BitVector_Copy(temp,quot);
-                BitVector_Div_Pos(quot,temp,base,rest);
+                if (BitVector_Div_Pos(quot,temp,base,rest))
+                {
+                    BitVector_Dispose(result); /* emergency exit */
+                    BitVector_Destroy(quot);
+                    BitVector_Destroy(rest);   /* should never occur */
+                    BitVector_Destroy(temp);   /* under normal operation */
+                    BitVector_Destroy(base);
+                    return(NULL);
+                }
                 loop = not BitVector_is_empty(quot);
                 q = *rest;
             }
@@ -2018,6 +2081,27 @@ void BitVector_Bit_Copy(wordptr addr, N_int index, boolean bit)
     }
 }
 
+void BitVector_LSB(wordptr addr, boolean bit)
+{
+    if (bits_(addr) > 0)
+    {
+        if (bit) *addr |= LSB;
+        else     *addr &= NOT LSB;
+    }
+}
+
+void BitVector_MSB(wordptr addr, boolean bit)
+{
+    N_word size = size_(addr);
+    N_word mask = mask_(addr);
+
+    if (size-- > 0)
+    {
+        if (bit) *(addr+size) |= mask AND NOT (mask >> 1);
+        else     *(addr+size) &= NOT mask OR (mask >> 1);
+    }
+}
+
 boolean BitVector_lsb(wordptr addr)
 {
     if (size_(addr) > 0) return( (*addr AND LSB) != 0 );
@@ -2029,8 +2113,8 @@ boolean BitVector_msb(wordptr addr)
     N_word size = size_(addr);
     N_word mask = mask_(addr);
 
-    if (size > 0)
-        return( (*(addr+size-1) AND (mask AND NOT (mask >> 1))) != 0 );
+    if (size-- > 0)
+        return( (*(addr+size) AND (mask AND NOT (mask >> 1))) != 0 );
     else
         return( false );
 }
@@ -2404,11 +2488,10 @@ ErrCode BitVector_Mul_Pos(wordptr X, wordptr Y, wordptr Z)
 
 ErrCode BitVector_Multiply(wordptr X, wordptr Y, wordptr Z)
 {
+    ErrCode error;
     N_word  bit_x = bits_(X);
     N_word  bit_y = bits_(Y);
     N_word  bit_z = bits_(Z);
-    boolean zero = true;
-    boolean ok = true;
     N_word  size;
     N_word  mask;
     N_word  msb;
@@ -2418,6 +2501,7 @@ ErrCode BitVector_Multiply(wordptr X, wordptr Y, wordptr Z)
     boolean sgn_x;
     boolean sgn_y;
     boolean sgn_z;
+    boolean zero;
     wordptr A;
     wordptr B;
 
@@ -2452,9 +2536,11 @@ ErrCode BitVector_Multiply(wordptr X, wordptr Y, wordptr Z)
         if (sgn_z) BitVector_Negate(B,Z); else BitVector_Copy(B,Z);
         ptr_y = A + size;
         ptr_z = B + size;
+        zero = true;
         while (zero and (size-- > 0))
         {
-            zero = ((*(--ptr_y) == 0) and (*(--ptr_z) == 0));
+            zero &= (*(--ptr_y) == 0);
+            zero &= (*(--ptr_z) == 0);
         }
         mask  = mask_(X);
         msb   = (mask AND NOT (mask >> 1));
@@ -2466,8 +2552,8 @@ ErrCode BitVector_Multiply(wordptr X, wordptr Y, wordptr Z)
                 A = BitVector_Resize(A,bit_x);
                 if (A == NULL) { BitVector_Destroy(B); return(ErrCode_Null); }
             }
-            ok = ((BitVector_Mul_Pos(X,A,B) == ErrCode_Ok) and
-                ((*ptr_x AND msb) == 0));
+            if ((not (error = BitVector_Mul_Pos(X,A,B))) and
+                ((*ptr_x AND msb) != 0)) error = ErrCode_Ovfl;
         }
         else
         {
@@ -2476,14 +2562,14 @@ ErrCode BitVector_Multiply(wordptr X, wordptr Y, wordptr Z)
                 B = BitVector_Resize(B,bit_x);
                 if (B == NULL) { BitVector_Destroy(A); return(ErrCode_Null); }
             }
-            ok = ((BitVector_Mul_Pos(X,B,A) == ErrCode_Ok) and
-               ((*ptr_x AND msb) == 0));
+            if ((not (error = BitVector_Mul_Pos(X,B,A))) and
+                ((*ptr_x AND msb) != 0)) error = ErrCode_Ovfl;
         }
-        if (ok and sgn_x) BitVector_Negate(X,X);
+        if ((not error) and sgn_x) BitVector_Negate(X,X);
         BitVector_Destroy(A);
         BitVector_Destroy(B);
     }
-    if (ok) return(ErrCode_Ok); else return(ErrCode_Ovfl);
+    return(error);
 }
 
 ErrCode BitVector_Div_Pos(wordptr Q, wordptr X, wordptr Y, wordptr R)
@@ -2541,6 +2627,7 @@ ErrCode BitVector_Div_Pos(wordptr Q, wordptr X, wordptr Y, wordptr R)
 
 ErrCode BitVector_Divide(wordptr Q, wordptr X, wordptr Y, wordptr R)
 {
+    ErrCode error;
     N_word  bits = bits_(Q);
     N_word  size = size_(Q);
     N_word  mask = mask_(Q);
@@ -2588,17 +2675,20 @@ ErrCode BitVector_Divide(wordptr Q, wordptr X, wordptr Y, wordptr R)
         sgn_q = sgn_x XOR sgn_y;
         if (sgn_x) BitVector_Negate(A,X); else BitVector_Copy(A,X);
         if (sgn_y) BitVector_Negate(B,Y); else BitVector_Copy(B,Y);
-        BitVector_Div_Pos(Q,A,B,R);
-        if (sgn_q) BitVector_Negate(Q,Q);
-        if (sgn_x) BitVector_Negate(R,R);
+        if (not (error = BitVector_Div_Pos(Q,A,B,R)))
+        {
+            if (sgn_q) BitVector_Negate(Q,Q);
+            if (sgn_x) BitVector_Negate(R,R);
+        }
         BitVector_Destroy(A);
         BitVector_Destroy(B);
     }
-    return(ErrCode_Ok);
+    return(error);
 }
 
 ErrCode BitVector_GCD(wordptr X, wordptr Y, wordptr Z)
 {
+    ErrCode error = ErrCode_Ok;
     N_word  bits = bits_(X);
     N_word  size = size_(X);
     N_word  mask = mask_(X);
@@ -2653,21 +2743,23 @@ ErrCode BitVector_GCD(wordptr X, wordptr Y, wordptr Z)
     else                                    BitVector_Copy(A,Y);
     if (((*(Z+size) &= mask) AND msb) != 0) BitVector_Negate(B,Z);
     else                                    BitVector_Copy(B,Z);
-    while (true)
+    while (not error)
     {
-        BitVector_Div_Pos(Q,A,B,R);
-        if (BitVector_is_empty(R)) break;
-        T = A;
-        A = B;
-        B = R;
-        R = T;
+        if (not (error = BitVector_Div_Pos(Q,A,B,R)))
+        {
+            if (BitVector_is_empty(R)) break;
+            T = A;
+            A = B;
+            B = R;
+            R = T;
+        }
     }
-    BitVector_Copy(X,B);
+    if (not error) BitVector_Copy(X,B);
     BitVector_Destroy(Q);
     BitVector_Destroy(R);
     BitVector_Destroy(A);
     BitVector_Destroy(B);
-    return(ErrCode_Ok);
+    return(error);
 }
 
 void BitVector_Block_Store(wordptr addr, charptr buffer, N_int length)
@@ -3167,7 +3259,7 @@ void Matrix_Transpose(wordptr X, N_int rowsX, N_int colsX,
 /*  VERSION HISTORY:                                                         */
 /*****************************************************************************/
 /*                                                                           */
-/*    25.02.98    Version 5.0                                                */
+/*    01.03.98    Version 5.0                                                */
 /*    16.07.97    Version 4.2  added is_empty, is_full                       */
 /*    30.06.97    Version 4.1  added word-ins/del, move-left/right, inc/dec  */
 /*    14.04.97    Version 4.0                                                */

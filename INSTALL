@@ -128,7 +128,7 @@ tree!!
     t/28__chunklist.....ok
     t/30_overloaded.....ok
     All tests successful.
-    Files=19,  Tests=67045, 175 secs (116.02 cusr  5.53 csys = 121.55 cpu)
+    Files=19,  Tests=67061, 173 secs (116.80 cusr  5.01 csys = 121.80 cpu)
 
     (Note that the exact number of tests will depend on the number of bits
      of a machine word/an unsigned long on your system!)

@@ -915,9 +915,9 @@ All methods are implemented in C internally for maximum performance.
 The module also provides overloaded arithmetic and relational operators
 for maximum ease of use (Perl only).
 
-(Note that - of course - there is a little speed penalty to pay for
+Note that there is (of course) a little speed penalty to pay for
 overloaded operators. If speed is crucial, use the methods of this
-module directly instead of their corresponding overloaded operators!)
+module directly instead of their corresponding overloaded operators!
 
 =head1 SYNOPSIS
 
@@ -1071,6 +1071,12 @@ module directly instead of their corresponding overloaded operators!)
 
   Bit_Copy
       $vector->Bit_Copy($index,$bit);
+
+  LSB (least significant bit)
+      $vector->LSB($bit);
+
+  MSB (most significant bit)
+      $vector->MSB($bit);
 
   lsb (least significant bit)
       $bit = $vector->lsb();
@@ -1846,9 +1852,9 @@ even though this is probably considered to be "politically incorrect"
 by OO ("object-orientation") aficionados. ;-)
 
 So even if you are too lazy to type "C<Bit::Vector-E<gt>>" instead of
-"C<$vec1-E<gt>>" (and even though laziness is a programmer's virtue),
-maybe it is better not to use this feature if you don't want to get
-booed at. ;-)
+"C<$vec1-E<gt>>" (and even though laziness is - allegedly - a programmer's
+virtue C<:-)>), maybe it is better not to use this feature if you don't
+want to get booed at. ;-)
 
 =item *
 
@@ -1885,8 +1891,8 @@ will also have length zero.
 
 C<$vector = $vec1-E<gt>Concat_List($vec2,$vec3,...);>
 
-This is an alternative way of calling this class method as though it
-was an object method.
+This is an alternative way of calling this (class) method as an
+object method.
 
 The method returns a new bit vector object which is the result of
 the concatenation of the contents of C<$vec1 . $vec2 . $vec3 . ...>
@@ -2010,7 +2016,7 @@ Note that in-place processing is also possible, i.e.,
 "C<$vec1>" and "C<$vec2>" may be identical.
 
 (Internally, this is the same as
-C<$vec1-E<gt>Interval_Reverse(0,$vec1->Size()-1);>.)
+C<$vec1-E<gt>Interval_Reverse(0,$vec1-E<gt>Size()-1);>.)
 
 =item *
 
@@ -2146,8 +2152,8 @@ C<$vec2-E<gt>Interval_Copy($vec1,$offset2,$offset1,$length);>
 
 This method allows you to copy a stretch of contiguous bits (starting
 at any position "C<$offset1>" you choose, with a length of "C<$length>"
-bits) from a given source bit vector "C<$vec1>" to another position
-"C<$offset2>" in a target bit vector "C<$vec2>".
+bits) from a given "source" bit vector "C<$vec1>" to another position
+"C<$offset2>" in a "target" bit vector "C<$vec2>".
 
 Note that the two bit vectors "C<$vec1>" and "C<$vec2>" do B<NOT>
 need to have the same (matching) size!
@@ -2187,13 +2193,98 @@ copied themselves.
 
 C<$vec2-E<gt>Interval_Substitute($vec1,$off2,$len2,$off1,$len1);>
 
+This method is (roughly) the same for bit vectors (i.e., arrays
+of booleans) as what the "splice" function in Perl is for lists
+(i.e., arrays of scalars).
 
+(See L<perlfunc/splice> for more details about this function.)
+
+The method allows you to substitute a stretch of contiguous bits
+(defined by a position (offset) "C<$off1>" and a length of "C<$len1>"
+bits) from a given "source" bit vector "C<$vec1>" for a different
+stretch of contiguous bits (defined by a position (offset) "C<$off2>"
+and a length of "C<$len2>" bits) in another, "target" bit vector
+"C<$vec2>".
 
 Note that the two bit vectors "C<$vec1>" and "C<$vec2>" do B<NOT>
 need to have the same (matching) size!
 
-Note that this is the only method - except for "C<Resize()>", of course -
-which changes the size of the given (target) bit vector (when appropriate).
+Note further that "C<$off1>" and "C<$off2>" must lie within the
+range "C<0>" and, respectively, "C<$vec1-E<gt>Size()>" or
+"C<$vec2-E<gt>Size()>", or a fatal "offset out of range" error
+will occur.
+
+Alert readers will have noticed that these upper limits are B<NOT>
+"C<$vec1-E<gt>Size()-1>" and "C<$vec2-E<gt>Size()-1>", as they would
+be for any other method in this module, but that these offsets may
+actually point to one position B<PAST THE END> of the corresponding
+bit vector.
+
+This is necessary in order to make it possible to B<APPEND> a given
+stretch of bits to the target bit vector instead of B<REPLACING>
+something in it.
+
+For reasons of symmetry and generality, the same applies to the offset
+in the source bit vector, even though such an offset (one position past
+the end of the bit vector) does not serve any practical purpose there
+(but does not cause any harm either).
+
+(Actually this saves you from the need of testing for this special case,
+in certain circumstances.)
+
+Note that whenever the term "C<$off1 + $len1>" exceeds the size
+"C<$vec1-E<gt>Size()>" of bit vector "C<$vec1>" (or if "C<$off2 + $len2>"
+exceeds "C<$vec2-E<gt>Size()>"), the corresponding length ("C<$len1>"
+or "C<$len2>", respectively) is automatically reduced internally
+so that "C<$off1 + $len1 E<lt>= $vec1-E<gt>Size()>" (and
+"C<$off2 + $len2 E<lt>= $vec2-E<gt>Size()>") holds.
+
+(Note that this does B<NOT> alter the intended result, even though
+this may seem counter-intuitive at first!)
+
+This may even result in a length ("C<$len1>" or "C<$len2>") of zero.
+
+A length of zero for the interval in the B<SOURCE> bit vector
+("C<$len1 == 0>") means that the indicated stretch of bits in
+the target bit vector (starting at position "C<$off2>") is to
+be replaced by B<NOTHING>, i.e., is to be B<DELETED>.
+
+A length of zero for the interval in the B<TARGET> bit vector
+("C<$len2> == 0") means that B<NOTHING> is replaced, and that the
+stretch of bits from the source bit vector is simply B<INSERTED>
+into the target bit vector at the indicated position ("C<$off2>").
+
+If both length parameters are zero, nothing is done at all.
+
+Note that in contrast to any other method in this module (especially
+"C<Interval_Copy()>", "C<Insert()>" and "C<Delete()>"), this method
+B<IMPLICITLY> and B<AUTOMATICALLY> adapts the length of the resulting
+bit vector as needed, as given by
+
+        $size = $vec2->Size();   #  before
+        $size += $len1 - $len2;  #  after
+
+(The only other method in this module that changes the size of a bit
+vector is the method "C<Resize()>".)
+
+In other words, replacing a given interval of bits in the target bit
+vector with a longer or shorter stretch of bits from the source bit
+vector, or simply inserting ("C<$len2 == 0>") a stretch of bits into
+or deleting ("C<$len1 == 0>") an interval of bits from the target bit
+vector will automatically increase or decrease, respectively, the size
+of the target bit vector accordingly.
+
+For the sake of generality, this may even result in a bit vector with
+a size of zero (containing no bits at all).
+
+This is also the reason why bit vectors of length zero are permitted
+in this module in the first place, starting with version 5.0.
+
+Finally, note that "C<$vec1>" and "C<$vec2>" may be identical, i.e.,
+in-place processing is possible.
+
+(If you think about that for a while or if you look at the code,
+you will see that this is far from trivial!)
 
 =item *
 
@@ -2208,6 +2299,9 @@ the number stored in the bit vector is zero ("C<0>").
 Returns "true" ("C<1>") if the bit vector is empty and "false" ("C<0>")
 otherwise.
 
+Note that this method also returns "true" ("C<1>") if the given bit
+vector has a length of zero, i.e., if it contains no bits at all.
+
 =item *
 
 C<if ($vector-E<gt>is_full())>
@@ -2220,6 +2314,9 @@ the number stored in the bit vector is minus one ("-1").
 
 Returns "true" ("C<1>") if the bit vector is full and "false" ("C<0>")
 otherwise.
+
+If the given bit vector has a length of zero (i.e., if it contains
+no bits at all), this method returns "false" ("C<0>").
 
 =item *
 
@@ -2272,12 +2369,16 @@ Moreover, in order to simplify the conversion, the unused bits in
 the bit vector (if any) are also converted, which may produce some
 extra (but innocuous) leading hexadecimal zeros.
 
+Finally, note that the B<LEAST> significant hexadecimal digit is
+located at the B<RIGHT> end of the resulting string, and the B<MOST>
+significant digit at the B<LEFT> end.
+
 =item *
 
 C<$vector-E<gt>from_Hex($string);>
 
 Allows to read in the contents of a bit vector from a hexadecimal
-string, such as returned by the method "to_Hex()" (see above).
+string, such as returned by the method "C<to_Hex()>" (see above).
 
 Remember that the least significant bits are always to the right of a
 hexadecimal string, and the most significant bits to the left. Therefore,
@@ -2305,15 +2406,65 @@ size, i.e., as much of it as will fit.
 
 If during the process of reading the given string any character is
 encountered which is not a hexadecimal digit, a fatal syntax error
-ensues.
+ensues ("input string syntax error").
 
 =item *
 
 C<$string = $vector-E<gt>to_Bin();>
 
+Returns a binary string representing the given bit vector.
+
+Example:
+
+  $vector = Bit::Vector->new(8);
+  $vector->Primes();
+  $string = $vector->to_Bin();
+  print "'$string'\n";
+
+This prints:
+
+  '10101100'
+
+(Bits #7, #5, #3 and #2 are set.)
+
+Note that the B<LEAST> significant bit is located at the B<RIGHT>
+end of the resulting string, and the B<MOST> significant bit at
+the B<LEFT> end.
+
 =item *
 
 C<$vector-E<gt>from_Bin($string);>
+
+This method allows you to read in the contents of a bit vector from a
+binary string, such as returned by the method "C<to_Bin()>" (see above).
+
+Note that this method assumes that the B<LEAST> significant bit is located at
+the B<RIGHT> end of the binary string, and the B<MOST> significant bit at the
+B<LEFT> end. Therefore, the string is actually read in from right to left
+while the bit vector is filled accordingly, one bit at a time, starting with
+the least significant bit and going upward to the most significant bit.
+
+If the given string contains less binary digits ("C<0>" and "C<1>") than are
+needed to completely fill the given bit vector, the remaining (most significant)
+bits are all cleared.
+
+This also means that, even if the given string does not contain enough digits
+to completely fill the given bit vector, the previous contents of the
+bit vector are erased completely.
+
+If the given string is longer than it needs to fill the given bit vector,
+the superfluous characters are simply ignored.
+
+(In fact they are ignored completely - they are not even checked for
+proper syntax. See also below for more about that.)
+
+This behaviour is intentional so that you may read in the string
+representing one bit vector into another bit vector of different
+size, i.e., as much of it as will fit.
+
+If during the process of reading the given string any character is
+encountered which is not either "C<0>" or "C<1>", a fatal syntax error
+ensues ("input string syntax error").
 
 =item *
 
@@ -2321,6 +2472,12 @@ C<$string = $vector-E<gt>to_Dec();>
 
 This method returns a string representing the contents of the given bit
 vector converted to decimal (base C<10>).
+
+Note that this method assumes the given bit vector to be B<SIGNED> (and
+to contain a number in two's complement binary representation).
+
+Consequently, whenever the most significant bit of the given bit vector
+is set, the number stored in it is regarded as being B<NEGATIVE>.
 
 The resulting string can be fed into "C<from_Dec()>" (see below) in order
 to copy the contents of this bit vector to another one (or to restore the
@@ -2333,12 +2490,12 @@ since the bit vector has to be repeatedly divided by C<10> with remainder
 until the quotient becomes C<0> (each remainder in turn represents a single
 decimal digit of the resulting string).
 
-This is also true for this method, even though considerable effort has been
-put into its implementation in order to speed it up: instead of repeatedly
-dividing by C<10>, the bit vector is repeatedly divided by the largest power
-of C<10> that will fit into a machine word. The remainder is then repeatedly
-divided by C<10> using only machine word arithmetics, which is much faster
-than dividing the whole bit vector ("divide and rule" principle).
+This is also true for the implementation of this method in this module,
+even though a considerable effort has been made to speed it up: instead of
+repeatedly dividing by C<10>, the bit vector is repeatedly divided by the
+largest power of C<10> that will fit into a machine word. The remainder is
+then repeatedly divided by C<10> using only machine word arithmetics, which
+is much faster than dividing the whole bit vector ("divide and rule" principle).
 
 According to my own measurements, this resulted in an 8-fold speed increase
 over the straightforward approach.
@@ -2348,11 +2505,30 @@ Still, conversion to decimal should be used only where absolutely necessary.
 Keep the resulting string stored in some variable if you need it again,
 instead of converting the bit vector all over again.
 
+Beware that if you set the configuration for overloaded operators to
+"output=decimal", this method will be called for every bit vector
+enclosed in double quotes!
+
 =item *
 
 C<$vector-E<gt>from_Dec($string);>
 
+This method allows you to convert a given decimal number, which may be
+positive or negative, into two's complement binary representation, which
+is then stored in the given bit vector.
 
+The decimal number should always be provided as a string, to avoid possible
+truncation (due to the limited precision of integers in Perl) or formatting
+(due to Perl's use of scientific notation for large numbers), which would
+lead to errors.
+
+If the binary representation of the given decimal number is too big to fit
+into the given bit vector (if the given bit vector does not contain enough
+bits to hold it), a fatal "numeric overflow error" occurs.
+
+If the input string contains other characters than decimal digits (C<0-9>)
+and an optional leading sign ("C<+>" or "C<->"), a fatal "input string
+syntax error" occurs.
 
 If possible program abortion is unwanted or intolerable, use
 "C<eval>", like this:
@@ -2372,6 +2548,29 @@ There are four possible error messages:
   if ($@ =~ /numeric overflow error/)
 
   if ($@ =~ /unable to allocate memory/)
+
+Note that the conversion from decimal to binary is costly in terms of
+processing time, since a lot of multiplications have to be carried out
+(in principle, each decimal digit must be multiplied with the binary
+representation of the power of C<10> corresponding to its position in
+the decimal number, i.e., 1, 10, 100, 1000, 10000 and so on).
+
+This is not as time consuming as the opposite conversion, from binary
+to decimal (where successive divisions have to be carried out, which
+are even more expensive than multiplications), but still noticeable.
+
+Again (as in the case of "C<to_Dec()>"), the implementation of this
+method in this module uses the principle of "divide and rule" in order
+to speed up the conversion, i.e., as many decimal digits as possible
+are first accumulated (converted) in a machine word and only then
+stored in the given bit vector.
+
+Even so, use this method only where absolutely necessary if speed is
+an important consideration in your application.
+
+Beware that if you set the configuration for overloaded operators to
+"input=decimal", this method will be called for every scalar operand
+you use!
 
 =item *
 
@@ -2399,7 +2598,7 @@ If the given bit vector is empty, the resulting string will
 also be empty.
 
 Note, by the way, that the above example can also be written
-a little handier, as follows:
+a little handier, perhaps, as follows:
 
   Bit::Vector->Configuration("out=enum");
   $vector = Bit::Vector->new(20);
@@ -2417,18 +2616,19 @@ The string "C<$string>" must only contain unsigned integers
 or ranges of integers (two unsigned integers separated by a
 dash "-"), separated by commas (",").
 
-All other characters are disallowed (including white space)
-and will lead to a fatal syntax error.
+All other characters are disallowed (including white space!)
+and will lead to a fatal "input string syntax error".
 
-In each range, the first integer must always be less than
-or equal to the second one.
+In each range, the first integer (the lower limit of the range)
+must always be less than or equal to the second integer (the
+upper limit), or a fatal "minimum > maximum index" error occurs.
 
 All integers must lie in the permitted range for the given
 bit vector, i.e., they must lie between "C<0>" and
 "C<$vector-E<gt>Size()-1>".
 
-If these conditions are not met, an appropriate error message
-is issued and program execution is aborted.
+If this condition is not met, a fatal "index out of range"
+error occurs.
 
 If possible program abortion is unwanted or intolerable, use
 "C<eval>", like this:
@@ -2502,6 +2702,25 @@ C<$vector-E<gt>Bit_Copy($index,$bit);>
 
 Sets the bit with index "C<$index>" in the given vector either
 to "C<0>" or "C<1>" depending on the boolean value "C<$bit>".
+
+=item *
+
+C<$vector-E<gt>LSB($bit);>
+
+Allows you to set the least significant bit in the given bit
+vector to the value given by the boolean parameter "C<$bit>".
+
+This is a (faster) shortcut for "C<$vector-E<gt>Bit_Copy(0,$bit);>".
+
+=item *
+
+C<$vector-E<gt>MSB($bit);>
+
+Allows you to set the most significant bit in the given bit
+vector to the value given by the boolean parameter "C<$bit>".
+
+This is a (faster) shortcut for
+"C<$vector-E<gt>Bit_Copy($vector-E<gt>Size()-1,$bit);>".
 
 =item *
 
@@ -2628,7 +2847,16 @@ this straightforward approach.
 
 C<$vector-E<gt>Insert($offset,$bits);>
 
+This method inserts "C<$bits>" fresh new bits at position "C<$offset>"
+in the given bit vector.
 
+The "C<$bits>" most significant bits are lost, and all bits starting
+with bit number "C<$offset>" up to and including bit number
+"C<$vector-E<gt>Size()-$bits-1>" are moved up by "C<$bits>" places.
+
+The now vacant "C<$bits>" bits starting at bit number "C<$offset>"
+(up to and including bit number "C<$offset+$bits-1>") are then set
+to zero (cleared).
 
 Note that this method does B<NOT> increase the size of the given bit
 vector, i.e., the bit vector is B<NOT> extended at its upper end to
@@ -2636,30 +2864,59 @@ vector, i.e., the bit vector is B<NOT> extended at its upper end to
 these bits are lost forever.
 
 If you don't want this to happen, you have to increase the size of the
-given bit vector first B<EXPLICITLY> with a statement such as
+given bit vector B<EXPLICITLY> and B<BEFORE> you perform the "Insert"
+operation, with a statement such as the following:
 
   $vector->Resize($vector->Size() + $bits);
 
-B<BEFORE> you perform the "Insert" operation.
+Or use the method "C<Interval_Substitute()>" instead of "C<Insert()>",
+which performs automatic growing and shrinking of its target bit vector.
+
+Note also that "C<$offset>" must lie in the permitted range between
+"C<0>" and "C<$vector-E<gt>Size()-1>", or a fatal "offset out of range"
+error will occur.
+
+If the term "C<$offset + $bits>" exceeds "C<$vector-E<gt>Size()-1>",
+all the bits starting with bit number "C<$offset>" up to bit number
+"C<$vector-E<gt>Size()-1>" are simply cleared.
 
 =item *
 
 C<$vector-E<gt>Delete($offset,$bits);>
 
+This method deletes, i.e., removes the bits starting at position
+"C<$offset>" up to and including bit number "C<$offset+$bits-1>"
+from the given bit vector.
 
+The remaining uppermost bits (starting at position "C<$offset+$bits>"
+up to and including bit number "C<$vector-E<gt>Size()-1>") are moved
+down by "C<$bits>" places.
+
+The now vacant uppermost (most significant) "C<$bits>" bits are then
+set to zero (cleared).
 
 Note that this method does B<NOT> decrease the size of the given bit
 vector, i.e., the bit vector is B<NOT> clipped at its upper end to
-"get rid of" the "C<$bits>" uppermost (most significant) bits which
-are "unused" after the "Delete" operation.
+"get rid of" the vacant "C<$bits>" uppermost bits.
 
 If you don't want this, i.e., if you want the bit vector to shrink
-accordingly, you have to do so B<EXPLICITLY>, B<AFTER> the "Delete"
+accordingly, you have to do so B<EXPLICITLY> and B<AFTER> the "Delete"
 operation, with a couple of statements such as these:
 
   $size = $vector->Size();
   if ($bits > $size) { $bits = $size; }
   $vector->Resize($size - $bits);
+
+Or use the method "C<Interval_Substitute()>" instead of "C<Delete()>",
+which performs automatic growing and shrinking of its target bit vector.
+
+Note also that "C<$offset>" must lie in the permitted range between
+"C<0>" and "C<$vector-E<gt>Size()-1>", or a fatal "offset out of range"
+error will occur.
+
+If the term "C<$offset + $bits>" exceeds "C<$vector-E<gt>Size()-1>",
+all the bits starting with bit number "C<$offset>" up to bit number
+"C<$vector-E<gt>Size()-1>" are simply cleared.
 
 =item *
 
@@ -2717,86 +2974,636 @@ bit vector can assume.
 
 C<$carry = $vec3-E<gt>add($vec1,$vec2,$carry);>
 
+This method adds the two numbers contained in bit vector "C<$vec1>"
+and "C<$vec2>" with carry "C<$carry>" and stores the result in
+bit vector "C<$vec3>".
+
+I.e.,
+            $vec3 = $vec1 + $vec2 + $carry
+
+Note that the "C<$carry>" parameter is a boolean value, i.e.,
+only its least significant bit is taken into account. (Think of
+it as though "C<$carry &= 1;>" was always executed internally.)
+
+The method returns a boolean value which indicates if a carry-over
+(to the next higher bit) has occured.
+
+The carry in- and output is needed mainly for cascading, i.e.,
+to add numbers that are fragmented into several pieces.
+
+Example:
+
+  # initialize
+
+  for ( $i = 0; $i < $n; $i++ )
+  {
+      $a[$i] = Bit::Vector->new($bits);
+      $b[$i] = Bit::Vector->new($bits);
+      $c[$i] = Bit::Vector->new($bits);
+  }
+
+  # fill @a and @b
+
+  # $a[  0 ] is low order part,
+  # $a[$n-1] is high order part,
+  # and same for @b
+
+  # add
+
+  $carry = 0;
+  for ( $i = 0; $i < $n; $i++ )
+  {
+      $carry = $c[$i]->add($a[$i],$b[$i],$carry);
+  }
+
+Note that it makes no difference to this method wether the numbers
+in "C<$vec1>" and "C<$vec2>" are unsigned or signed (i.e., in two's
+complement binary representation).
+
+Note however that the return value (carry-over) is not meaningful
+when the numbers are B<SIGNED>.
+
+Moreover, when the numbers are signed, a special type of error can
+occur which is commonly called an "overflow error".
+
+An overflow error occurs when the sign of the result (its most
+significant bit) is flipped (i.e., falsified) by a carry-over
+from the next-lower bit position.
+
+It is your own responsibility to make sure that no overflow error
+occurs if the numbers are signed.
+
+To make absolutely sure that no overflow error can occur, make
+your bit vectors at least one bit longer than the largest number
+you wish to represent needs, right from the start, or proceed as
+follows:
+
+    $msb1 = $vec1->msb();
+    $msb2 = $vec2->msb();
+    $vec1->Resize($vec1->Size()+1);
+    $vec2->Resize($vec2->Size()+1);
+    $vec3->Resize($vec3->Size()+1);
+    $vec1->MSB($msb1);
+    $vec2->MSB($msb2);
+    $c_o = $vec3->add($vec1,$vec2,$c_i);
+
 =item *
 
 C<$carry = $vec3-E<gt>subtract($vec1,$vec2,$carry);>
+
+This method subtracts the two numbers contained in bit vector
+"C<$vec1>" and "C<$vec2>" with carry "C<$carry>" and stores the
+result in bit vector "C<$vec3>".
+
+I.e.,
+            $vec3 = $vec1 - $vec2 - $carry
+
+Note that the "C<$carry>" parameter is a boolean value, i.e.,
+only its least significant bit is taken into account. (Think of
+it as though "C<$carry &= 1;>" was always executed internally.)
+
+The method returns a boolean value which indicates if a carry-over
+(to the next higher bit) has occured.
+
+The carry in- and output is needed mainly for cascading, i.e.,
+to subtract numbers that are fragmented into several pieces.
+
+Example:
+
+  # initialize
+
+  for ( $i = 0; $i < $n; $i++ )
+  {
+      $a[$i] = Bit::Vector->new($bits);
+      $b[$i] = Bit::Vector->new($bits);
+      $c[$i] = Bit::Vector->new($bits);
+  }
+
+  # fill @a and @b
+
+  # $a[  0 ] is low order part,
+  # $a[$n-1] is high order part,
+  # and same for @b
+
+  # subtract
+
+  $carry = 0;
+  for ( $i = 0; $i < $n; $i++ )
+  {
+      $carry = $c[$i]->subtract($a[$i],$b[$i],$carry);
+  }
+
+Note that it makes no difference to this method wether the numbers
+in "C<$vec1>" and "C<$vec2>" are unsigned or signed (i.e., in two's
+complement binary representation).
+
+Note however that the return value (carry-over) is not meaningful
+when the numbers are B<SIGNED>.
+
+Moreover, when the numbers are signed, a special type of error can
+occur which is commonly called an "overflow error".
+
+An overflow error occurs when the sign of the result (its most
+significant bit) is flipped (i.e., falsified) by a carry-over
+from the next-lower bit position.
+
+It is your own responsibility to make sure that no overflow error
+occurs if the numbers are signed.
+
+To make absolutely sure that no overflow error can occur, make
+your bit vectors at least one bit longer than the largest number
+you wish to represent needs, right from the start, or proceed as
+follows:
+
+    $msb1 = $vec1->msb();
+    $msb2 = $vec2->msb();
+    $vec1->Resize($vec1->Size()+1);
+    $vec2->Resize($vec2->Size()+1);
+    $vec3->Resize($vec3->Size()+1);
+    $vec1->MSB($msb1);
+    $vec2->MSB($msb2);
+    $c_o = $vec3->subtract($vec1,$vec2,$c_i);
 
 =item *
 
 C<$vec2-E<gt>Negate($vec1);>
 
+This method calculates the two's complement of the number in bit
+vector "C<$vec1>" and stores the result in bit vector "C<$vec2>".
+
+Calculating the two's complement of a given number in binary representation
+consists of inverting all bits and incrementing the result by one.
+
+This is the same as changing the sign of the given number from "C<+>" to
+"C<->" or vice-versa. In other words, applying this method twice on a given
+number yields the original number again.
+
+Note that in-place processing is also possible, i.e., "C<$vec1>" and
+"C<$vec2>" may be identical.
+
+Most importantly, beware that this method produces a counter-intuitive
+result if the number contained in bit vector "C<$vec1>" is C<2 ^ (n-1)>
+(i.e., "1000...0000"), where "C<n>" is the number of bits the given bit
+vector contains: The negated value of this number is the number itself!
+
 =item *
 
 C<$vec2-E<gt>Absolute($vec1);>
+
+Depending on the sign (i.e., the most significant bit) of the number in
+bit vector "C<$vec1>", the contents of bit vector "C<$vec1>" are copied
+to bit vector "C<$vec2>" either with the method "C<Copy()>" (if the number
+in bit vector "C<$vec1>" is positive), or with "C<Negate()>" (if the number
+in bit vector "C<$vec1>" is negative).
+
+In other words, this method calculates the absolute value of the number
+in bit vector "C<$vec1>" and stores the result in bit vector "C<$vec2>".
+
+Note that in-place processing is also possible, i.e., "C<$vec1>" and
+"C<$vec2>" may be identical.
+
+Most importantly, beware that this method produces a counter-intuitive
+result if the number contained in bit vector "C<$vec1>" is C<2 ^ (n-1)>
+(i.e., "1000...0000"), where "C<n>" is the number of bits the given bit
+vector contains: The absolute value of this number is the number itself,
+even though this number is still negative by definition (the most
+significant bit is still set)!
 
 =item *
 
 C<$sign = $vector-E<gt>Sign();>
 
+This method returns "C<0>" if all bits in the given bit vector are cleared,
+i.e., if the given bit vector contains the number "C<0>", or if the given
+bit vector has a length of zero (contains no bits at all).
+
+If not all bits are cleared, this method returns "C<-1>" if the most
+significant bit is set (i.e., if the bit vector contains a negative
+number), or "C<1>" otherwise (i.e., if the bit vector contains a
+positive number).
+
 =item *
 
 C<$vec3-E<gt>Multiply($vec1,$vec2);>
+
+This method multiplies the two numbers contained in bit vector "C<$vec1>"
+and "C<$vec2>" and stores the result in bit vector "C<$vec3>".
+
+Note that this method regards its arguments as B<SIGNED>.
+
+If you want to make sure that a large number can never be treated as being
+negative by mistake, make your bit vectors at least one bit longer than the
+largest number you wish to represent, right from the start, or proceed as
+follows:
+
+    $msb1 = $vec1->msb();
+    $msb2 = $vec2->msb();
+    $vec1->Resize($vec1->Size()+1);
+    $vec2->Resize($vec2->Size()+1);
+    $vec3->Resize($vec3->Size()+1);
+    $vec1->MSB($msb1);
+    $vec2->MSB($msb2);
+    $vec3->Multiply($vec1,$vec2);
+
+Note also that all three bit vector arguments must in principle obey the
+rule of matching sizes, but that the bit vector "C<$vec3>" may be larger
+than the two factors "C<$vec1>" and "C<$vec2>".
+
+In fact multiplying two binary numbers with "C<n>" bits may yield a result
+which is at most "C<2n>" bits long.
+
+Therefore, it is usually a good idea to let bit vector "C<$vec3>" have
+twice the size of bit vector "C<$vec1>" and "C<$vec2>", unless you are
+absolutely sure that the result will fit into a bit vector of the same
+size as the two factors.
+
+If you are wrong, a fatal "numeric overflow error" will occur.
+
+Finally, note that in-place processing is possible, i.e., "C<$vec3>"
+may be identical with "C<$vec1>" or "C<$vec2>", or both.
 
 =item *
 
 C<$quot-E<gt>Divide($vec1,$vec2,$rest);>
 
+This method divides the two numbers contained in bit vector "C<$vec1>"
+and "C<$vec2>" and stores the quotient in bit vector "C<$quot>" and
+the remainder in bit vector "C<$rest>".
+
+I.e.,
+            $quot = $vec1 / $vec2;  #  div
+            $rest = $vec1 % $vec2;  #  mod
+
+Therefore, "C<$quot>" and "C<$rest>" must be two B<DISTINCT> bit vectors,
+or a fatal "Q and R must be distinct" error will occur.
+
+Note also that a fatal "division by zero error" will occur if "C<$vec2>"
+is equal to zero.
+
+Note further that this method regards its arguments as B<SIGNED>.
+
+If you want to make sure that a large number can never be treated as being
+negative by mistake, make your bit vectors at least one bit longer than the
+largest number you wish to represent, right from the start, or proceed as
+follows:
+
+    $msb1 = $vec1->msb();
+    $msb2 = $vec2->msb();
+    $vec1->Resize($vec1->Size()+1);
+    $vec2->Resize($vec2->Size()+1);
+    $quot->Resize($quot->Size()+1);
+    $rest->Resize($rest->Size()+1);
+    $vec1->MSB($msb1);
+    $vec2->MSB($msb2);
+    $quot->Divide($vec1,$vec2,$rest);
+
+Finally, note that in-place processing is possible, i.e., "C<$quot>"
+may be identical with "C<$vec1>" or "C<$vec2>" or both, and "C<$rest>"
+may also be identical with "C<$vec1>" or "C<$vec2>" or both, as long
+as "C<$quot>" and "C<$rest>" are distinct. (!)
+
 =item *
 
 C<$vec3-E<gt>GCD($vec1,$vec2);>
+
+This method calculates the "Greatest Common Divisor" of the two numbers
+contained in bit vector "C<$vec1>" and "C<$vec2>" and stores the result
+in bit vector "C<$vec3>".
+
+The method uses Euklid's algorithm internally:
+
+    int GCD(int a, int b)
+    {
+        int t;
+
+        while (b != 0)
+        {
+            t = a % b; /* = remainder of (a div b) */
+            a = b;
+            b = t;
+        }
+        return(a);
+    }
+
+Note that a fatal "division by zero error" will occur if any of the two
+numbers is equal to zero.
 
 =item *
 
 C<$vector-E<gt>Block_Store($buffer);>
 
+This method allows you to load the contents of a given bit vector in
+one go.
+
+This is useful when you store the contents of a bit vector in a file,
+for instance (using method "C<Block_Read()>"), and when you want to
+restore the previously saved bit vector.
+
+For this, "C<$buffer>" B<MUST> be a string (B<NO> automatic conversion
+from numeric to string is provided here as would normally in Perl!)
+containing the bit vector in "low order byte first" order.
+
+If the given string is shorter than what is needed to completely fill
+the given bit vector, the remaining (most significant) bytes of the
+bit vector are filled with zeros, i.e., the previous contents of the
+bit vector are always erased completely.
+
+If the given string is longer than what is needed to completely fill
+the given bit vector, the superfluous bytes are simply ignored.
+
+See L<perlfunc/sysread> for how to read in the contents of "C<$buffer>"
+from a file prior to passing it to this method.
+
 =item *
 
 C<$buffer = $vector-E<gt>Block_Read();>
+
+This method allows you to export the contents of a given bit vector in
+one block.
+
+This is useful when you want to save the contents of a bit vector for
+later, for instance in a file.
+
+The advantage of this method is that it allows you to do so in the
+compactest possible format, in binary.
+
+The method returns a Perl string which contains an exact copy of the
+contents of the given bit vector in "low order byte first" order.
+
+See L<perlfunc/syswrite> for how to write the data from this string
+to a file.
 
 =item *
 
 C<$size = $vector-E<gt>Word_Size();>
 
+Each bit vector is internally organized as an array of machine words.
+
+The methods whose names begin with "Word_" allow you to access this
+internal array of machine words.
+
+Note that because the size of a machine word may vary from system to
+system, these methods are inherently B<MACHINE-DEPENDENT>!
+
+Therefore, B<DO NOT USE> these methods unless you are absolutely certain
+that portability of your code is not an issue!
+
+You have been warned!
+
+To be machine-independent, use the methods whose names begin with "C<Chunk_>"
+instead, with chunks sizes no greater than 32 bits.
+
+The method "C<Word_Size()>" returns the number of machine words that the
+internal array of words of the given bit vector contains.
+
+This is similar in function to the term "C<scalar(@array)>" for a Perl array.
+
 =item *
 
 C<$vector-E<gt>Word_Store($offset,$word);>
+
+This method allows you to store a given value "C<$word>" at a given
+position "C<$offset>" in the internal array of words of the given
+bit vector.
+
+Note that "C<$offset>" must lie in the permitted range between "C<0>"
+and "C<$vector-E<gt>Word_Size()-1>", or a fatal "offset out of range"
+error will occur.
+
+This method is similar in function to the expression
+"C<$array[$offset] = $word;>" for a Perl array.
 
 =item *
 
 C<$word = $vector-E<gt>Word_Read($offset);>
 
+This method allows you to access the value of a given machine word
+at position "C<$offset>" in the internal array of words of the given
+bit vector.
+
+Note that "C<$offset>" must lie in the permitted range between "C<0>"
+and "C<$vector-E<gt>Word_Size()-1>", or a fatal "offset out of range"
+error will occur.
+
+This method is similar in function to the expression
+"C<$word = $array[$offset];>" for a Perl array.
+
 =item *
 
 C<$vector-E<gt>Word_List_Store(@words);>
+
+This method allows you to store a list of values "C<@words>" in the
+internal array of machine words of the given bit vector.
+
+Thereby the B<LEFTMOST> value in the list ("C<$words[0]>") is stored
+in the B<LEAST> significant word of the internal array of words (the
+one with offset "C<0>"), the next value from the list ("C<$words[1]>")
+is stored in the word with offset "C<1>", and so on, as intuitively
+expected.
+
+If the list "C<@words>" contains fewer elements than the internal
+array of words of the given bit vector contains machine words,
+the remaining (most significant) words are filled with zeros.
+
+If the list "C<@words>" contains more elements than the internal
+array of words of the given bit vector contains machine words,
+the superfluous values are simply ignored.
+
+This method is comparable in function to the expression
+"C<@array = @words;>" for a Perl array.
 
 =item *
 
 C<@words = $vector-E<gt>Word_List_Read();>
 
+This method allows you to retrieve the internal array of machine
+words of the given bit vector all at once.
+
+Thereby the B<LEFTMOST> value in the returned list ("C<$words[0]>")
+is the B<LEAST> significant word from the given bit vector, and the
+B<RIGHTMOST> value in the returned list ("C<$words[$#words]>") is
+the B<MOST> significant word of the given bit vector.
+
+This method is similar in function to the expression
+"C<@words = @array;>" for a Perl array.
+
 =item *
 
 C<$vector-E<gt>Word_Insert($offset,$count);>
+
+This method inserts "C<$count>" empty new machine words at position
+"C<$offset>" in the internal array of words of the given bit vector.
+
+The "C<$count>" most significant words are lost, and all words starting
+with word number "C<$offset>" up to and including word number
+"C<$vector-E<gt>Word_Size()-$count-1>" are moved up by "C<$count>" places.
+
+The now vacant "C<$count>" words starting at word number "C<$offset>"
+(up to and including word number "C<$offset+$count-1>") are then set
+to zero (cleared).
+
+Note that this method does B<NOT> increase the size of the given bit
+vector, i.e., the bit vector is B<NOT> extended at its upper end to
+"rescue" the "C<$count>" uppermost (most significant) words - instead,
+these words are lost forever.
+
+If you don't want this to happen, you have to increase the size of the
+given bit vector B<EXPLICITLY> and B<BEFORE> you perform the "Insert"
+operation, with a statement such as the following:
+
+  $vector->Resize($vector->Size() + $count * Bit::Vector->Word_Bits());
+
+Note also that "C<$offset>" must lie in the permitted range between
+"C<0>" and "C<$vector-E<gt>Word_Size()-1>", or a fatal "offset out
+of range" error will occur.
+
+If the term "C<$offset + $count>" exceeds "C<$vector-E<gt>Word_Size()-1>",
+all the words starting with word number "C<$offset>" up to word number
+"C<$vector-E<gt>Word_Size()-1>" are simply cleared.
 
 =item *
 
 C<$vector-E<gt>Word_Delete($offset,$count);>
 
+This method deletes, i.e., removes the words starting at position
+"C<$offset>" up to and including word number "C<$offset+$count-1>"
+from the internal array of machine words of the given bit vector.
+
+The remaining uppermost words (starting at position "C<$offset+$count>"
+up to and including word number "C<$vector-E<gt>Word_Size()-1>") are
+moved down by "C<$count>" places.
+
+The now vacant uppermost (most significant) "C<$count>" words are then
+set to zero (cleared).
+
+Note that this method does B<NOT> decrease the size of the given bit
+vector, i.e., the bit vector is B<NOT> clipped at its upper end to
+"get rid of" the vacant "C<$count>" uppermost words.
+
+If you don't want this, i.e., if you want the bit vector to shrink
+accordingly, you have to do so B<EXPLICITLY> and B<AFTER> the "Delete"
+operation, with a couple of statements such as these:
+
+  $bits = $vector->Size();
+  $count *= Bit::Vector->Word_Bits();
+  if ($count > $bits) { $count = $bits; }
+  $vector->Resize($bits - $count);
+
+Note also that "C<$offset>" must lie in the permitted range between
+"C<0>" and "C<$vector-E<gt>Word_Size()-1>", or a fatal "offset out
+of range" error will occur.
+
+If the term "C<$offset + $count>" exceeds "C<$vector-E<gt>Word_Size()-1>",
+all the words starting with word number "C<$offset>" up to word number
+"C<$vector-E<gt>Word_Size()-1>" are simply cleared.
+
 =item *
 
 C<$vector-E<gt>Chunk_Store($chunksize,$offset,$chunk);>
+
+This method allows you to set more than one bit at a time with
+different values.
+
+You can access chunks (i.e., ranges of contiguous bits) between
+one and at most "C<Bit::Vector-E<gt>Long_Bits()>" bits wide.
+
+In order to be portable, though, you should never use chunk sizes
+larger than 32 bits.
+
+If the given "C<$chunksize>" does not lie between "C<1>" and
+"C<Bit::Vector-E<gt>Long_Bits()>", a fatal "chunk size out of range"
+error will occur.
+
+The method copies the "C<$chunksize>" least significant bits
+from the value "C<$chunk>" to the given bit vector, starting at
+bit position "C<$offset>" and proceeding upwards until bit number
+"C<$offset+$chunksize-1>".
+
+(I.e., bit number "C<0>" of "C<$chunk>" becomes bit number "C<$offset>"
+in the given bit vector, and bit number "C<$chunksize-1>" becomes
+bit number "C<$offset+$chunksize-1>".)
+
+If the term "C<$offset+$chunksize-1>" exceeds "C<$vector-E<gt>Size()-1>",
+the corresponding superfluous (most significant) bits from "C<$chunk>"
+are simply ignored.
+
+Note that "C<$offset>" itself must lie in the permitted range between
+"C<0>" and "C<$vector-E<gt>Size()-1>", or a fatal "offset out of range"
+error will occur.
+
+This method (as well as the other "C<Chunk_>" methods) is useful, for
+example, when you are reading in data in chunks of, say, 8 bits, which
+you need to access later, say, using 16 bits at a time (like audio CD
+wave files, for instance).
 
 =item *
 
 C<$chunk = $vector-E<gt>Chunk_Read($chunksize,$offset);>
 
+This method allows you to read the values of more than one bit at
+a time.
+
+You can read chunks (i.e., ranges of contiguous bits) between
+one and at most "C<Bit::Vector-E<gt>Long_Bits()>" bits wide.
+
+In order to be portable, though, you should never use chunk sizes
+larger than 32 bits.
+
+If the given "C<$chunksize>" does not lie between "C<1>" and
+"C<Bit::Vector-E<gt>Long_Bits()>", a fatal "chunk size out of range"
+error will occur.
+
+The method returns the "C<$chunksize>" bits from the given bit vector
+starting at bit position "C<$offset>" and proceeding upwards until
+bit number "C<$offset+$chunksize-1>".
+
+(I.e., bit number "C<$offset>" of the given bit vector becomes bit number
+"C<0>" of the returned value, and bit number "C<$offset+$chunksize-1>"
+becomes bit number "C<$chunksize-1>".)
+
+If the term "C<$offset+$chunksize-1>" exceeds "C<$vector-E<gt>Size()-1>",
+the non-existent bits are simply not returned.
+
+Note that "C<$offset>" itself must lie in the permitted range between
+"C<0>" and "C<$vector-E<gt>Size()-1>", or a fatal "offset out of range"
+error will occur.
+
 =item *
 
 C<$vector-E<gt>Chunk_List_Store($chunksize,@chunks);>
 
+This method allows you to fill the given bit vector with a list of
+data packets ("chunks") of any size ("C<$chunksize>") you like
+(within certain limits).
 
+In fact the given "C<$chunksize>" must lie in the range between "C<1>"
+and "C<Bit::Vector-E<gt>Long_Bits()>", or a fatal "chunk size out of
+range" error will occur.
 
-This method can also be used to store an octal string in
-a given bit vector:
+In order to be portable, though, you should never use chunk sizes
+larger than 32 bits.
+
+The given bit vector is thereby filled in ascending order: The first
+chunk from the list (i.e., "C<$chunks[0]>") fills the "C<$chunksize>"
+least significant bits, the next chunk from the list ("C<$chunks[1]>")
+fills the bits number "C<$chunksize>" to number "C<2*$chunksize-1>",
+the third chunk ("C<$chunks[2]>") fills the bits number "C<2*$chunksize>",
+to number "C<3*$chunksize-1>", and so on.
+
+If there a less chunks in the list than are needed to fill the entire
+bit vector, the remaining (most significant) bits are cleared, i.e.,
+the previous contents of the given bit vector are always erased completely.
+
+If there are more chunks in the list than are needed to fill the entire
+bit vector, and/or if a chunk extends beyond "C<$vector-E<gt>Size()-1>"
+(which happens whenever "C<$vector-E<gt>Size()>" is not a multiple of
+"C<$chunksize>"), the superfluous chunks and/or bits are simply ignored.
+
+The method is useful, for example (and among many other applications),
+for the conversion of packet sizes in a data stream.
+
+This method can also be used to store an octal string in a given
+bit vector:
 
   $vector->Chunk_List_Store(3, split(//, reverse $string));
 
@@ -2816,14 +3623,56 @@ To perform syntax checking, add the following statements:
       # error, string contains other than octal characters
   }
 
+Another application is to store a repetitive pattern in a given
+bit vector:
+
+  $pattern = 0xDEADBEEF;
+  $length = 32;            # = length of $pattern in bits
+  $size = $vector->Size();
+  $factor = int($size / $length);
+  if ($size % $length) { $factor++; }
+  $vector->Chunk_List_Store($length, ($pattern) x $factor);
+
 =item *
 
 C<@chunks = $vector-E<gt>Chunk_List_Read($chunksize);>
 
+This method allows you to access the contents of the given bit vector in
+form of a list of data packets ("chunks") of a size ("C<$chunksize>")
+of your choosing (within certain limits).
 
+In fact the given "C<$chunksize>" must lie in the range between "C<1>"
+and "C<Bit::Vector-E<gt>Long_Bits()>", or a fatal "chunk size out of
+range" error will occur.
 
-This method can also be used to convert a given bit vector
-to a string of octal numbers:
+In order to be portable, though, you should never use chunk sizes
+larger than 32 bits.
+
+The given bit vector is thereby read in ascending order: The
+"C<$chunksize>" least significant bits (bits number "C<0>" to
+"C<$chunksize-1>") become the first chunk in the returned list
+(i.e., "C<$chunks[0]>"). The bits number "C<$chunksize>" to
+"C<2*$chunksize-1>" become the next chunk in the list
+("C<$chunks[1]>"), and so on.
+
+If "C<$vector-E<gt>Size()>" is not a multiple of "C<$chunksize>",
+the last chunk in the list will contain fewer bits than "C<$chunksize>".
+
+B<BEWARE> that for large bit vectors and/or small values of "C<$chunksize>",
+the number of returned list elements can be extremely large! B<BE CAREFUL!>
+
+You could blow up your application with lack of memory (each list element
+is a full-grown Perl scalar, internally, with an associated memory overhead
+for its administration!) or at least cause a noticeable, more or less
+long-lasting "freeze" of your application!
+
+Possible applications:
+
+The method is especially useful in the conversion of packet sizes in
+a data stream.
+
+This method can also be used to convert a given bit vector to a string
+of octal numbers:
 
   $string = reverse join('', $vector->Chunk_List_Read(3));
 
@@ -2831,13 +3680,83 @@ to a string of octal numbers:
 
 C<$vector-E<gt>Index_List_Remove(@indices);>
 
+This method allows you to specify a list of indices of bits which
+should be turned off in the given bit vector.
+
+In fact this method is a shortcut for
+
+    foreach $index (@indices)
+    {
+        $vector->Bit_Off($index);
+    }
+
+In contrast to all other import methods in this module, this method
+does B<NOT> clear the given bit vector before processing its list
+of arguments.
+
+Instead, this method allows you to accumulate the results of various
+consecutive calls.
+
+(The same holds for the method "C<Index_List_Store()>". As a
+consequence, you can "wipe out" what you did using the method
+"C<Index_List_Remove()>" by passing the identical argument list
+to the method "C<Index_List_Store()>".)
+
 =item *
 
 C<$vector-E<gt>Index_List_Store(@indices);>
 
+This method allows you to specify a list of indices of bits which
+should be turned on in the given bit vector.
+
+In fact this method is a shortcut for
+
+    foreach $index (@indices)
+    {
+        $vector->Bit_On($index);
+    }
+
+In contrast to all other import methods in this module, this method
+does B<NOT> clear the given bit vector before processing its list
+of arguments.
+
+Instead, this method allows you to accumulate the results of various
+consecutive calls.
+
+(The same holds for the method "C<Index_List_Remove()>". As a
+consequence, you can "wipe out" what you did using the method
+"C<Index_List_Store()>" by passing the identical argument list
+to the method "C<Index_List_Remove()>".)
+
 =item *
 
 C<@indices = $vector-E<gt>Index_List_Read();>
+
+This method returns a list of Perl scalars.
+
+The list contains one scalar for each set bit in the given
+bit vector.
+
+B<BEWARE> that for large bit vectors, this can result in a literally
+overwhelming number of list elements! B<BE CAREFUL!> You could run
+out of memory or slow down your application considerably!
+
+Each scalar contains the number of the index corresponding to
+the bit in question.
+
+These indices are always returned in ascending order.
+
+If the given bit vector is empty (contains only cleared bits)
+or if it has a length of zero (if it contains no bits at all),
+the method returns an empty list.
+
+This method can be useful, for instance, to obtain a list of
+prime numbers:
+
+    $limit = 1000; # or whatever
+    $vector = Bit::Vector->new($limit+1);
+    $vector->Primes();
+    @primes = $vector->Index_List_Read();
 
 =item *
 

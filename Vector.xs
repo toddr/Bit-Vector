@@ -81,6 +81,12 @@ typedef     SV *BitVector_Scalar;
 #define BIT_VECTOR_START_ERROR(name) \
     BIT_VECTOR_ERROR(name,"start index out of range")
 
+#define BIT_VECTOR_OFFSET_ERROR(name) \
+    BIT_VECTOR_ERROR(name,"offset out of range")
+
+#define BIT_VECTOR_CHUNK_ERROR(name) \
+    BIT_VECTOR_ERROR(name,"chunk size out of range")
+
 #define BIT_VECTOR_SIZE_ERROR(name) \
     BIT_VECTOR_ERROR(name,"bit vector size mismatch")
 
@@ -93,26 +99,17 @@ typedef     SV *BitVector_Scalar;
 #define BIT_VECTOR_SHAPE_ERROR(name) \
     BIT_VECTOR_ERROR(name,"matrix is not quadratic")
 
-#define BIT_VECTOR_OVERFLOW_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"numeric overflow error")
-
 #define BIT_VECTOR_SYNTAX_ERROR(name) \
     BIT_VECTOR_ERROR(name,"input string syntax error")
 
-#define BIT_VECTOR_ZERO_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"division by zero error")
-
-#define BIT_VECTOR_OFFSET_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"offset out of range")
-
-#define BIT_VECTOR_CHUNK_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"chunk size out of range")
+#define BIT_VECTOR_OVERFLOW_ERROR(name) \
+    BIT_VECTOR_ERROR(name,"numeric overflow error")
 
 #define BIT_VECTOR_DISTINCT_ERROR(name) \
     BIT_VECTOR_ERROR(name,"Q and R must be distinct")
 
-#define BIT_VECTOR_INPLACE_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"in-place only with quadratic matrices")
+#define BIT_VECTOR_ZERO_ERROR(name) \
+    BIT_VECTOR_ERROR(name,"division by zero error")
 
 #define BIT_VECTOR_INTERNAL_ERROR(name) \
     BIT_VECTOR_ERROR(name,"unexpected internal error - please contact author")
@@ -120,13 +117,13 @@ typedef     SV *BitVector_Scalar;
 #define BIT_VECTOR_EXCEPTION(code,name) \
     { switch (code) { case ErrCode_Ok: break; \
     case ErrCode_Null: BIT_VECTOR_MEMORY_ERROR(name); break; \
-    case ErrCode_Size: BIT_VECTOR_SIZE_ERROR(name); break; \
-    case ErrCode_Same: BIT_VECTOR_DISTINCT_ERROR(name); break; \
-    case ErrCode_Zero: BIT_VECTOR_ZERO_ERROR(name); break; \
-    case ErrCode_Ovfl: BIT_VECTOR_OVERFLOW_ERROR(name); break; \
-    case ErrCode_Pars: BIT_VECTOR_SYNTAX_ERROR(name); break; \
     case ErrCode_Indx: BIT_VECTOR_INDEX_ERROR(name); break; \
     case ErrCode_Ordr: BIT_VECTOR_ORDER_ERROR(name); break; \
+    case ErrCode_Size: BIT_VECTOR_SIZE_ERROR(name); break; \
+    case ErrCode_Pars: BIT_VECTOR_SYNTAX_ERROR(name); break; \
+    case ErrCode_Ovfl: BIT_VECTOR_OVERFLOW_ERROR(name); break; \
+    case ErrCode_Same: BIT_VECTOR_DISTINCT_ERROR(name); break; \
+    case ErrCode_Zero: BIT_VECTOR_ZERO_ERROR(name); break; \
     default: BIT_VECTOR_INTERNAL_ERROR(name); break; } }
 
 
@@ -1292,6 +1289,50 @@ CODE:
         else BIT_VECTOR_SCALAR_ERROR("Bit_Copy");
     }
     else BIT_VECTOR_OBJECT_ERROR("Bit_Copy");
+}
+
+
+void
+BitVector_LSB(reference,bit)
+BitVector_Object	reference
+BitVector_Scalar	bit
+CODE:
+{
+    BitVector_Handle  handle;
+    BitVector_Address address;
+    boolean b;
+
+    if ( BIT_VECTOR_OBJECT(reference,handle,address) )
+    {
+        if ( BIT_VECTOR_SCALAR(bit,boolean,b) )
+        {
+            BitVector_LSB(address,b);
+        }
+        else BIT_VECTOR_SCALAR_ERROR("LSB");
+    }
+    else BIT_VECTOR_OBJECT_ERROR("LSB");
+}
+
+
+void
+BitVector_MSB(reference,bit)
+BitVector_Object	reference
+BitVector_Scalar	bit
+CODE:
+{
+    BitVector_Handle  handle;
+    BitVector_Address address;
+    boolean b;
+
+    if ( BIT_VECTOR_OBJECT(reference,handle,address) )
+    {
+        if ( BIT_VECTOR_SCALAR(bit,boolean,b) )
+        {
+            BitVector_MSB(address,b);
+        }
+        else BIT_VECTOR_SCALAR_ERROR("MSB");
+    }
+    else BIT_VECTOR_OBJECT_ERROR("MSB");
 }
 
 
@@ -2747,7 +2788,7 @@ CODE:
                     Matrix_Transpose(Xadr,rowsX,colsX,
                                      Yadr,rowsY,colsY);
                 }
-                else BIT_VECTOR_INPLACE_ERROR("Transpose");
+                else BIT_VECTOR_SHAPE_ERROR("Transpose");
             }
             else BIT_VECTOR_MATRIX_ERROR("Transpose");
         }

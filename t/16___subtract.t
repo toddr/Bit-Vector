@@ -9,7 +9,7 @@ use Bit::Vector;
 #   $carry_out = $vector1->subtract($vector2,$vector3,$carry_in);
 # ======================================================================
 
-print "1..1000\n";
+print "1..1001\n";
 
 $n = 1;
 
@@ -122,6 +122,12 @@ foreach $bits (8, 15, 16, 31, 32, 63, 64, 127, 128, 997)
         }
     }
 }
+
+$vec = Bit::Vector->new(1024);
+$vec->subtract($vec,$vec,5);
+if ($vec->is_full())
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
 
 exit;
 
