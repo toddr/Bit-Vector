@@ -1,80 +1,18 @@
                     =====================================
-                      Package "Bit::Vector" Version 4.2
+                      Package "Bit::Vector" Version 5.0
                     =====================================
                       for Perl version 5.000 and higher
 
      Copyright (c) 1995, 1996, 1997 by Steffen Beyer. All rights reserved.
-     This package is free software; you can redistribute it and/or modify
-     it under the same terms as Perl itself.
 
 
-Abstract:
----------
+Legal issues:
+-------------
 
-This module is extremely useful for a lot of different tasks:
+Please read the file "LICENSE" in this distribution for details about
+the exact terms under which this package may be used and distributed.
 
-For example for implementing sets and performing set operations (like
-union, difference, intersection, complement, check for subset relation-
-ship etc.), as a basis for many efficient algorithms (the complexities
-of the methods in this module are either O(1) or O(n), which is very
-good, and they are mostly implemented in C for maximum execution speed)
-like the "Sieve of Erathostenes" (for calculating prime numbers), for
-having shift registers (for instance for Cyclic Redundancy Checksums!)
-of arbitrary length, to calculate "look-ahead", "first" and "follow"
-character sets for parsers and compiler-compilers, for graph algorithms,
-for performing text generation depending on logical expressions, and
-much more!
-
-
-Contents of this file:
-----------------------
-
-   -   Where to find
-   -   Legal stuff (-> LICENSE, ARTISTIC, COPYING)
-   -   Prerequisites
-   -   Installation (-> INSTALL)
-   -   Changes over previous versions (-> CHANGES)
-   -   This distribution contains
-   -   What does it do
-   -   Complexity analysis (-> COMPLEXITY)
-   -   Credits (-> CREDITS)
-   -   Author's note
-
-
-Where to find:
---------------
-
-At any CPAN ftp site (CPAN = "Comprehensive Perl Archive Network"),
-the file "Bit-Vector-4.2.tar.gz" can be found in any of the following
-directories:
-
-    .../CPAN/authors/id/STBEY/
-    .../CPAN/modules/by-category/06_Data_Type_Utilities/Bit/
-    .../CPAN/modules/by-module/Bit/
-
-To find a CPAN ftp site, you can either direct your web browser to
-
-    http://www.perl.com/CPAN/modules/by-module/Bit/Bit-Vector-4.2.tar.gz
-
-(which will automatically redirect you to a CPAN ftp server near you) or
-look into "The Perl 5 Module List" by Tim Bunce and Andreas Koenig either
-on USENET in the "comp.lang.perl.modules" newsgroup or at
-
-    http://www.perl.com/CPAN/modules/00modlist.long.html
-
-You can also download this module directly from the author's web site,
-where you will also find my other modules and a couple of logos describing
-what the modules do:
-
-    http://www.engelschall.com/u/sb/download/
-
-
-Legal stuff:
-------------
-
-Please see the file "LICENSE" in this distribution (and the associated files
-"ARTISTIC" and "COPYING") for details about the exact terms under which this
-package may be used and distributed.
+Note that these terms have changed as of version 5.0 of this package!
 
 
 Prerequisites:
@@ -93,204 +31,59 @@ to install this package.
 Changes over previous versions:
 -------------------------------
 
-Please refer to the file "CHANGES" in this distribution for a list of new
-features in and for instructions on how to adapt your existing applications
-to this new version.
-
-
-This distribution contains:
----------------------------
-
-   *   a "BitVector" C library (can be used stand-alone!)
-
-       (files "Definitions.h", "BitVector.h" and "BitVector.c")
-
-          +   efficient (fast) handling of bit vectors and sets of
-              integers (and more)
-
-          +   determines the size of a machine word on your system
-              and automatically configures itself accordingly for
-              maximum speed of execution
-
-   *   a "Bit::Vector" base class
-
-       (files "Vector.pm", "Vector.xs", "typemap", "Definitions.h",
-        "BitVector.h" and "BitVector.c")
-
-          +   efficient (fast) object-oriented methods for handling
-              bit vectors and sets of integers (intervals from zero
-              to some positive integer)
-
-          +   methods for converting bit vectors in strings and
-              vice-versa (supports "newsrc" style sets)
-
-          +   overloaded arithmetic and relational operators for
-              maximum comfort
-
-   *   a "Set::IntegerFast" wrapper module
-
-       (file "lib/Set/IntegerFast.pm")
-
-          +   assures backward compatibility to previous versions
-
-   *   a "Set::IntegerRange" application module
-
-       (file "lib/Set/IntegerRange.pm")
-
-          +   object-oriented methods for handling sets of integers
-              (arbitrary intervals)
-
-          +   overloaded arithmetic and relational operators for
-              maximum comfort
-
-          +   methods for converting sets in strings and
-              vice-versa
-
-   *   a "Math::MatrixBool" application module
-
-       (file "lib/Math/MatrixBool.pm")
-
-          +   object-oriented methods for handling matrices of booleans
-              (Boolean Algebra)
-
-          +   overloaded arithmetic and relational operators for
-              maximum comfort
-
-          +   computes reflexive transitive closure using Kleene's
-              algorithm (essential for solving path-problem in graphs)
-
-          +   methods for converting matrices in strings and
-              vice-versa
-
-          +   matrix multiplication and closure are actually carried out
-              in the "Bit::Vector" module for maximum speed of execution
-
-Related modules (NOT derived from the "Bit::Vector" base class):
-
-   *   "Math::MatrixReal"
-
-       (file "lib/Math/MatrixReal.pm")
-
-          +   object-oriented methods for handling matrices of reals
-
-          +   overloaded arithmetic and relational operators for
-              maximum comfort
-
-          +   allows to solve linear equation systems using an
-              efficient algorithm known as "LR decomposition"
-              and several approximative (iterative) methods
-
-          +   features an implementation of Kleene's algorithm to
-              compute the minimal costs for all paths in a graph
-              with weighted edges
-
-          +   methods for converting matrices in strings and
-              vice-versa
-
-   *   "DFA::Kleene"
-
-       (file "lib/DFA/Kleene.pm")
-
-          +   another implementation of Kleene's algorithm to compute
-              the language accepted by a Deterministic Finite Automaton
-
-   *   "Math::Kleene"
-
-       (file "lib/Math/Kleene.pod")
-
-          +   a man page giving a brief introduction into the theory
-              behind Kleene's algorithm
-
-   *   "Graph::Kruskal"
-
-       (file "lib/Graph/Kruskal.pm")
-
-          +   implementation of Kruskal's efficient algorithm
-              for Minimal Spanning Trees in graphs O( n * ld(n) )
-
-          +   example of an efficient algorithm relying heavily on sets
-              (with a different representation, though, not bit vectors)
+Please refer to the file "CHANGES" in this distribution for a detailed
+version history and instructions on how to upgrade existing applications.
 
 
 What does it do:
 ----------------
 
-The base class of this distribution, "Bit::Vector", allows you to create bit
-vectors and sets of arbitrary size (only limited by the size of a machine
-word and available memory on your system) with indices (= elements) in the
-range from zero to some positive integer, to dynamically change the size of
-such bit vectors or sets and to perform a broad range of basic operations on
-them, like
+This module is useful for a large range of different tasks:
 
-  -  adding or removing elements (setting and clearing single bits),
+  -  For example for implementing sets and performing set operations
+     (like union, difference, intersection, complement, check for subset
+     relationship etc.),
 
-  -  testing the presence of a certain element (testing a single bit),
+  -  as a basis for many efficient algorithms (the complexities of the
+     methods in this module are usually either O(1) or O(n/b), where
+     "b" is the number of bits in a machine word on your system),
+     like the "Sieve of Erathostenes" (for calculating prime numbers),
 
-  -  setting or clearing contiguous ranges of bits,
+  -  for using shift registers (for instance for cyclic redundancy
+     checksums) of arbitrary length,
 
-  -  detecting contiguous ranges of set bits,
+  -  to calculate "look-ahead", "first" and "follow" character sets
+     for parsers and compiler-compilers,
 
-  -  copying bit vectors,
+  -  for graph algorithms,
 
-  -  converting a bit vector into either a compact (hexadecimal) or a
-     human-readable string representation (allowing you to store bit
-     vectors in a file, for instance),
+  -  for efficient storage and retrieval of status information,
 
-  -  reading in the contents of a bit vector from a string,
+  -  for performing text generation depending on logical expressions,
 
-  -  comparing two bit vectors for equality and lexical order,
+  -  for big integer arithmetic,
 
-  -  performing bitwise shift and rotation operations,
-
-  -  computing the union, intersection, difference, symmetric difference
-     or complement of sets,
-
-  -  testing two sets for equality or inclusion (subset relationship),
-
-  -  computing the minimum, the maximum and the norm (number of elements)
-     of a set,
+  -  for manipulations of chunks of bits of arbitrary size,
 
 and more.
 
-Note also that it is very easy to implement sets of arbitrary intervals of
-integers using this module (negative indices are no obstacle), despite the
-fact that only intervals of positive integers (from zero to some positive
-integer) are supported directly.
+A large number of import/export methods allow you to access individual
+bits, contiguous ranges of bits, machine words, arbitrary chunks of
+bits, lists (arrays) of chunks of bits or machine words and a whole
+bit vector at once (for instance for blockread/-write to and from
+a file).
 
-Please refer to the "Set::IntegerRange" module (also contained in this
-distribution) and its man page to see how this can be done!
+You can also import and export the contents of a bit vector in binary,
+hexadecimal and decimal representation as well as "newsrc" style
+enumerations.
 
-The "Bit::Vector" module is mainly intended for mathematical or algorithmical
-computations. There are also a number of efficient algorithms that rely on
-sets (and bit vectors).
+Note that this module is especially designed for efficiency, which is
+also the reason why its methods are implemented in C.
 
-An example of such an efficient algorithm (which uses a different
-representation for sets, however, not bit vectors) is Kruskal's
-algorithm for minimal spanning trees in graphs.
-
-(See the module "Graph::Kruskal" and its man page in this distribution.)
-
-Another famous algorithm using bit vectors is the "Sieve of Erathostenes"
-for calculating prime numbers, which is included here as a demo program
-(see the file "primes.pl" in this distribution).
-
-An important field of application is the computation of "first", "follow"
-and "look-ahead" character sets for the construction of LL, SLR, LR and LALR
-parsers for compilers (or a compiler-compiler, like "yacc", for instance).
-
-(That's what the C library in this package was initially written for.)
-
-(See Aho, Hopcroft, Ullman, "The Design and Analysis of Computer Algorithms"
-for an excellent book on efficient algorithms and the famous "Dragon Book"
-on how to build compilers by Aho, Sethi, Ullman.)
-
-Therefore, this module is primarily designed for efficiency, which is the
-reason why most of its methods are implemented in C.
-
-To increase execution speed, the module doesn't use bytes as its basic storage
-unit, it rather uses machine words, assuming that a machine word is the most
-efficiently handled size of all scalar types on any machine (that's what the
-ANSI C standard proposes and assumes anyway).
+To further increase execution speed, the module doesn't use bytes as its
+basic storage unit, but rather uses machine words, assuming that a machine
+word is the most efficiently handled size of all scalar types on all
+machines (that's what the ANSI C standard proposes and assumes anyway).
 
 In order to achieve this, it automatically determines the number of bits
 in a machine word on your system and then adjusts its internal configuration
@@ -300,34 +93,47 @@ The greater the size of this basic storage unit, the better the complexity
 (= execution speed) of the methods in this module (but also the greater the
 average waste of unused bits in the last word).
 
-Note that the C library of this package ("BitVector.c") is designed in such
-a way that it can be used independently from Perl and this Perl extension
-module. (!)
 
-For this, you can use the file "BitVector.o" exactly as it is produced when
-building this module! It contains no references to Perl, and it doesn't need
-any Perl header files in order to compile. (It only needs "Definitions.h" and
-some system header files.)
+Important note:
+---------------
 
-Note however that this C library does not perform any bounds checking
-whatsoever! (This is your application's duty!)
+Note that the C library at the core of this module ("BitVector.c") can
+also be used stand-alone (i.e., without Perl).
 
-(See the respective explanation in the file "BitVector.c" for more details
-and the file "Vector.xs" for an example of how this can be done!)
+To do so, link the output file "BitVector.o" (which is produced when you
+build this module or when you just compile "BitVector.c") with your
+application.
 
-In this module, all bounds and type checking (which should be absolutely
-fool-proof, BTW!) is done in the XSUB routines (in C).
+Note however that this C library does not perform any bounds checking;
+this is your application's duty.
 
-For more details about the modules in this distribution, please refer to
-their respective man pages!
+See the file "Vector.xs" in this distribution for an example of how
+this can be done.
 
 
-Complexity analysis:
---------------------
+Example applications:
+---------------------
 
-For an analysis of the (time) complexity of the methods implemented in
-the "Bit::Vector" module, please refer to the file "COMPLEXITY" in this
-distribution!
+See the module "Set::IntegerRange" for an easy-to-use module for sets
+of integers.
+
+See the module "Math::MatrixBool" for an implementation of boolean
+matrices.
+
+(Both modules are available from "http://www.engelschall.com/u/sb/download/"
+or from any CPAN ftp server.)
+
+A tool relying crucially on this "Bit::Vector" module is "Slice" (see
+also "http://www.engelschall.com/sw/slice/"), a tool for generating
+varying document versions out of a single master file. (This tool was
+written by Ralf S. Engelschall).
+
+This tool is itself part of another tool (by the same author), "WML"
+(= "Website Meta Language"), which allows you to generate and maintain
+large web sites (see also "http://www.engelschall.com/sw/wml/"). Among
+many other features, it allows you to define your own HTML tags which
+will be expanded either at generation or at run time, depending on your
+choice.
 
 
 Credits:
@@ -340,13 +146,15 @@ contributors.
 Author's note:
 --------------
 
-If you have any questions or need any assistance, or should you have some
-comments to make, suggestions, compliments or donations ;-) to give, then
-please don't hesitate to send me some e-mail!
+If you have any questions, suggestions or need any assistance, please
+let me know!
 
-I hope you will find this module benefitful!
+Also, if there is anything you would like to do with this module which
+the module doesn't provide yet, please let me know! If it fits the module's
+overall concept, I'll implement it as soon as possible. Frequently this is
+only a matter of a few days.
 
-Share and enjoy!
+I hope you will find this module beneficial!
 
 Yours,
 --

@@ -26,12 +26,12 @@ foreach $limit (15,16,31,32,63,64,127,128,255,256,511,512,1023,1024)
     $ref = Bit::Vector->new($limit);
 
     $ref->Fill();
-    $ref->Delete(0);
-    $ref->Delete(1);
-    for ( $j = 4; $j < $limit; $j += 2 ) { $ref->Delete($j); }
+    $ref->Bit_Off(0);
+    $ref->Bit_Off(1);
+    for ( $j = 4; $j < $limit; $j += 2 ) { $ref->Bit_Off($j); }
     for ( $i = 3; ($j = $i * $i) < $limit; $i += 2 )
     {
-        for ( ; $j < $limit; $j += $i ) { $ref->Delete($j); }
+        for ( ; $j < $limit; $j += $i ) { $ref->Bit_Off($j); }
     }
 
     $rol = $ref->Clone();

@@ -3,20 +3,55 @@
 use strict;
 no strict "vars";
 
-use Set::IntegerFast;
+use Bit::Vector 5.0;
 
 # ======================================================================
-#   $ver = Set::IntegerFast::Version();
-#   $Set::IntegerFast::VERSION
+#   $ver = $Bit::Vector::VERSION;
+#   $ver = Bit::Vector::Version();
+#   $ver = Bit::Vector->Version();
+#   $bits = Bit::Vector::Word_Bits();
+#   $bits = Bit::Vector->Word_Bits();
+#   $bits = Bit::Vector::Long_Bits();
+#   $bits = Bit::Vector->Long_Bits();
 # ======================================================================
 
-print "1..2\n";
+print "1..10\n";
 
 $n = 1;
-if (Set::IntegerFast::Version() eq "4.2")
+if ($Bit::Vector::VERSION eq "5.0")
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
-if ($Set::IntegerFast::VERSION eq "4.2")
+
+if (Bit::Vector::Version() eq "5.0")
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+if (Bit::Vector::Word_Bits() >= 32)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+if (Bit::Vector::Long_Bits() >= 32)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+
+if (Bit::Vector->Version() eq "5.0")
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+if (Bit::Vector->Word_Bits() >= 32)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+if (Bit::Vector->Long_Bits() >= 32)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+
+eval { Bit::Vector->Version(0); };
+if ($@ =~ /^Usage: Bit::Vector->Version()/)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+eval { Bit::Vector->Word_Bits(0); };
+if ($@ =~ /^Usage: Bit::Vector->Word_Bits()/)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+eval { Bit::Vector->Long_Bits(0); };
+if ($@ =~ /^Usage: Bit::Vector->Long_Bits()/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 

@@ -1,35 +1,130 @@
                     =====================================
-                      Package "Bit::Vector" Version 4.2
+                      Package "Bit::Vector" Version 5.0
                     =====================================
                       for Perl version 5.000 and higher
 
 
      Copyright (c) 1995, 1996, 1997 by Steffen Beyer. All rights reserved.
-     This package is free software; you can redistribute it and/or modify
-     it under the same terms as Perl itself.
 
 
 Contents of this file:
 ----------------------
 
+  -  New features in version 5.0
+  -  Migration strategy to version 5.0 from previous versions
   -  New features in version 4.2
   -  New features in version 4.1
   -  New features in version 4.0
-  -  Migration strategy
+  -  Migration strategy to version 4.0 from previous versions
   -  Most important differences between versions 3.x and 4.0
   -  Most important differences between versions 2.x and 3.0
   -  Most important differences between versions 1.x and 2.0
   -  Version history in details
 
 
+New features in version 5.0:
+----------------------------
+
+Starting with version 5.0 of the "Bit::Vector" distribution, all accompanying
+modules that were previously part of this distribution have been "out-sourced",
+i.e., they are now distributed separately as modules of their own.
+
+This was done because it became more and more difficult to handle such a huge
+distribution.
+
+This is also because version 5.0 of the "Bit::Vector" module contains a large
+number of new methods:
+
+  -  Version()
+  -  Word_Bits()
+  -  Long_Bits()
+  -  Shadow()
+  -  Clone()
+  -  Primes()
+  -  Interval_Copy()
+  -  Interval_Substitute()
+  -  to_Hex()
+  -  from_hex()
+  -  to_Bin()
+  -  from_bin()
+  -  to_Dec()
+  -  from_dec()
+  -  to_Enum()
+  -  from_enum()
+  -  Insert()
+  -  Delete()
+  -  add()
+  -  subtract()
+  -  Negate()
+  -  Absolute()
+  -  Sign()
+  -  Multiply()
+  -  Divide()
+  -  GCD()
+  -  Block_Store()
+  -  Block_Read()
+  -  Word_Size()
+  -  Word_Store()
+  -  Word_Read()
+  -  Word_List_Store()
+  -  Word_List_Read()
+  -  Word_Insert()
+  -  Word_Delete()
+  -  Chunk_Store()
+  -  Chunk_Read()
+  -  Chunk_List_Store()
+  -  Chunk_List_Read()
+  -  Transpose()
+
+See the "Bit::Vector" man page (after installing this module) for more
+details about these new methods.
+
+
+Migration strategy to version 5.0 from previous versions:
+---------------------------------------------------------
+
+If you haven't done so already, first apply the changes recommended in
+section "Migration strategy to version 4.0 from previous versions" in
+this document in case you have applications that use a version of this
+module prior to 4.0.
+
+Using the tool "modify" (contained in this distribution), apply the following
+patches to your existing applications which use version 4.x of "Bit::Vector":
+
+(You may need to adjust the shell bang line at the top of this Perl script,
+which is currently set to "#!/usr/local/bin/perl".)
+
+    % ./modify 's!lexorder\((.*?)\)!Compare($1) <= 0!g' application.pl
+
+    % ./modify 's!from_ASCII\((.*?)\)\s*;!from_enum($1) || die;!g'\
+      application.pl
+
+    % ./modify 's!(\$\w+)\s*=\s*Bit::Vector->new_from_String\((.*?)\)\s*;\
+      !$1 = Bit::Vector->new(length($2)*4); $1->from_hex($2) || die;!g'\
+      application.pl
+
+Beware that these modifications will not work properly if the arguments
+between parentheses use parentheses themselfes (e.g. expressions), if you
+use a syntax different from the one assumed above or if the corresponding
+method call spans across multiple lines. In such cases, apply these
+modifications manually in an analog fashion.
+
+You can also use the little "patch" shell script included in this
+distribution to apply these (and some more) changes to your application:
+
+    % ./patch application.pl
+
+WARNING: In any case, keep a copy of your original file in a safe place!
+
+
 New features in version 4.2:
 ----------------------------
 
 Two new methods are available in the "Bit::Vector" and the
-"Set::IntegerRange" module: "is_empty()" and "is_full".
+"Set::IntegerRange" module: "is_empty()" and "is_full()".
 
 These methods test wether ALL bits in the given bit vector
-are cleared or set.
+are cleared or set, respectively.
 
 
 New features in version 4.1:
@@ -65,7 +160,7 @@ d) BEWARE that the semantics of the overloaded operators "++" and "--"
    same as setting bit #1 to the "off" state, these two operators now
    perform a true increment and decrement operation on the given bit
    vector, which - by the way - can be used in its pre-increment and
-   post-increment or pre-decrement and post-decrement form as usual!
+   post-increment or pre-decrement and post-decrement form, as usual!
 
 2) In the "Set::IntegerRange" module:
 
@@ -73,19 +168,21 @@ a) A "Resize()" method was added which allows you to change the size of
    an existing set while preserving as many bits (i.e., elements) of the
    old set as will fit into the new set.
 
-b) The methods "Interval_Scan_inc" and "Interval_Scan_dec" are now also
-   available in the "Set::IntegerRange" module.
+b) The methods "Interval_Scan_inc()" and "Interval_Scan_dec()" are now
+   also available in the "Set::IntegerRange" module.
 
-c) A method "BitVector" is now available which allows you to call any of
-   the methods of the "Bit::Vector" class for the underlying bit vector
+c) A method "BitVector()" is now available which allows you to call any
+   of the methods of the "Bit::Vector" class for the underlying bit vector
    which contains your set. Use wisely and with precaution!
 
 3) In general:
 
    A complexity analysis has been added to this distribution that shows
-   the time complexity of the functions implemented in the C library which
+   the time complexity of the methods implemented in the C library which
    is the core of the "Bit::Vector" module. See the file "COMPLEXITY" in
    this distribution for more details.
+
+   (This file is not available in version 5.0!)
 
 
 New features in version 4.0:
@@ -246,8 +343,8 @@ Norm
     $norm = abs($set);
 
 
-Migration strategy:
--------------------
+Migration strategy to version 4.0 from previous versions:
+---------------------------------------------------------
 
 You will need to apply the following changes to your existing
 applications that use the "Set::IntegerFast" module (use
@@ -599,13 +696,76 @@ Finally, the two methods "Interval_Scan_inc()" and "Interval_Scan_dec()"
 
 In order to facilitate the calling of methods of the underlying "Bit::Vector"
 class without violating the module's privacy (i.e., without having to know
-the module's implementation), a method named "BitVector" has been added.
+the module's implementation), a method named "BitVector()" has been added.
 
 ----------------------------------------------------------------------------
 
 In version 4.2, two new methods have been added to the "Bit::Vector" and
 the "Set::IntegerRange" module which test wether ALL bits of a given bit
 vector are cleared or set: "is_empty()" and "is_full()".
+
+----------------------------------------------------------------------------
+
+Starting with version 5.0 of the "Bit::Vector" distribution, all modules
+that were previously part of this distribution are now available separately.
+
+In version 5.0, the following new methods have been added:
+
+  -  Word_Bits()
+  -  Long_Bits()
+  -  Primes()
+  -  Interval_Copy()
+  -  Interval_Substitute()
+  -  to_Bin()
+  -  from_bin()
+  -  to_Dec()
+  -  from_dec()
+  -  Insert()
+  -  Delete()
+  -  add()
+  -  subtract()
+  -  Negate()
+  -  Absolute()
+  -  Sign()
+  -  Multiply()
+  -  Divide()
+  -  GCD()
+  -  Block_Store()
+  -  Block_Read()
+  -  Word_Size()
+  -  Word_Store()
+  -  Word_Read()
+  -  Word_List_Store()
+  -  Word_List_Read()
+  -  Word_Insert()
+  -  Word_Delete()
+  -  Chunk_Store()
+  -  Chunk_Read()
+  -  Chunk_List_Store()
+  -  Chunk_List_Read()
+  -  Transpose()
+
+The following methods have been re-implemented in C (instead of Perl):
+
+  -  Version()
+  -  Shadow()
+  -  Clone()
+  -  to_Enum()       (previously named "to_ASCII")
+  -  from_enum()     (previously named "from_ASCII")
+
+The following methods have been renamed:
+
+  -  to_String()      -->    to_Hex()
+  -  from_string()    -->    from_hex()
+  -  to_ASCII()       -->    to_Enum()
+  -  from_ASCII()     -->    from_enum()
+
+(Aliases for the old names are still available but deprecated!)
+
+And finally, the following methods are gone:
+
+  -  lexorder()
+  -  new_from_String()
 
 ----------------------------------------------------------------------------
 

@@ -3,13 +3,16 @@
 use strict;
 no strict "vars";
 
-use Set::IntegerFast;
+use Bit::Vector;
 
 # ======================================================================
+#   $set->Flip();
 #   $set->Fill();
 #   $set->Empty();
+#   $set->is_empty();
+#   $set->is_full();
 #   $set1->equal($set2);
-#   $set1->inclusion($set2);
+#   $set1->subset($set2);
 #   $set1->Union($set2,$set3);
 #   $set1->Intersection($set2,$set3);
 #   $set1->Difference($set2,$set3);
@@ -24,44 +27,37 @@ $n = 1;
 
 $limit = 999; # must be odd!
 
-$set0 = new Set::IntegerFast($limit+1);
-$set1 = new Set::IntegerFast($limit+1);
-$set2 = new Set::IntegerFast($limit+1);
-$set3 = new Set::IntegerFast($limit+1);
-$set4 = new Set::IntegerFast($limit+1);
+$set0 = new Bit::Vector($limit+1);
+$set1 = new Bit::Vector($limit+1);
+$set2 = new Bit::Vector($limit+1);
+$set3 = new Bit::Vector($limit+1);
+$set4 = new Bit::Vector($limit+1);
 
 $set3->Fill();
 
-for ( $i = 0; $i < $limit; $i+=2 )
-{
-    $set1->Insert($i);
-    $set2->Insert($i+1);
-}
+for ( $i = 0; $i <= $limit; $i += 2 ) { $set1->Bit_On($i); }
+
+$set2->Copy($set1);
+
+$set2->Flip();
 
 &test;
 
 $set1->Fill();
-$set2->Empty();
 
-$set1->Delete(0);
-$set1->Delete(1);
-$set2->Insert(0);
-$set2->Insert(1);
+$set1->Bit_Off(0);
+$set1->Bit_Off(1);
 
-for ( $j = 4; $j <= $limit; $j += 2 )
-{
-    $set1->Delete($j);
-    $set2->Insert($j);
-}
+for ( $j = 4; $j <= $limit; $j += 2 ) { $set1->Bit_Off($j); }
 
 for ( $i = 3; ($j = $i * $i) <= $limit; $i += 2 )
 {
-    for ( ; $j <= $limit; $j += $i )
-    {
-        $set1->Delete($j);
-        $set2->Insert($j);
-    }
+    for ( ; $j <= $limit; $j += $i ) { $set1->Bit_Off($j); }
 }
+
+$set2->Copy($set1);
+
+$set2->Flip();
 
 &test;
 
@@ -120,54 +116,54 @@ sub test
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
 
-    # inclusion
+    # subset
 
-    if ($set0->inclusion($set0))
+    if ($set0->subset($set0))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if ($set0->inclusion($set1))
+    if ($set0->subset($set1))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if ($set0->inclusion($set2))
+    if ($set0->subset($set2))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if ($set0->inclusion($set3))
+    if ($set0->subset($set3))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if (! $set1->inclusion($set0))
+    if (! $set1->subset($set0))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if ($set1->inclusion($set1))
+    if ($set1->subset($set1))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if (! $set1->inclusion($set2))
+    if (! $set1->subset($set2))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if ($set1->inclusion($set3))
+    if ($set1->subset($set3))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if (! $set2->inclusion($set0))
+    if (! $set2->subset($set0))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if (! $set2->inclusion($set1))
+    if (! $set2->subset($set1))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if ($set2->inclusion($set2))
+    if ($set2->subset($set2))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if ($set2->inclusion($set3))
+    if ($set2->subset($set3))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if (! $set3->inclusion($set0))
+    if (! $set3->subset($set0))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if (! $set3->inclusion($set1))
+    if (! $set3->subset($set1))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if (! $set3->inclusion($set2))
+    if (! $set3->subset($set2))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if ($set3->inclusion($set3))
+    if ($set3->subset($set3))
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
 

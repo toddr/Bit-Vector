@@ -1,11 +1,9 @@
                     =====================================
-                      Package "Bit::Vector" Version 4.2
+                      Package "Bit::Vector" Version 5.0
                     =====================================
                       for Perl version 5.000 and higher
 
      Copyright (c) 1995, 1996, 1997 by Steffen Beyer. All rights reserved.
-     This package is free software; you can redistribute it and/or modify
-     it under the same terms as Perl itself.
 
 
 Credits:
@@ -60,8 +58,8 @@ assumption of 32 bit integers was hidden, and for testing the new version
 on his machine!
 
 Many thanks to Ralf S. Engelschall <rse@engelschall.com> for suggesting
-the four new methods ("Size()", "Empty_Interval()", "Fill_Interval()" and
-"Flip_Interval()") implemented in version 3.0 of the "Set::IntegerFast"
+the four new methods "Size()", "Empty_Interval()", "Fill_Interval()" and
+"Flip_Interval()", implemented in version 3.0 of the "Set::IntegerFast"
 module (and also in the "Set::IntegerRange" module)!
 
 Also many thanks to Ralf Engelschall for the many good suggestions that
@@ -77,5 +75,17 @@ Also many thanks to Jon Orwant <orwant@media.mit.edu> and Tim Bunce
 <Tim.Bunce@ig.co.uk> for their suggestions and comments concerning my
 first attempts at writing a module for bitwise shift and rotate operations
 in Perl, which eventually went into version 4.0 of this module!
+
+Many thanks to Brian S. Julin <bri@calyx.net> for sharing his ideas, his
+questions and the code of his "Bit::File" module with me, which inspired
+me to write the routines to access arbitrary chunks of bits.
+
+Many thanks to Hau-Yung Chen <hchen@oda-tech.com> for suggesting the
+string conversion routines to convert to/from binary representation.
+
+Many thanks to Jarkko Hietaniemi <Jarkko.Hietaniemi@hut.fi> for suggesting
+the implementation of the transpose of a matrix in C for better performance.
+The transpose can be used in finding the strongly connected components of
+a graph.
 
 

@@ -3,23 +3,24 @@
 use strict;
 no strict "vars";
 
-use Set::IntegerFast;
+use Bit::Vector;
 
 # ======================================================================
-#   $set = new Set::IntegerFast($elements);
+#   $set = new Bit::Vector($elements);
 #   $set->Fill();
 #   $set->Empty();
-#   $set->Delete($i);
-#   $set->Insert($i);
-#   $set->flip($i);
-#   $set->in($i);
+#   $set->Primes();
+#   $set->Bit_Off($i);
+#   $set->Bit_On($i);
+#   $set->bit_flip($i);
+#   $set->contains($i);
 #   $set->Norm();
 #   $set1->equal($set2);
 # ======================================================================
 
 $limit = 1000;
 
-print "1..", ($limit+2)*2+1, "\n";
+print "1..", ($limit+4)*2, "\n";
 
 @prime = (0) x ($limit+1);
 
@@ -192,39 +193,41 @@ $prime[983] = 1;
 $prime[991] = 1;
 $prime[997] = 1;
 
-$set1 = new Set::IntegerFast($limit+1);
-$set2 = new Set::IntegerFast($limit+1);
+$set1 = new Bit::Vector($limit+1);
+$set2 = new Bit::Vector($limit+1);
+$set3 = new Bit::Vector($limit+1);
 
 $set1->Fill();
 $set2->Empty();
+$set3->Primes();
 
-$set1->Delete(0);
-$set1->Delete(1);
-$set2->Insert(0);
-$set2->Insert(1);
+$set1->Bit_Off(0);
+$set1->Bit_Off(1);
+$set2->Bit_On(0);
+$set2->Bit_On(1);
 
 for ( $j = 4; $j <= $limit; $j += 2 )
 {
-    $set1->Delete($j);
-    $set2->Insert($j);
+    $set1->Bit_Off($j);
+    $set2->Bit_On($j);
 }
 
 for ( $i = 3; ($j = $i * $i) <= $limit; $i += 2 )
 {
     for ( ; $j <= $limit; $j += $i )
     {
-        $set1->Delete($j);
-        $set2->Insert($j);
+        $set1->Bit_Off($j);
+        $set2->Bit_On($j);
     }
 }
 
 $n = 1;
 for ( $i = 0; $i <= $limit; ++$i )
 {
-    if ($set1->in($i) == $prime[$i])
+    if ($set1->contains($i) == $prime[$i])
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
-    if ($set2->flip($i) == $prime[$i])
+    if ($set2->bit_flip($i) == $prime[$i])
     {print "ok $n\n";} else {print "not ok $n\n";}
     $n++;
 }
@@ -237,7 +240,19 @@ if ($set2->Norm() == 168)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
+if ($set3->Norm() == 168)
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+
 if ($set1->equal($set2))
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+
+if ($set1->equal($set3))
+{print "ok $n\n";} else {print "not ok $n\n";}
+$n++;
+
+if ($set2->equal($set3))
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 

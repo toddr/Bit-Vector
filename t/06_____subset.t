@@ -3,7 +3,7 @@
 use strict;
 no strict "vars";
 
-use Set::IntegerFast;
+use Bit::Vector;
 
 # ======================================================================
 #   $set1->subset($set2);
@@ -17,8 +17,8 @@ $n = 1;
 for ( $b = 1; $b <= $bits; ++$b )
 {
 
-    $set1 = new Set::IntegerFast($b);
-    $set2 = new Set::IntegerFast($b);
+    $set1 = new Bit::Vector($b);
+    $set2 = new Bit::Vector($b);
 
     $c1 = 0;
     $c2 = 0;
@@ -33,7 +33,7 @@ for ( $b = 1; $b <= $bits; ++$b )
         $c = $i;
         for ( $k = 0; $k < $b; ++$k )
         {
-            if ($c & 1) { $set1->Insert($k); } else { $set1->Delete($k); }
+            if ($c & 1) { $set1->Bit_On($k); } else { $set1->Bit_Off($k); }
             $c >>= 1;
         }
         for ( $j = 0; $j < (1<<$b); ++$j )
@@ -41,7 +41,7 @@ for ( $b = 1; $b <= $bits; ++$b )
             $c = $j;
             for ( $k = 0; $k < $b; ++$k )
             {
-                if ($c & 1) { $set2->Insert($k); } else { $set2->Delete($k); }
+                if ($c & 1) { $set2->Bit_On($k); } else { $set2->Bit_Off($k); }
                 $c >>= 1;
             }
             if ($set1->subset($set2)) { ++$c2; }

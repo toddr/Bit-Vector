@@ -1,5 +1,9 @@
 #!perl -w
 
+#
+#  Copyright (c) 1995, 1996, 1997 by Steffen Beyer. All rights reserved.
+#
+
 use strict;
 use vars qw($limit $set $start $stop $min $max $norm $i $j);
 
@@ -27,21 +31,11 @@ else
 
 $set = Bit::Vector->new($limit+1);
 
-$set->Fill();
-
-$set->Delete(0);
-$set->Delete(1);
-
 print "Calculating the prime numbers in the range [2..$limit]...\n\n";
 
 $start = time;
 
-for ( $j = 4; $j <= $limit; $j += 2 ) { $set->Delete($j); }
-
-for ( $i = 3; ($j = $i * $i) <= $limit; $i += 2 )
-{
-    for ( ; $j <= $limit; $j += $i ) { $set->Delete($j); }
-}
+$set->Primes();
 
 $stop = time;
 

@@ -10,51 +10,60 @@
 /*  MODULE INTERFACE:                                                        */
 /*****************************************************************************/
 
-/* Note: weird names are used here in order to avoid name conflicts! */
-
-typedef  unsigned   char    base;
-
-/* = a BYTE, the BASE for everything (mnemonic: also starts with a "b") */
-
-typedef  unsigned   int     unit;
-
-/* = a machine WORD, the basic UNIT (mnemonic: unit is an anagram of uint!) */
-
-typedef  unsigned   long    longunit;
-typedef  unsigned   short   shortunit;
+/*  NOTE: Type names used here are deliberately somewhat weird to avoid      */
+/*        name conflicts with system and other applications' header files!   */
 
 typedef  unsigned   char    N_char;
-typedef  unsigned   int     N_int;
-typedef  unsigned   long    N_long;
+typedef  unsigned   char    N_byte;
 typedef  unsigned   short   N_short;
+typedef  unsigned   short   N_shortword;
+typedef  unsigned   int     N_int;
+typedef  unsigned   int     N_word;
+typedef  unsigned   long    N_long;
+typedef  unsigned   long    N_longword;
 
-/* mnemonic 1: the natural numbers, N = { 0, 1, 2, 3, ... } */
-/* mnemonic 2: Nnnn = u_N_signed, _N_ot signed */
+/*  Mnemonic 1:  The natural numbers,  N = { 0, 1, 2, 3, ... }               */
+/*  Mnemonic 2:  Nnnn = u_N_signed,  _N_ot signed                            */
 
 typedef  signed     char    Z_char;
-typedef  signed     int     Z_int;
-typedef  signed     long    Z_long;
+typedef  signed     char    Z_byte;
 typedef  signed     short   Z_short;
+typedef  signed     short   Z_shortword;
+typedef  signed     int     Z_int;
+typedef  signed     int     Z_word;
+typedef  signed     long    Z_long;
+typedef  signed     long    Z_longword;
 
-/* mnemonic 1: the whole numbers, Z = { 0, -1, 1, -2, 2, -3, 3, ... } */
-/* mnemonic 2: Zzzz = Ssss_igned */
+/*  Mnemonic 1:  The whole numbers,  Z = { 0, -1, 1, -2, 2, -3, 3, ... }     */
+/*  Mnemonic 2:  Zzzz = Ssss_igned                                           */
 
 typedef  void               *voidptr;
+typedef  N_char             *charptr;
+typedef  N_byte             *byteptr;
+typedef  N_short            *shortptr;
+typedef  N_shortword        *shortwordptr;
+typedef  N_int              *intptr;
+typedef  N_word             *wordptr;
+typedef  N_long             *longptr;
+typedef  N_longword         *longwordptr;
 
-typedef  base               *baseptr;
-typedef  unit               *unitptr;
-typedef  longunit           *longunitptr;
-typedef  shortunit          *shortunitptr;
+typedef  N_char             *N_charptr;
+typedef  N_byte             *N_byteptr;
+typedef  N_short            *N_shortptr;
+typedef  N_shortword        *N_shortwordptr;
+typedef  N_int              *N_intptr;
+typedef  N_word             *N_wordptr;
+typedef  N_long             *N_longptr;
+typedef  N_longword         *N_longwordptr;
 
-typedef  unsigned   char    *N_charptr;
-typedef  unsigned   int     *N_intptr;
-typedef  unsigned   long    *N_longptr;
-typedef  unsigned   short   *N_shortptr;
-
-typedef  signed     char    *Z_charptr;
-typedef  signed     int     *Z_intptr;
-typedef  signed     long    *Z_longptr;
-typedef  signed     short   *Z_shortptr;
+typedef  Z_char             *Z_charptr;
+typedef  Z_byte             *Z_byteptr;
+typedef  Z_short            *Z_shortptr;
+typedef  Z_shortword        *Z_shortwordptr;
+typedef  Z_int              *Z_intptr;
+typedef  Z_word             *Z_wordptr;
+typedef  Z_long             *Z_longptr;
+typedef  Z_longword         *Z_longwordptr;
 
 #undef  FALSE
 #define FALSE       (0==1)
@@ -99,23 +108,23 @@ typedef enum { false = FALSE , true = TRUE } boolean;
 
 typedef             struct
 {
-    base        l;
-    base        h;
-}                   twobases;
+    N_byte      l;
+    N_byte      h;
+}                   twobytes;
 
 typedef             struct
 {
-    base        a;
-    base        b;
-    base        c;
-    base        d;
-}                   fourbases;
+    N_byte      a;
+    N_byte      b;
+    N_byte      c;
+    N_byte      d;
+}                   fourbytes;
 
 typedef             struct
 {
-    unit        l;
-    unit        h;
-}                   twounits;
+    N_word      l;
+    N_word      h;
+}                   twowords;
 
 /*******************************/
 /* implementation dependent!!! */
@@ -124,9 +133,9 @@ typedef             struct
 
 typedef             union
 {
-    unit        x;
-    twobases    z;
-}                   unitreg;
+    N_word      x;
+    twobytes    z;
+}                   wordreg;
 
 /**********************************************/
 /*        implementation dependent!!!         */
@@ -135,10 +144,10 @@ typedef             union
 
 typedef             union
 {
-    longunit    x;
-    twounits    y;
-    fourbases   z;
-}                   longunitreg;
+    N_long      x;
+    twowords    y;
+    fourbytes   z;
+}                   longwordreg;
 
 #define lobyte(x)           (((int)(x)) & 0xFF)
 #define hibyte(x)           ((((int)(x)) >> 8) & 0xFF)
@@ -156,7 +165,7 @@ typedef             union
 /*****************************************************************************/
 /*  AUTHOR:  Steffen Beyer                                                   */
 /*****************************************************************************/
-/*  VERSION:  4.0                                                            */
+/*  VERSION:  5.0                                                            */
 /*****************************************************************************/
 /*  VERSION HISTORY:                                                         */
 /*****************************************************************************/
@@ -165,7 +174,8 @@ typedef             union
 /*    ??.??.??    ???                                                        */
 /*    16.02.97    Version 3.0                                                */
 /*    24.03.97    Version 4.0                                                */
+/*    12.10.97    Version 5.0                                                */
 /*****************************************************************************/
-/*  COPYRIGHT (C) 1993-1997 BY:  Steffen Beyer                               */
+/*  COPYRIGHT (C) 1993-1997 BY:  Steffen Beyer         ALL RIGHTS RESERVED.  */
 /*****************************************************************************/
 #endif

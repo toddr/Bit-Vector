@@ -3,13 +3,13 @@
 use strict;
 no strict "vars";
 
-use Set::IntegerFast;
+use Bit::Vector;
 
 # ======================================================================
 #   parameter checks
 # ======================================================================
 
-$prefix = 'Set::IntegerFast';
+$prefix = 'Bit::Vector';
 
 $bad_idx = "^[^:]+::[^:]+::[^:]+\\(\\): (?:minimum |maximum |start |)index out of range";
 
@@ -22,82 +22,94 @@ $special  = 1 << 4;
 
 $limit = $numeric;
 
-$method_list{'Size'}           = 1;
-$method_list{'Resize'}         = 2 + $numeric;
-$method_list{'Empty'}          = 1;
-$method_list{'Fill'}           = 1;
-$method_list{'Interval_Empty'} = 3 + $numeric + $special;
-$method_list{'Interval_Fill'}  = 3 + $numeric + $special;
-$method_list{'Interval_Flip'}  = 3 + $numeric + $special;
-$method_list{'Empty_Interval'} = 3 + $numeric + $special;
-$method_list{'Fill_Interval'}  = 3 + $numeric + $special;
-$method_list{'Flip_Interval'}  = 3 + $numeric + $special;
-$method_list{'Bit_Off'}        = 2 + $numeric + $special;
-$method_list{'Bit_On'}         = 2 + $numeric + $special;
-$method_list{'Delete'}         = 2 + $numeric + $special;
-$method_list{'Insert'}         = 2 + $numeric + $special;
-$method_list{'bit_flip'}       = 2 + $numeric + $special;
-$method_list{'flip'}           = 2 + $numeric + $special;
-$method_list{'bit_test'}       = 2 + $numeric + $special;
-$method_list{'contains'}       = 2 + $numeric + $special;
-$method_list{'in'}             = 2 + $numeric + $special;
-$method_list{'Norm'}           = 1;
-$method_list{'Min'}            = 1;
-$method_list{'Max'}            = 1;
-$method_list{'Union'}          = 3;
-$method_list{'Intersection'}   = 3;
-$method_list{'Difference'}     = 3;
-$method_list{'ExclusiveOr'}    = 3;
-$method_list{'Complement'}     = 2;
-$method_list{'equal'}          = 2;
-$method_list{'subset'}         = 2;
-$method_list{'inclusion'}      = 2;
-$method_list{'lexorder'}       = 2;
-$method_list{'Compare'}        = 2;
-$method_list{'Copy'}           = 2;
+$method_list{'Size'}              = 1;
+$method_list{'Resize'}            = 2 + $numeric;
+$method_list{'Empty'}             = 1;
+$method_list{'Fill'}              = 1;
+$method_list{'Flip'}              = 1;
+$method_list{'Interval_Empty'}    = 3 + $numeric + $special;
+$method_list{'Interval_Fill'}     = 3 + $numeric + $special;
+$method_list{'Interval_Flip'}     = 3 + $numeric + $special;
+$method_list{'Interval_Scan_inc'} = 2 + $numeric + $special;
+$method_list{'Interval_Scan_dec'} = 2 + $numeric + $special;
+$method_list{'Empty_Interval'}    = 3 + $numeric + $special;
+$method_list{'Fill_Interval'}     = 3 + $numeric + $special;
+$method_list{'Flip_Interval'}     = 3 + $numeric + $special;
+$method_list{'Bit_Off'}           = 2 + $numeric + $special;
+$method_list{'Bit_On'}            = 2 + $numeric + $special;
+$method_list{'bit_flip'}          = 2 + $numeric + $special;
+$method_list{'flip'}              = 2 + $numeric + $special;
+$method_list{'bit_test'}          = 2 + $numeric + $special;
+$method_list{'contains'}          = 2 + $numeric + $special;
+$method_list{'in'}                = 2 + $numeric + $special;
+$method_list{'increment'}         = 1;
+$method_list{'decrement'}         = 1;
+$method_list{'Norm'}              = 1;
+$method_list{'Min'}               = 1;
+$method_list{'Max'}               = 1;
+$method_list{'Union'}             = 3;
+$method_list{'Intersection'}      = 3;
+$method_list{'Difference'}        = 3;
+$method_list{'ExclusiveOr'}       = 3;
+$method_list{'Complement'}        = 2;
+$method_list{'is_empty'}          = 1;
+$method_list{'is_full'}           = 1;
+$method_list{'equal'}             = 2;
+$method_list{'subset'}            = 2;
+$method_list{'inclusion'}         = 2;
+$method_list{'Compare'}           = 2;
+$method_list{'Copy'}              = 2;
+$method_list{'rotate_left'}       = 1;
+$method_list{'rotate_right'}      = 1;
+$method_list{'shift_left'}        = 2 + $numeric;
+$method_list{'shift_right'}       = 2 + $numeric;
+$method_list{'Move_Left'}         = 2 + $numeric;
+$method_list{'Move_Right'}        = 2 + $numeric;
+$method_list{'to_Hex'}            = 1;
+$method_list{'from_hex'}          = 2 + $numeric;
 
-print "1..1045\n";
+print "1..1144\n";
 
 $n = 1;
 
-$set = Set::IntegerFast->new($limit);
+$set = Bit::Vector->new($limit);
 if (defined $set)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
-if (ref($set) =~ /^Set::IntegerFast$|^Bit::Vector$/)
+if (ref($set) eq 'Bit::Vector')
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 if (${$set} != 0)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-$set1 = Set::IntegerFast->new($limit-1);
+$set1 = Bit::Vector->new($limit-1);
 if (defined $set1)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
-if (ref($set1) =~ /^Set::IntegerFast$|^Bit::Vector$/)
+if (ref($set1) eq 'Bit::Vector')
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 if (${$set1} != 0)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-$set2 = Set::IntegerFast->new($limit-2);
+$set2 = Bit::Vector->new($limit-2);
 if (defined $set2)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
-if (ref($set2) =~ /^Set::IntegerFast$|^Bit::Vector$/)
+if (ref($set2) eq 'Bit::Vector')
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 if (${$set2} != 0)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-$set3 = Set::IntegerFast->new($limit-3);
+$set3 = Bit::Vector->new($limit-3);
 if (defined $set3)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
-if (ref($set3) =~ /^Set::IntegerFast$|^Bit::Vector$/)
+if (ref($set3) eq 'Bit::Vector')
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 if (${$set3} != 0)
@@ -107,11 +119,11 @@ $n++;
 if (! $set->in(0))
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
-$set->Insert(0);
+$set->Bit_On(0);
 if ($set->in(0))
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
-$set->Delete(0);
+$set->Bit_Off(0);
 if (! $set->in(0))
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
@@ -131,11 +143,11 @@ $n++;
 if (! $set->in(1))
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
-$set->Insert(1);
+$set->Bit_On(1);
 if ($set->in(1))
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
-$set->Delete(1);
+$set->Bit_Off(1);
 if (! $set->in(1))
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
@@ -155,11 +167,11 @@ $n++;
 if (! $set->in($limit-2))
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
-$set->Insert($limit-2);
+$set->Bit_On($limit-2);
 if ($set->in($limit-2))
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
-$set->Delete($limit-2);
+$set->Bit_Off($limit-2);
 if (! $set->in($limit-2))
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
@@ -179,11 +191,11 @@ $n++;
 if (! $set->in($limit-1))
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
-$set->Insert($limit-1);
+$set->Bit_On($limit-1);
 if ($set->in($limit-1))
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
-$set->Delete($limit-1);
+$set->Bit_Off($limit-1);
 if (! $set->in($limit-1))
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
@@ -307,11 +319,11 @@ foreach $method (keys %method_list)
                 bless($fake, 'nonsense');
                 &test_fake;
 
-                bless($fake, 'Set::IntegerFast');
+                bless($fake, 'Bit::Vector');
                 &test_fake;
 
-                $fake = Set::IntegerFast->new($limit);
-                Set::IntegerFast::DESTROY($fake);
+                $fake = Bit::Vector->new($limit);
+                Bit::Vector::DESTROY($fake);
                 &test_fake;
             }
             if ((! $num_flag) && ($parms > 1))

@@ -1,20 +1,50 @@
                     =====================================
-                      Package "Bit::Vector" Version 4.1
+                      Package "Bit::Vector" Version 5.0
                     =====================================
                       for Perl version 5.000 and higher
 
      Copyright (c) 1995, 1996, 1997 by Steffen Beyer. All rights reserved.
-     This package is free software; you can redistribute it and/or modify
-     it under the same terms as Perl itself.
 
 
-Legal stuff:
-------------
+LICENSE:
+--------
 
 Copyright (c) 1995, 1996, 1997 by Steffen Beyer. All rights reserved.
-This package is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
 
-See the files "ARTISTIC" and "COPYING" in this distribution for details.
+You may freely use (and modify) this package and its parts for your
+personal and any non-profit use.
+
+This package or its parts may not be included into any commercial product
+whatsoever, nor may it be used to provide services to customers against
+payment, without prior written consent from its author, Steffen Beyer.
+
+You may also freely redistribute VERBATIM copies of this package
+provided that you don't charge for them.
+
+(Shareware CD etc. publishers please contact the author first; you
+will usually get permission to include this package on CD etc. free
+of charges provided that the costs of the CD (or the like) for the
+final customer will be within reasonable limits.)
+
+Modified versions of this package or parts thereof may not be
+redistributed without prior written permission from its author.
+
+Patches in form of UNIX "diff" files or from equivalent programs
+do not require such a permission and remain the property of their
+respective author(s).
+
+
+DISCLAIMER:
+-----------
+
+This package is provided "as is", without any warranty, neither express
+nor implied, including, but not limited to, the implied warranty of
+merchantability, regarding the fitness of this package or any of its
+parts for any particular purpose or the accuracy of its documentation.
+
+In no event will the author be liable for any damage that may result
+from the use (or non-use) of or inability to use this package and its
+documentation, even if the author has been advised of the possibility
+of such damage.
 
 

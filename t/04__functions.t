@@ -3,7 +3,7 @@
 use strict;
 no strict "vars";
 
-use Set::IntegerFast;
+use Bit::Vector;
 
 # ======================================================================
 #   $set->Norm();
@@ -15,7 +15,7 @@ print "1..21\n";
 
 $lim = 997;
 
-$set = new Set::IntegerFast($lim);
+$set = new Bit::Vector($lim);
 
 $norm = $set->Norm();
 $min = $set->Min();
@@ -48,8 +48,8 @@ if ($max == $lim-1)
 $n++;
 
 $set->Empty();
-$set->Insert(0);
-$set->Insert($lim-1);
+$set->Bit_On(0);
+$set->Bit_On($lim-1);
 $norm = $set->Norm();
 $min = $set->Min();
 $max = $set->Max();
@@ -65,7 +65,7 @@ if ($max == $lim-1)
 $n++;
 
 $set->Empty();
-$set->Insert(0);
+$set->Bit_On(0);
 $norm = $set->Norm();
 $min = $set->Min();
 $max = $set->Max();
@@ -81,7 +81,7 @@ if ($max == 0)
 $n++;
 
 $set->Empty();
-$set->Insert($lim-1);
+$set->Bit_On($lim-1);
 $norm = $set->Norm();
 $min = $set->Min();
 $max = $set->Max();
@@ -97,8 +97,8 @@ if ($max == $lim-1)
 $n++;
 
 $set->Empty();
-$set->Insert(1);
-$set->Insert($lim-2);
+$set->Bit_On(1);
+$set->Bit_On($lim-2);
 $norm = $set->Norm();
 $min = $set->Min();
 $max = $set->Max();
@@ -114,7 +114,7 @@ if ($max == $lim-2)
 $n++;
 
 $set->Empty();
-$set->Insert(int($lim/2));
+$set->Bit_On(int($lim/2));
 $norm = $set->Norm();
 $min = $set->Min();
 $max = $set->Max();

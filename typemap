@@ -1,22 +1,22 @@
 ################################################################
 #
-#  Typemap for module "Bit::Vector" version 4.2
+#  Typemap for module "Bit::Vector" version 5.0
 #
 #  Copyright (c) 1995, 1996, 1997 by Steffen Beyer. All rights reserved.
-#  This package is free software; you can redistribute it and/or modify
-#  it under the same terms as Perl itself.
 #
-#  Last modified 16-Jul-1997
+#  Last modified 12-Oct-1997
 #
 ################################################################
 
 TYPEMAP
 
 N_int	T_IV
+N_long	T_IV
 Z_int	T_IV
 Z_long	T_IV
 boolean	T_IV
-baseptr	T_PV
+charptr	T_PV
 Class_Type	T_SV
 BitVector_Object	T_SV
+BitVector_Buffer	T_SV
 

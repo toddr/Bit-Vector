@@ -3,7 +3,7 @@
 use strict;
 no strict "vars";
 
-use Set::IntegerFast;
+use Bit::Vector;
 
 # ======================================================================
 #   $set->Resize($elements);
@@ -13,11 +13,11 @@ print "1..57\n";
 
 $n = 1;
 
-$set = Set::IntegerFast->new(1);
+$set = Bit::Vector->new(1);
 if (defined $set)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
-if (ref($set) =~ /^Set::IntegerFast$|^Bit::Vector$/)
+if (ref($set) eq 'Bit::Vector')
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 if (${$set} != 0)
@@ -32,7 +32,7 @@ eval { $set->Resize(0); };
 if ($@ =~ /zero length '[^']+' object not permitted/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
-if (ref($set) =~ /^Set::IntegerFast$|^Bit::Vector$/)
+if (ref($set) eq 'Bit::Vector')
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 if (${$set} != 0)
@@ -43,11 +43,11 @@ if ($@ =~ /Modification of a read-only value attempted/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-$set = Set::IntegerFast->new(8);
+$set = Bit::Vector->new(8);
 if (defined $set)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
-if (ref($set) =~ /^Set::IntegerFast$|^Bit::Vector$/)
+if (ref($set) eq 'Bit::Vector')
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 if (${$set} != 0)
@@ -62,7 +62,7 @@ $set->Resize(65536);
 if (defined $set)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
-if (ref($set) =~ /^Set::IntegerFast$|^Bit::Vector$/)
+if (ref($set) eq 'Bit::Vector')
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 if (${$set} != 0)
@@ -83,7 +83,7 @@ $set->Resize(4090);
 if (defined $set)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
-if (ref($set) =~ /^Set::IntegerFast$|^Bit::Vector$/)
+if (ref($set) eq 'Bit::Vector')
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 if (${$set} != 0)
@@ -100,7 +100,7 @@ $set->Resize(4096);
 if (defined $set)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
-if (ref($set) =~ /^Set::IntegerFast$|^Bit::Vector$/)
+if (ref($set) eq 'Bit::Vector')
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 if (${$set} != 0)
@@ -117,7 +117,7 @@ $set->Resize(&binomial(49,6));
 if (defined $set)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
-if (ref($set) =~ /^Set::IntegerFast$|^Bit::Vector$/)
+if (ref($set) eq 'Bit::Vector')
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 if (${$set} != 0)
@@ -141,7 +141,7 @@ $set->Resize($limit);
 if (defined $set)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
-if (ref($set) =~ /^Set::IntegerFast$|^Bit::Vector$/)
+if (ref($set) eq 'Bit::Vector')
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 if (${$set} != 0)
@@ -154,12 +154,12 @@ if ($set->Size() == $limit)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-$inv = Set::IntegerFast->new($limit);
+$inv = Bit::Vector->new($limit);
 
 $inv->Fill();
 
-$set->Insert(0);
-$inv->Delete(0);
+$set->Bit_On(0);
+$inv->Bit_Off(0);
 
 @fib = ( 0, 1 );
 
@@ -169,8 +169,8 @@ while (1)
     $fib[0] = $fib[1];
     $fib[1] = $index;
     last if $index >= $limit;
-    $set->Insert($index);
-    $inv->Delete($index);
+    $set->Bit_On($index);
+    $inv->Bit_Off($index);
 }
 
 if ($set->Norm() == $count)
@@ -184,7 +184,7 @@ $set->Resize($limit * 2);
 if (defined $set)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
-if (ref($set) =~ /^Set::IntegerFast$|^Bit::Vector$/)
+if (ref($set) eq 'Bit::Vector')
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 if (${$set} != 0)
@@ -205,7 +205,7 @@ $inv->Resize($limit * 2);
 if (defined $inv)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
-if (ref($inv) =~ /^Set::IntegerFast$|^Bit::Vector$/)
+if (ref($inv) eq 'Bit::Vector')
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 if (${$inv} != 0)

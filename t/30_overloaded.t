@@ -5,6 +5,8 @@ no strict "vars";
 
 use Bit::Vector;
 
+$Bit::Vector::CONFIG[2] = 3;
+
 # ======================================================================
 #   test overloaded operators
 # ======================================================================
@@ -43,7 +45,7 @@ $operator_list{'le'}  = 2;
 $operator_list{'gt'}  = 2;
 $operator_list{'ge'}  = 2;
 
-print "1..15645\n";
+print "1..15643\n";
 
 $n = 1;
 
@@ -453,19 +455,11 @@ if (($odd + $even) == $full)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-if (($primes + $even) == -($odd - $primes))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-
 if (($primes + $even) == ~($odd - $primes))
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-if (($primes + $even) == -($odd * ~$primes))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-
-if (($primes + $even) == ~($odd * -$primes))
+if (($primes + $even) == ~($odd * ~$primes))
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
@@ -971,22 +965,22 @@ foreach $bits (0,1,2,3,4,16,32,61,97,256,257,499,512)
 }
 
 eval { $shift = (0 << $primes); };
-if ($@ =~ /^Bit::Vector '<<': wrong argument type/)
+if ($@ =~ /^Bit::Vector '<<': reversed arguments error/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
 eval { $shift = (1 << $primes); };
-if ($@ =~ /^Bit::Vector '<<': wrong argument type/)
+if ($@ =~ /^Bit::Vector '<<': reversed arguments error/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
 eval { $shift = (0 >> $primes); };
-if ($@ =~ /^Bit::Vector '>>': wrong argument type/)
+if ($@ =~ /^Bit::Vector '>>': reversed arguments error/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
 eval { $shift = (1 >> $primes); };
-if ($@ =~ /^Bit::Vector '>>': wrong argument type/)
+if ($@ =~ /^Bit::Vector '>>': reversed arguments error/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
@@ -998,12 +992,12 @@ sub test_fake
     my($op,$message);
 
     $op = $operator;
-    $op =~ tr/|&/+*/;
+    $op =~ s/^[a-z]+$/cmp/;
 
     if ($parms == 1)
     {
         $op =~ s/=$//;
-        $message = quotemeta("$prefix '$op': wrong argument type");
+        $message = quotemeta("$prefix '$op': argument type error");
         $action = "\$set $operator \$fake";
         eval "$action";
         if ($@ =~ /$message/)
@@ -1012,12 +1006,12 @@ sub test_fake
     }
     elsif ($parms == 2)
     {
-        if ($op =~ /^[a-z]+$/) { $op = "cmp"; } else { $op = "'$op'"; }
-        $message = quotemeta("$prefix $op: wrong argument type");
+        $message = quotemeta("$prefix '$op': argument type error");
         $action = "\$temp = \$set $operator \$fake";
         eval "$action";
         if ($@ =~ /$message/)
         {print "ok $n\n";} else {print "not ok $n\n";}
+
         $n++;
         $action = "\$temp = \$fake $operator \$set";
         eval "$action";
