@@ -11,6 +11,7 @@ Makefile.PL
 README.txt
 ToolBox.h
 Vector.pm
+Vector.pod
 Vector.xs
 examples/primes.pl
 t/00____version.t
@@ -32,6 +33,4 @@ t/15________add.t
 t/16___subtract.t
 t/28__chunklist.t
 t/30_overloaded.t
-tools/upgrade_BV42.pl
-tools/upgrade_BV57.pl
 typemap

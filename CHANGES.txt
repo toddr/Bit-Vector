@@ -1,16 +1,32 @@
                     =====================================
-                      Package "Bit::Vector" Version 5.7
+                      Package "Bit::Vector" Version 5.8
                     =====================================
 
 
-         Copyright (c) 1995, 1996, 1997, 1998, 1999 by Steffen Beyer.
+                 Copyright (c) 1995 - 2000 by Steffen Beyer.
                              All rights reserved.
 
 
 Version history:
 ----------------
 
-Version 5.7   19.05.99
+Version 5.8   14.07.2000
+
+ +  Changed "na" to "PL_na" in Vector.xs in order to make the module
+    ready for Perl 5.6.0.
+ +  Removed the error messages which appeared at global destruction
+    time with Perl 5.6.0.
+ +  Changed the corresponding test script (t/02____destroy.t) accordingly.
+ +  Optimized the "strEQ" away from the typemap section in Vector.xs.
+ +  Fixed the misspelled word "whether" in the documentation.
+ +  Added method "Power()".
+ +  Added overloaded operator "**" (for exponentiation).
+ +  Changed method "Copy()"; the two vectors do not need to have the same
+    size anymore. The method will copy as much as will fit or fill up
+    with 0's or 1's (depending on the sign of the source) if necessary.
+ +  Changed the corresponding test script (t/09_parameters.t) accordingly.
+
+Version 5.7   19.05.1999
 
  +  Improved method "Div_Pos()": It now uses only one instead of the
     former two (very costly) "shift" operations in its main loop, and
@@ -24,18 +40,18 @@ Version 5.7   19.05.99
  +  Fixed the problems with anchored error messages in the regression
     test suite under MacPerl.
 
-Version 5.6   02.11.98
+Version 5.6   02.11.1998
 
  +  Removed the leading zeros from the output of "to_Hex()".
  +  Fixed compiler warning on line 2067 of "BitVector.c".
 
-Version 5.5   21.09.98
+Version 5.5   21.09.1998
 
  +  Fixed the bug of the uninitialized return code in method "Multiply()".
  +  Fixed the failure of tests 96-131 of test script "t/01________new.t"
     under HP-UX 10.
 
-Version 5.4   07.09.98
+Version 5.4   07.09.1998
 
  +  Fixed the bug of the uninitialized return code in method "Divide()".
  +  Introduced an additional header "Preface" in the POD documentation to
@@ -43,7 +59,7 @@ Version 5.4   07.09.98
  +  Added the new attributes to "Makefile.PL" for ActiveState's port
     of Perl 5.005 to the Win32 platform.
 
-Version 5.3   12.05.98
+Version 5.3   12.05.1998
 
     Changed "Norm()" to become still a bit more efficient.
     Ported the "upgrade_BV52" utility to Perl ("upgrade_BV53.pl"),
@@ -52,17 +68,17 @@ Version 5.3   12.05.98
     Enhanced support for Windows NT/95.
     Complete rewrite of this "CHANGES.txt" document.
 
-Version 5.2   31.03.98
+Version 5.2   31.03.1998
 
     Changed "Norm()", "<<" and ">>" to become more efficient.
     Added "new_Hex()", "new_Bin()", "new_Dec()" and "new_Enum()".
     Made the exception handling in "Vector.pm" more elegant.
 
-Version 5.1   09.03.98
+Version 5.1   09.03.1998
 
     Added systematic exception handling to "Vector.pm".
 
-Version 5.0   01.03.98
+Version 5.0   01.03.1998
 
  +  "Outsourced" all example modules (now available separately).
  +  Added: Word_Bits(), Long_Bits(), Concat(), Concat_List(), Primes(),
@@ -88,11 +104,11 @@ Version 5.0   01.03.98
     version 5.0. Issued quick fix "Set::IntRange" version 5.0. More
     thorough implementation is under construction.
 
-Version 4.2   16.07.97
+Version 4.2   16.07.1997
 
     Added "is_empty()" and "is_full()".
 
-Version 4.1   30.06.97
+Version 4.1   30.06.1997
 
     Added "Move_Left()" and "Move_Right()".
     Changed "<<" and ">>" to call "Move_Left()" and "Move_Right()" instead.
@@ -101,7 +117,7 @@ Version 4.1   30.06.97
     Added "Resize()", "Interval_Scan_inc()", "Interval_Scan_dec()" and
     "BitVector()" to "Set::IntegerRange".
 
-Version 4.0   23.04.97
+Version 4.0   23.04.1997
 
  +  Complete rewrite of the "Set::IntegerFast" module.
  +  Renamed "Set::IntegerFast" to "Bit::Vector".
@@ -119,7 +135,7 @@ Version 4.0   23.04.97
     difference, exclusive-or, complement, subset relationship, true subset
     relationship, superset relationship, true superset relationship, norm.
 
-Version 3.2   04.02.97
+Version 3.2   04.02.1997
 
     Added "Empty_Interval()", "Fill_Interval()", "Flip_Interval()" and
     "Size()" to "Set::IntegerFast" and "Set::IntegerRange".
@@ -132,14 +148,14 @@ Version 3.2   04.02.97
     Fixed a severe bug in the "kleene()" method of "Math::MatrixReal"
     (new version number: 1.1).
 
-Version 3.1   21.01.97
+Version 3.1   21.01.1997
 
     Fixed a bug that caused the initialization routine of the module to fail
     on 64 bit machines due to a wrong conditional expression (type "int" and
     "size_t" do not necessarily have the same size!).
     "Set::IntegerFast" switched to version number 2.2.
 
-Version 3.0   12.01.97
+Version 3.0   12.01.1997
 
     Added "flip()" to "Set::IntegerFast" and "Set::IntegerRange".
     Transformed the "kruskal" demo program to a Perl module "Graph::Kruskal".
@@ -153,7 +169,7 @@ Version 3.0   12.01.97
     XS file (caused core dumps in previous versions when "new()" was called
     with a nonexistent class name and subclassing enabled).
 
-Version 2.0   14.12.96
+Version 2.0   14.12.1996
 
     Changed "Create()" to "new()".
     Now supports "$set = new Set::IntegerFast($elements);" instead of
@@ -171,7 +187,7 @@ Version 2.0   14.12.96
     Complete rewrite of the documentation, now in POD format.
     Added a new (wrapper) module named "Set::IntegerRange".
 
-Version 1.1   08.01.96
+Version 1.1   08.01.1996
 
     Added "Resize()".
     Changed "Create()", "Empty()", "Fill()" and "Copy()" to have complexity
@@ -181,16 +197,16 @@ Version 1.1   08.01.96
     Added new paragraphs to the documentation.
     Added "ExclusiveOr()" (for symmetric difference X = (Y + Z) \ (Y * Z)).
 
-Version 1.0   14.12.95   First version under UNIX (with Perl module).
+Version 1.0   14.12.1995   First version under UNIX (with Perl module).
 
     Initial release as a C library and Perl module.
 
-Version 0.9   01.11.93   First version of C library under MS-DOS.
+Version 0.9   01.11.1993   First version of C library under MS-DOS.
 
     Ported the Pascal code to C because I thought sets of arbitrary sizes
     are always useful to have.
 
-Version 0.1   ??.??.89   First version in Turbo Pascal under CP/M.
+Version 0.1   ??.??.1989   First version in Turbo Pascal under CP/M.
 
     I first wrote this library (on my Apple ][+) because I needed more bits
     in a set than Turbo Pascal would support in order to calculate "first",

@@ -1,9 +1,9 @@
                     =====================================
-                      Package "Bit::Vector" Version 5.7
+                      Package "Bit::Vector" Version 5.8
                     =====================================
 
 
-         Copyright (c) 1995, 1996, 1997, 1998, 1999 by Steffen Beyer.
+                 Copyright (c) 1995 - 2000 by Steffen Beyer.
                              All rights reserved.
 
 
@@ -126,5 +126,23 @@ which has been fixed in version 5.6.
 Also many thanks to Matt Knecht <hex@voicenet.com> for pushing me hard
 enough ;-) to suppress those annoying leading zeros in the output from
 "to_Hex()" in version 5.6!
+
+Many thanks to Roland Titze <Roland.Titze@ks.sel.alcatel.de> and
+to Andrew Brown <alloneword@dial.pipex.com> for pointing out the
+misspelling of "whether" (was: wether) throughout my documentation,
+corrected in version 5.8.
+
+Thanks also go to Steve Tolkin <steve.tolkin@fmr.com> for suggesting that
+I should emphasize in the README.txt file that the reading of the INSTALL.txt
+file is important, especially if running Perl under Windows. :-)
+
+Many special thanks to Joshua N. Pritikin <joshua.pritikin@db.com> for
+sending in valuable patches to make this module ready for Perl 5.6.0
+and to optimize the "strEQ" away from the typemap section in Vector.xs.
+
+Lots of thanks also to Yitzchak Scott-Thoennes <sthoenna@efn.org> for
+sending in a patch to make this module ready for Perl 5.6.0 and for
+extremely useful hints (and a patch) as to why the test suite had
+failures with Perl 5.6.0 all of a sudden.
 
 

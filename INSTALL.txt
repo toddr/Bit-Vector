@@ -1,9 +1,9 @@
                     =====================================
-                      Package "Bit::Vector" Version 5.7
+                      Package "Bit::Vector" Version 5.8
                     =====================================
 
 
-         Copyright (c) 1995, 1996, 1997, 1998, 1999 by Steffen Beyer.
+                 Copyright (c) 1995 - 2000 by Steffen Beyer.
                              All rights reserved.
 
 
@@ -14,6 +14,13 @@ Perl version 5.000 or higher, and an ANSI C compiler (!)
                                      ^^^^^^
 
 
+Preliminary steps for use with Perl prior to version 5.005:
+-----------------------------------------------------------
+
+Edit the file "Vector.xs" and change all occurrences (just two)
+of "PL_na" into "na".
+
+
 Preliminary steps for use with Perl prior to version 5.002:
 -----------------------------------------------------------
 
@@ -21,7 +28,7 @@ Edit the file "Makefile.PL" and change the line
 
     'VERSION_FROM'      => 'Vector.pm',
 to
-    'VERSION'           => '5.7',
+    'VERSION'           => '5.8',
 
 Then edit the file "Vector.pm" and change the line
 
@@ -31,7 +38,7 @@ to
 
 Also edit the file "t/00____version.t" and change the line
 
-    use Bit::Vector 5.7;
+    use Bit::Vector 5.8;
 to
     use Bit::Vector;
 
@@ -40,14 +47,14 @@ Finally, edit the file "Vector.xs" and delete the line
     PROTOTYPES: DISABLE
 
 
-Preliminary steps for use with ActiveState's port of Perl 5.005:
-----------------------------------------------------------------
+Preliminary steps for use with ActiveState's port of Perl 5:
+------------------------------------------------------------
 
 (For the Win32 platform)
 
 Edit the file "Makefile.PL" and remove all of the "#" characters
-which currently comment out the attributes "ABSTRACT", "AUTHOR"
-and "CAPI".
+which currently comment out the lines involved with the setting
+of the attributes "ABSTRACT", "AUTHOR" and "CAPI".
 
 
 Installation:
@@ -57,11 +64,6 @@ Installation:
 ALWAYS unpack and build Perl modules OUTSIDE the Perl source and installation
 tree! (You might otherwise inadvertently corrupt your Perl installation!)
 =============================================================================
-
-Note that installation under Windows NT/95 is easiest with the "native"
-"Perl for Win32" port by Perl developer Gurusamy Sarathy, available from:
-
-                http://www.perl.com/CPAN/authors/id/GSAR/
 
 Quick installation guide for experienced users:
 -----------------------------------------------
@@ -78,7 +80,7 @@ Detailed installation guide:
 ----------------------------
 
  1) Change directory to the directory that has been created by unpacking this
-    package ("cd Bit-Vector-5.7").
+    package ("cd Bit-Vector-5.8").
 
  2) Type "perl Makefile.PL" (or whatever the name and path of your Perl 5
     binary is).
@@ -138,10 +140,10 @@ Detailed installation guide:
 
     The output should look somewhat like this:
 
-    PERL_DL_NONLAZY=1 /usr/sw/bin/perl -I./blib/arch -I./blib/lib
-    -I/usr/sw/pkg/perl/lib/5.00503/i386-freebsd -I/usr/sw/pkg/perl/lib/5.00503
-    -e 'use Test::Harness qw(&runtests $verbose); $verbose=0; runtests @ARGV;'
-    t/*.t
+    PERL_DL_NONLAZY=1 /usr/sw/bin/perl -Iblib/arch
+    -Iblib/lib -I/usr/sw/pkg/perl/lib/5.6.0/i386-freebsd
+    -I/usr/sw/pkg/perl/lib/5.6.0 -e 'use Test::Harness
+    qw(&runtests $verbose); $verbose=0; runtests @ARGV;' t/*.t
     t/00____version.....ok
     t/01________new.....ok
     t/02____destroy.....ok
@@ -162,7 +164,8 @@ Detailed installation guide:
     t/28__chunklist.....ok
     t/30_overloaded.....ok
     All tests successful.
-    Files=19, Tests=67239, 42 secs (29.51 cusr + 1.33 csys = 30.84 CPU)
+    Files=19, Tests=67255, 19 wallclock secs
+    ( 6.43 cusr +  0.47 csys =  6.90 CPU)
 
     (Note that the exact number of tests will depend on the number of bits
      of a machine word/an unsigned long on your system!)

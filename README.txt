@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 5.7
+                      Package "Bit::Vector" Version 5.8
                     =====================================
 
 
@@ -9,14 +9,25 @@ This package is available for download either from my web site at
 
 or from any CPAN (= "Comprehensive Perl Archive Network") mirror server:
 
-                  http://www.perl.com/CPAN/authors/id/STBEY/
+               http://www.perl.com/CPAN/authors/id/S/ST/STBEY/
 
 
-The package consists of a C library (designed for maximum efficiency)
-which is the core of a Perl module (designed for maximum ease of use).
+Abstract:
+---------
 
-The C library is specifically designed so that it can be used stand-alone,
-without Perl.
+Bit::Vector is an efficient C library which allows you to handle
+bit vectors, sets (of integers), "big integer arithmetic" and
+boolean matrices, all of arbitrary sizes.
+
+The library is efficient (in terms of algorithmical complexity)
+and therefore fast (in terms of execution speed) for instance
+through the widespread use of divide-and-conquer algorithms.
+
+The package also includes an object-oriented Perl module for
+accessing the C library from Perl, and features overloaded
+operators for maximum ease of use.
+
+The C library can nevertheless be used stand-alone, without Perl.
 
 
 Legal issues:
@@ -24,19 +35,19 @@ Legal issues:
 
 This package with all its parts is
 
-Copyright (c) 1995, 1996, 1997, 1998, 1999 by Steffen Beyer.
+Copyright (c) 1995 - 2000 by Steffen Beyer.
 All rights reserved.
 
-This package is free software; you can redistribute it and/or
-modify it under the same terms as Perl itself, i.e., under the
-terms of the "Artistic License" or the "GNU General Public License".
+This package is free software; you can use, modify and redistribute
+it under the same terms as Perl itself, i.e., under the terms of
+the "Artistic License" or the "GNU General Public License".
 
 The C library at the core of this Perl module can additionally
-be redistributed and/or modified under the terms of the
+be used, modified and redistributed under the terms of the
 "GNU Library General Public License".
 
 Please refer to the files "Artistic.txt", "GNU_GPL.txt" and
-"GNU_LGPL.txt" in this distribution for details!
+"GNU_LGPL.txt" in this distribution, respectively, for details!
 
 
 Prerequisites:
@@ -52,29 +63,32 @@ Installation:
 Please see the file "INSTALL.txt" in this distribution for instructions
 on how to install this package.
 
+It is essential that you read this file since one of the special cases
+described in it might apply to you, especially if you are running Perl
+under Windows.
+
 
 Changes over previous versions:
 -------------------------------
 
 Please refer to the file "CHANGES.txt" in this distribution for a detailed
-version history. See the two scripts in the subdirectory "tools" in this
-distribution in order to automatically upgrade your existing applications
-from "Set::IntegerFast" versions 3.* and "Bit::Vector" versions 4.*.
+version history.
 
 
 Documentation:
 --------------
 
-The documentation to this package is included in POD format (= "Plain Old
-Documentation") in the file "Vector.pm" in this distribution, the human-
-readable markup-language standard for Perl documentation.
+The documentation of this package is included in POD format (= "Plain
+Old Documentation") in the file "Vector.pod" in this distribution,
+the human-readable markup-language standard for Perl documentation.
 
-By building this package, this documentation will automatically be converted
-into a man page, which will automatically be installed in your Perl tree for
-further reference in this process, where it can be accessed via the command
-"man Bit::Vector" (UNIX) or "perldoc Bit::Vector" (UNIX and Win32).
+By building this package, this documentation will automatically be
+converted into a man page, which will automatically be installed in
+your Perl tree for further reference through the installation process,
+where it can be accessed by the commands "man Bit::Vector" (UNIX)
+and "perldoc Bit::Vector" (UNIX and Win32).
 
-If Perl is not available on your system, you can also read this documentation
+If Perl is not available on your system, you can also read this file
 directly.
 
 
@@ -170,21 +184,21 @@ Move_Left()              Move_Right()             Insert()
 Delete()                 increment()              decrement()
 add()                    subtract()               Negate()
 Absolute()               Sign()                   Multiply()
-Divide()                 GCD()                    Block_Store()
-Block_Read()             Word_Size()              Word_Store()
-Word_Read()              Word_List_Store()        Word_List_Read()
-Word_Insert()            Word_Delete()            Chunk_Store()
-Chunk_Read()             Chunk_List_Store()       Chunk_List_Read()
-Index_List_Remove()      Index_List_Store()       Index_List_Read()
-Union()                  Intersection()           Difference()
-ExclusiveOr()            Complement()             subset()
-Norm()                   Min()                    Max()
-Multiplication()         Product()                Closure()
-Transpose()
+Divide()                 GCD()                    Power()
+Block_Store()            Block_Read()             Word_Size()
+Word_Store()             Word_Read()              Word_List_Store()
+Word_List_Read()         Word_Insert()            Word_Delete()
+Chunk_Store()            Chunk_Read()             Chunk_List_Store()
+Chunk_List_Read()        Index_List_Remove()      Index_List_Store()
+Index_List_Read()        Union()                  Intersection()
+Difference()             ExclusiveOr()            Complement()
+subset()                 Norm()                   Min()
+Max()                    Multiplication()         Product()
+Closure()                Transpose()
 
 
-Important note to C developers:
--------------------------------
+Note to C developers:
+---------------------
 
 Note again that the C library at the core of this module can also be
 used stand-alone (i.e., it contains no inter-dependencies whatsoever
@@ -241,7 +255,8 @@ Author's note:
 If you have any questions, suggestions or need any assistance, please
 let me know!
 
-I would in fact be glad to receive any kind of feedback from you!
+Please do send feedback, this is essential for improving this module
+according to your needs!
 
 I hope you will find this module beneficial.
 

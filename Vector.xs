@@ -2,7 +2,7 @@
 
 /*****************************************************************************/
 /*                                                                           */
-/*    Copyright (c) 1995, 1996, 1997, 1998, 1999 by Steffen Beyer.           */
+/*    Copyright (c) 1995 - 2000 by Steffen Beyer.                            */
 /*    All rights reserved.                                                   */
 /*                                                                           */
 /*    This package is free software; you can redistribute it                 */
@@ -20,6 +20,7 @@
 
 
 static    char *BitVector_Class = "Bit::Vector";
+static      HV *BitVector_Stash;
 
 typedef     SV *BitVector_Object;
 typedef     SV *BitVector_Handle;
@@ -28,21 +29,24 @@ typedef     SV *BitVector_Scalar;
 
 
 #define BIT_VECTOR_OBJECT(ref,hdl,adr) \
-    ( ref && SvROK(ref) && \
+    ( ref && \
+    SvROK(ref) && \
     (hdl = (BitVector_Handle)SvRV(ref)) && \
-    SvOBJECT(hdl) && (SvTYPE(hdl) == SVt_PVMG) && \
-    (strEQ(HvNAME(SvSTASH(hdl)),BitVector_Class)) && \
-    SvREADONLY(hdl) && (adr = (BitVector_Address)SvIV(hdl)) )
+    SvOBJECT(hdl) && \
+    SvREADONLY(hdl) && \
+    (SvTYPE(hdl) == SVt_PVMG) && \
+    (SvSTASH(hdl) == BitVector_Stash) && \
+    (adr = (BitVector_Address)SvIV(hdl)) )
 
 #define BIT_VECTOR_SCALAR(ref,typ,var) \
     ( ref && !(SvROK(ref)) && ((var = (typ)SvIV(ref)) | 1) )
 
 #define BIT_VECTOR_STRING(ref,var) \
-    ( ref && !(SvROK(ref)) && (var = (charptr)SvPV(ref,na)) )
+    ( ref && !(SvROK(ref)) && (var = (charptr)SvPV(ref,PL_na)) )
 
 #define BIT_VECTOR_BUFFER(ref,var,len) \
     ( ref && !(SvROK(ref)) && SvPOK(ref) && \
-    (var = (charptr)SvPV(ref,na)) && \
+    (var = (charptr)SvPV(ref,PL_na)) && \
     ((len = (N_int)SvCUR(ref)) | 1) )
 
 
@@ -101,10 +105,13 @@ typedef     SV *BitVector_Scalar;
     BIT_VECTOR_ERROR(name,"numeric overflow error")
 
 #define BIT_VECTOR_DISTINCT_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"Q and R must be distinct")
+    BIT_VECTOR_ERROR(name,"result vector(s) must be distinct")
 
 #define BIT_VECTOR_ZERO_ERROR(name) \
     BIT_VECTOR_ERROR(name,"division by zero error")
+
+#define BIT_VECTOR_EXPONENT_ERROR(name) \
+    BIT_VECTOR_ERROR(name,"exponent must be positive")
 
 #define BIT_VECTOR_INTERNAL_ERROR(name) \
     BIT_VECTOR_ERROR(name,"unexpected internal error - please contact author")
@@ -118,6 +125,7 @@ typedef     SV *BitVector_Scalar;
     case ErrCode_Pars: BIT_VECTOR_SYNTAX_ERROR(name); break; \
     case ErrCode_Ovfl: BIT_VECTOR_OVERFLOW_ERROR(name); break; \
     case ErrCode_Same: BIT_VECTOR_DISTINCT_ERROR(name); break; \
+    case ErrCode_Expo: BIT_VECTOR_EXPONENT_ERROR(name); break; \
     case ErrCode_Zero: BIT_VECTOR_ZERO_ERROR(name); break; \
     default: BIT_VECTOR_INTERNAL_ERROR(name); break; } }
 
@@ -163,6 +171,7 @@ BOOT:
         }
         exit(rc);
     }
+    BitVector_Stash = gv_stashpv(BitVector_Class,1);
 }
 
 
@@ -233,7 +242,7 @@ PPCODE:
         {
             handle = newSViv((IV)address);
             reference = sv_bless(sv_2mortal(newRV(handle)),
-                gv_stashpv(BitVector_Class,1));
+                BitVector_Stash);
             SvREFCNT_dec(handle);
             SvREADONLY_on(handle);
             PUSHs(reference);
@@ -273,7 +282,7 @@ PPCODE:
                 {
                     handle = newSViv((IV)address);
                     reference = sv_bless(sv_2mortal(newRV(handle)),
-                        gv_stashpv(BitVector_Class,1));
+                        BitVector_Stash);
                     SvREFCNT_dec(handle);
                     SvREADONLY_on(handle);
                     PUSHs(reference);
@@ -316,7 +325,7 @@ PPCODE:
                 {
                     handle = newSViv((IV)address);
                     reference = sv_bless(sv_2mortal(newRV(handle)),
-                        gv_stashpv(BitVector_Class,1));
+                        BitVector_Stash);
                     SvREFCNT_dec(handle);
                     SvREADONLY_on(handle);
                     PUSHs(reference);
@@ -359,7 +368,7 @@ PPCODE:
                 {
                     handle = newSViv((IV)address);
                     reference = sv_bless(sv_2mortal(newRV(handle)),
-                        gv_stashpv(BitVector_Class,1));
+                        BitVector_Stash);
                     SvREFCNT_dec(handle);
                     SvREADONLY_on(handle);
                     PUSHs(reference);
@@ -402,7 +411,7 @@ PPCODE:
                 {
                     handle = newSViv((IV)address);
                     reference = sv_bless(sv_2mortal(newRV(handle)),
-                        gv_stashpv(BitVector_Class,1));
+                        BitVector_Stash);
                     SvREFCNT_dec(handle);
                     SvREADONLY_on(handle);
                     PUSHs(reference);
@@ -430,7 +439,7 @@ PPCODE:
         {
             handle = newSViv((IV)address);
             reference = sv_bless(sv_2mortal(newRV(handle)),
-                gv_stashpv(BitVector_Class,1));
+                BitVector_Stash);
             SvREFCNT_dec(handle);
             SvREADONLY_on(handle);
             PUSHs(reference);
@@ -455,7 +464,7 @@ PPCODE:
         {
             handle = newSViv((IV)address);
             reference = sv_bless(sv_2mortal(newRV(handle)),
-                gv_stashpv(BitVector_Class,1));
+                BitVector_Stash);
             SvREFCNT_dec(handle);
             SvREADONLY_on(handle);
             PUSHs(reference);
@@ -487,7 +496,7 @@ PPCODE:
         {
             handle = newSViv((IV)address);
             reference = sv_bless(sv_2mortal(newRV(handle)),
-                gv_stashpv(BitVector_Class,1));
+                BitVector_Stash);
             SvREFCNT_dec(handle);
             SvREADONLY_on(handle);
             PUSHs(reference);
@@ -544,7 +553,7 @@ PPCODE:
         }
         handle = newSViv((IV)address);
         reference = sv_bless(sv_2mortal(newRV(handle)),
-            gv_stashpv(BitVector_Class,1));
+            BitVector_Stash);
         SvREFCNT_dec(handle);
         SvREADONLY_on(handle);
         PUSHs(reference);
@@ -612,7 +621,7 @@ CODE:
         sv_setiv(handle,(IV)NULL);
         SvREADONLY_on(handle);
     }
-    else BIT_VECTOR_OBJECT_ERROR("DESTROY");
+    /* else BIT_VECTOR_OBJECT_ERROR("DESTROY"); */
 }
 
 
@@ -630,11 +639,7 @@ CODE:
     if ( BIT_VECTOR_OBJECT(Xref,Xhdl,Xadr) &&
          BIT_VECTOR_OBJECT(Yref,Yhdl,Yadr) )
     {
-        if (bits_(Xadr) == bits_(Yadr))
-        {
-            BitVector_Copy(Xadr,Yadr);
-        }
-        else BIT_VECTOR_SIZE_ERROR("Copy");
+        BitVector_Copy(Xadr,Yadr);
     }
     else BIT_VECTOR_OBJECT_ERROR("Copy");
 }
@@ -2004,6 +2009,32 @@ CODE:
         else BIT_VECTOR_SIZE_ERROR("GCD");
     }
     else BIT_VECTOR_OBJECT_ERROR("GCD");
+}
+
+
+void
+BitVector_Power(Xref,Yref,Zref)
+BitVector_Object	Xref
+BitVector_Object	Yref
+BitVector_Object	Zref
+CODE:
+{
+    BitVector_Handle  Xhdl;
+    BitVector_Address Xadr;
+    BitVector_Handle  Yhdl;
+    BitVector_Address Yadr;
+    BitVector_Handle  Zhdl;
+    BitVector_Address Zadr;
+    ErrCode           code;
+
+    if ( BIT_VECTOR_OBJECT(Xref,Xhdl,Xadr) &&
+         BIT_VECTOR_OBJECT(Yref,Yhdl,Yadr) &&
+         BIT_VECTOR_OBJECT(Zref,Zhdl,Zadr) )
+    {
+        if (code = BitVector_Power(Xadr,Yadr,Zadr))
+            BIT_VECTOR_EXCEPTION(code,"Power");
+    }
+    else BIT_VECTOR_OBJECT_ERROR("Power");
 }
 
 

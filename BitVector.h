@@ -33,6 +33,7 @@ typedef enum
         ErrCode_Pars,     /* input string syntax error                       */
         ErrCode_Ovfl,     /* numeric overflow error                          */
         ErrCode_Same,     /* operands must be distinct                       */
+        ErrCode_Expo,     /* exponent must be positive                       */
         ErrCode_Zero      /* division by zero error                          */
     } ErrCode;
 
@@ -167,6 +168,7 @@ ErrCode BitVector_Multiply(wordptr X, wordptr Y, wordptr Z);
 ErrCode BitVector_Div_Pos (wordptr Q, wordptr X, wordptr Y, wordptr R);
 ErrCode BitVector_Divide  (wordptr Q, wordptr X, wordptr Y, wordptr R);
 ErrCode BitVector_GCD     (wordptr X, wordptr Y, wordptr Z);
+ErrCode BitVector_Power   (wordptr X, wordptr Y, wordptr Z);
 
 /* ===> direct memory access functions: */
 
@@ -234,11 +236,12 @@ void    Matrix_Transpose     (wordptr X, N_int rowsX, N_int colsX,
 /*****************************************************************************/
 
 /*****************************************************************************/
-/*  VERSION:  5.7                                                            */
+/*  VERSION:  5.8                                                            */
 /*****************************************************************************/
 /*  VERSION HISTORY:                                                         */
 /*****************************************************************************/
 /*                                                                           */
+/*    Version 5.8  14.07.00  Added "Power()". Changed "Copy()".              */
 /*    Version 5.7  19.05.99  Quickened "Div_Pos()". Added "Product()".       */
 /*    Version 5.6  02.11.98  Leading zeros eliminated in "to_Hex()".         */
 /*    Version 5.5  21.09.98  Fixed bug of uninitialized "error" in Multiply. */
@@ -275,7 +278,7 @@ void    Matrix_Transpose     (wordptr X, N_int rowsX, N_int colsX,
 /*  COPYRIGHT:                                                               */
 /*****************************************************************************/
 /*                                                                           */
-/*    Copyright (c) 1995, 1996, 1997, 1998, 1999 by Steffen Beyer.           */
+/*    Copyright (c) 1995 - 2000 by Steffen Beyer.                            */
 /*    All rights reserved.                                                   */
 /*                                                                           */
 /*****************************************************************************/

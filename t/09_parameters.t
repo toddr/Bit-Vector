@@ -11,7 +11,7 @@ use Bit::Vector;
 
 $prefix = 'Bit::Vector';
 
-print "1..948\n";
+print "1..964\n";
 
 $n = 1;
 
@@ -103,6 +103,7 @@ $method_list{'Sign'}                = [ 0 ];
 $method_list{'Multiply'}            = [ 0, 0, 0 ];
 $method_list{'Divide'}              = [ 0, 0, 0, 0 ];
 $method_list{'GCD'}                 = [ 0, 0, 0 ];
+$method_list{'Power'}               = [ 0, 0, 0 ];
 $method_list{'Block_Store'}         = [ 0, 8 ];
 $method_list{'Block_Read'}          = [ 0 ];
 $method_list{'Word_Size'}           = [ 0 ];
@@ -134,7 +135,7 @@ $method_list{'Closure'}             = [ 0, 11, 12 ];
 $method_list{'Transpose'}           = [ 0, 11, 12, 0, 11, 12 ];
 
 
-foreach $method (keys %method_list)
+foreach $method (sort keys(%method_list))
 {
     $definition = $method_list{$method};
     $count = @{$definition};
@@ -176,9 +177,9 @@ foreach $method (keys %method_list)
                 &init_objects();
                 &correct_values(1);
                 eval "$action";
-                if ($method eq "Divide")
+                if (($method eq "Divide") or ($method eq "Power"))
                 {
-                    if ($@ =~ /Q and R must be distinct/)
+                    if ($@ =~ /result vector\(s\) must be distinct/)
                     {print "ok $n\n";} else {print "not ok $n\n";}
                     $n++;
                 }
@@ -191,7 +192,7 @@ foreach $method (keys %method_list)
             }
             if ($limited)
             {
-                $message = "Usage: (?:${prefix}::)?${method}\\([a-zA-Z_,]+\\)";
+                $message = "Usage: (?:${prefix}::)?${method}\\([a-zA-Z_, ]+\\)";
                 &refresh();
                 pop(@parameter_list);
                 eval "$action";
@@ -217,8 +218,17 @@ foreach $method (keys %method_list)
                     $parameter_list[$i] = $wrong_values[$type]->[$j];
                     $message = $leadin . $error_message[$type]->[$j];
                     eval "$action";
-                    if ($@ =~ /$message/)
-                    {print "ok $n\n";} else {print "not ok $n\n";}
+                    # Special cases "Copy()" and "Power()":
+                    if (($n == 170) or ($n == 174) or ($n == 574) or ($n == 578))
+                    {
+                        unless ($@)
+                        {print "ok $n\n";} else {print "not ok $n\n";}
+                    }
+                    else
+                    {
+                        if ($@ =~ /$message/)
+                        {print "ok $n\n";} else {print "not ok $n\n";}
+                    }
                     $n++;
                 }
             }

@@ -33,6 +33,7 @@ typedef enum
         ErrCode_Pars,     /* input string syntax error                       */
         ErrCode_Ovfl,     /* numeric overflow error                          */
         ErrCode_Same,     /* operands must be distinct                       */
+        ErrCode_Expo,     /* exponent must be positive                       */
         ErrCode_Zero      /* division by zero error                          */
     } ErrCode;
 
@@ -167,6 +168,7 @@ ErrCode BitVector_Multiply(wordptr X, wordptr Y, wordptr Z);
 ErrCode BitVector_Div_Pos (wordptr Q, wordptr X, wordptr Y, wordptr R);
 ErrCode BitVector_Divide  (wordptr Q, wordptr X, wordptr Y, wordptr R);
 ErrCode BitVector_GCD     (wordptr X, wordptr Y, wordptr Z);
+ErrCode BitVector_Power   (wordptr X, wordptr Y, wordptr Z);
 
 /* ===> direct memory access functions: */
 
@@ -507,7 +509,7 @@ N_word BitVector_Mask(N_int bits)           /* bit vector mask (unused bits) */
 
 charptr BitVector_Version(void)
 {
-    return((charptr)"5.7");
+    return((charptr)"5.8");
 }
 
 N_int BitVector_Word_Bits(void)
@@ -640,13 +642,35 @@ void BitVector_Destroy(wordptr addr)                        /* free          */
 
 void BitVector_Copy(wordptr X, wordptr Y)                           /* X = Y */
 {
-    N_word size = size_(X);
-    N_word mask = mask_(X);
+    N_word  sizeX = size_(X);
+    N_word  sizeY = size_(Y);
+    N_word  maskX = mask_(X);
+    N_word  maskY = mask_(Y);
+    N_word  fill  = 0;
+    wordptr lastX;
+    wordptr lastY;
 
-    if ((size > 0) and (bits_(X) == bits_(Y)))
+    if ((X != Y) and (sizeX > 0))
     {
-        BIT_VECTOR_COPY_WORDS(X,Y,size)
-        *(--X) &= mask;
+        lastX = X + sizeX - 1;
+        if (sizeY > 0)
+        {
+            lastY = Y + sizeY - 1;
+            *lastY &= maskY;
+            while ((sizeX > 0) and (sizeY > 0))
+            {
+                *X++ = *Y++;
+                sizeX--;
+                sizeY--;
+            }
+            if ( (*lastY AND (maskY AND NOT (maskY >> 1))) != 0 )
+            {
+                fill = (N_word) ~0L;
+                *(X-1) |= NOT maskY;
+            }
+        }
+        while (sizeX-- > 0) *X++ = fill;
+        *lastX &= maskX;
     }
 }
 
@@ -2586,7 +2610,7 @@ ErrCode BitVector_Div_Pos(wordptr Q, wordptr X, wordptr Y, wordptr R)
     wordptr addr;
     Z_long  last;
     boolean flag;
-    boolean copy = false; /* flags wether valid rest is in R (0) or X (1) */
+    boolean copy = false; /* flags whether valid rest is in R (0) or X (1) */
 
     /*
        Requirements:
@@ -2769,6 +2793,65 @@ ErrCode BitVector_GCD(wordptr X, wordptr Y, wordptr Z)
     BitVector_Destroy(R);
     BitVector_Destroy(A);
     BitVector_Destroy(B);
+    return(error);
+}
+
+ErrCode BitVector_Power(wordptr X, wordptr Y, wordptr Z)
+{
+    ErrCode error = ErrCode_Ok;
+    N_word  bits  = bits_(X);
+    boolean first = true;
+    Z_long  last;
+    N_word  limit;
+    N_word  count;
+    wordptr T;
+
+    /*
+       Requirements:
+         -  X must have at least the same size as Y but may be larger (!)
+         -  X may not be identical with Z
+         -  Z must be positive
+       Features:
+         -  The contents of Y and Z are preserved
+    */
+
+    if (X == Z) return(ErrCode_Same);
+    if (bits < bits_(Y)) return(ErrCode_Size);
+    if (BitVector_msb(Z)) return(ErrCode_Expo);
+    if ((last = Set_Max(Z)) < 0L)
+    {
+        if (bits < 2) return(ErrCode_Ovfl);
+        BitVector_Empty(X);
+        *X |= LSB;
+        return(ErrCode_Ok);                             /* anything ^ 0 == 1 */
+    }
+    if (BitVector_is_empty(Y))
+    {
+        if (X != Y) BitVector_Empty(X);
+        return(ErrCode_Ok);                    /* 0 ^ anything not zero == 0 */
+    }
+    T = BitVector_Create(bits,false);
+    if (T == NULL) return(ErrCode_Null);
+    limit = (N_word) last;
+    for ( count = 0; ((!error) and (count <= limit)); count++ )
+    {
+        if ( BIT_VECTOR_TST_BIT(Z,count) )
+        {
+            if (first)
+            {
+                first = false;
+                if (count) {             BitVector_Copy(X,T); }
+                else       { if (X != Y) BitVector_Copy(X,Y); }
+            }
+            else error = BitVector_Multiply(X,T,X); /* order important because T > X */
+        }
+        if ((!error) and (count < limit))
+        {
+            if (count) error = BitVector_Multiply(T,T,T);
+            else       error = BitVector_Multiply(T,Y,Y);
+        }
+    }
+    BitVector_Destroy(T);
     return(error);
 }
 
@@ -3305,11 +3388,12 @@ void Matrix_Transpose(wordptr X, N_int rowsX, N_int colsX,
 }
 
 /*****************************************************************************/
-/*  VERSION:  5.7                                                            */
+/*  VERSION:  5.8                                                            */
 /*****************************************************************************/
 /*  VERSION HISTORY:                                                         */
 /*****************************************************************************/
 /*                                                                           */
+/*    Version 5.8  14.07.00  Added "Power()". Changed "Copy()".              */
 /*    Version 5.7  19.05.99  Quickened "Div_Pos()". Added "Product()".       */
 /*    Version 5.6  02.11.98  Leading zeros eliminated in "to_Hex()".         */
 /*    Version 5.5  21.09.98  Fixed bug of uninitialized "error" in Multiply. */
@@ -3346,7 +3430,7 @@ void Matrix_Transpose(wordptr X, N_int rowsX, N_int colsX,
 /*  COPYRIGHT:                                                               */
 /*****************************************************************************/
 /*                                                                           */
-/*    Copyright (c) 1995, 1996, 1997, 1998, 1999 by Steffen Beyer.           */
+/*    Copyright (c) 1995 - 2000 by Steffen Beyer.                            */
 /*    All rights reserved.                                                   */
 /*                                                                           */
 /*****************************************************************************/

@@ -136,7 +136,7 @@ typedef enum { false = FALSE , true = TRUE } boolean;
 /*  COPYRIGHT:                                                               */
 /*****************************************************************************/
 /*                                                                           */
-/*    Copyright (c) 1995, 1996, 1997, 1998, 1999 by Steffen Beyer.           */
+/*    Copyright (c) 1995 - 2000 by Steffen Beyer.                            */
 /*    All rights reserved.                                                   */
 /*                                                                           */
 /*****************************************************************************/

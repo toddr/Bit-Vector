@@ -21,7 +21,7 @@ if ($@ =~ /Can't call method "DESTROY" without a package or object reference/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 eval { Bit::Vector::DESTROY($set); };
-if ($@ =~ /[^:]+::[^:]+::DESTROY\(\): item is not a "[^"]+" object/)
+unless ($@)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 $obj = 0x00088850;
@@ -34,7 +34,7 @@ if ($@ =~ /Can't call method "DESTROY" on unblessed reference/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 eval { Bit::Vector::DESTROY($set); };
-if ($@ =~ /[^:]+::[^:]+::DESTROY\(\): item is not a "[^"]+" object/)
+unless ($@)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 $obj = 0x000E9CE0;
@@ -44,11 +44,11 @@ if (ref($set) eq 'Bit::Vector')
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 eval { $set->DESTROY(); };
-if ($@ =~ /[^:]+::[^:]+::DESTROY\(\): item is not a "[^"]+" object/)
+unless ($@)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 eval { Bit::Vector::DESTROY($set); };
-if ($@ =~ /[^:]+::[^:]+::DESTROY\(\): item is not a "[^"]+" object/)
+unless ($@)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 $set = new Bit::Vector(1);
@@ -66,7 +66,7 @@ if (defined(${$set}) && (${$set} == 0))
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 eval { $set->DESTROY(); };
-if ($@ =~ /[^:]+::[^:]+::DESTROY\(\): item is not a "[^"]+" object/)
+unless ($@)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 eval { $set = 0; };
