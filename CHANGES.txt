@@ -1,14 +1,27 @@
                     =====================================
-                      Package "Bit::Vector" Version 6.1
+                      Package "Bit::Vector" Version 6.2
                     =====================================
 
 
-                 Copyright (c) 1995 - 2001 by Steffen Beyer.
+                 Copyright (c) 1995 - 2002 by Steffen Beyer.
                              All rights reserved.
 
 
 Version history:
 ----------------
+
+Version 6.2   15.09.2002
+
+ +  Fixed missing "\" in regular expression in "t/00____version.t".
+ +  Overhauled the error handlers in "BitVector.c" and "Vector.xs".
+ +  Added a demo "examples/test.c" to play around with the C library.
+ +  Attempted to fix all compiler warnings.
+ +  Fixed a problem in test "t/01________new.t" with Perl using
+    64 bit integers; now contains "use integer;" to avoid failure.
+ +  Synchronized "Carp::Clan" and "ToolBox.h" with "Date::Calc" 5.2.
+ +  Revealed common method aliases (Or, And, etc.) in the documentation.
+ +  Fixed GCD(), now GCD(x,0) == GCD(0,x) == x and negative values
+    are handled correctly.
 
 Version 6.1   08.10.2001
 
@@ -25,8 +38,8 @@ Version 6.1   08.10.2001
     accordingly.
  +  Changed the internal names BitVector_msb and BitVector_lsb to
     BitVector_msb_ and BitVector_lsb_ in order to make the (non-
-    ANSI C-standard-compliant!) VMS linker happy. This does not
-    affect the Perl interface.
+    ANSI C-standard-compliant!) VMS linker happy. This does NOT
+    affect the Perl interface, though.
 
 Version 6.0   08.10.2000
 

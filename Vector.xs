@@ -2,7 +2,7 @@
 
 /*****************************************************************************/
 /*                                                                           */
-/*    Copyright (c) 1995 - 2001 by Steffen Beyer.                            */
+/*    Copyright (c) 1995 - 2002 by Steffen Beyer.                            */
 /*    All rights reserved.                                                   */
 /*                                                                           */
 /*    This package is free software; you can redistribute it                 */
@@ -68,8 +68,6 @@ typedef     SV *BitVector_Scalar;
 #define BIT_VECTOR_ERROR(name,error) \
     croak("Bit::Vector::" name "(): " error)
 
-#define BIT_VECTOR_MEMORY_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"unable to allocate memory")
 
 #define BIT_VECTOR_OBJECT_ERROR(name) \
     BIT_VECTOR_ERROR(name,"item is not a \"Bit::Vector\" object")
@@ -80,17 +78,11 @@ typedef     SV *BitVector_Scalar;
 #define BIT_VECTOR_STRING_ERROR(name) \
     BIT_VECTOR_ERROR(name,"item is not a string")
 
-#define BIT_VECTOR_INDEX_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"index out of range")
-
 #define BIT_VECTOR_MIN_ERROR(name) \
     BIT_VECTOR_ERROR(name,"minimum index out of range")
 
 #define BIT_VECTOR_MAX_ERROR(name) \
     BIT_VECTOR_ERROR(name,"maximum index out of range")
-
-#define BIT_VECTOR_ORDER_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"minimum > maximum index")
 
 #define BIT_VECTOR_START_ERROR(name) \
     BIT_VECTOR_ERROR(name,"start index out of range")
@@ -101,9 +93,6 @@ typedef     SV *BitVector_Scalar;
 #define BIT_VECTOR_CHUNK_ERROR(name) \
     BIT_VECTOR_ERROR(name,"chunk size out of range")
 
-#define BIT_VECTOR_SIZE_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"bit vector size mismatch")
-
 #define BIT_VECTOR_SET_ERROR(name) \
     BIT_VECTOR_ERROR(name,"set size mismatch")
 
@@ -113,36 +102,45 @@ typedef     SV *BitVector_Scalar;
 #define BIT_VECTOR_SHAPE_ERROR(name) \
     BIT_VECTOR_ERROR(name,"not a square matrix")
 
-#define BIT_VECTOR_SYNTAX_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"input string syntax error")
 
-#define BIT_VECTOR_OVERFLOW_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"numeric overflow error")
+#define BIT_VECTOR_MEMORY_ERROR(name) \
+    BIT_VECTOR_ERROR(name,ERRCODE_NULL)
+
+#define BIT_VECTOR_INDEX_ERROR(name) \
+    BIT_VECTOR_ERROR(name,ERRCODE_INDX)
+
+#define BIT_VECTOR_ORDER_ERROR(name) \
+    BIT_VECTOR_ERROR(name,ERRCODE_ORDR)
+
+#define BIT_VECTOR_SIZE_ERROR(name) \
+    BIT_VECTOR_ERROR(name,ERRCODE_SIZE)
 
 #define BIT_VECTOR_DISTINCT_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"result vector(s) must be distinct")
+    BIT_VECTOR_ERROR(name,ERRCODE_SAME)
 
 #define BIT_VECTOR_ZERO_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"division by zero error")
+    BIT_VECTOR_ERROR(name,ERRCODE_ZERO)
 
-#define BIT_VECTOR_EXPONENT_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"exponent must be positive")
-
-#define BIT_VECTOR_INTERNAL_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"unexpected internal error - please contact author")
 
 #define BIT_VECTOR_EXCEPTION(code,name) \
-    { switch (code) { case ErrCode_Ok: break; \
-    case ErrCode_Null: BIT_VECTOR_MEMORY_ERROR(name); break; \
-    case ErrCode_Indx: BIT_VECTOR_INDEX_ERROR(name); break; \
-    case ErrCode_Ordr: BIT_VECTOR_ORDER_ERROR(name); break; \
-    case ErrCode_Size: BIT_VECTOR_SIZE_ERROR(name); break; \
-    case ErrCode_Pars: BIT_VECTOR_SYNTAX_ERROR(name); break; \
-    case ErrCode_Ovfl: BIT_VECTOR_OVERFLOW_ERROR(name); break; \
-    case ErrCode_Same: BIT_VECTOR_DISTINCT_ERROR(name); break; \
-    case ErrCode_Expo: BIT_VECTOR_EXPONENT_ERROR(name); break; \
-    case ErrCode_Zero: BIT_VECTOR_ZERO_ERROR(name); break; \
-    default: BIT_VECTOR_INTERNAL_ERROR(name); break; } }
+    { switch (code) { \
+    case ErrCode_Ok:   break; \
+    case ErrCode_Type: BIT_VECTOR_ERROR(name,ERRCODE_TYPE); break; \
+    case ErrCode_Bits: BIT_VECTOR_ERROR(name,ERRCODE_BITS); break; \
+    case ErrCode_Word: BIT_VECTOR_ERROR(name,ERRCODE_WORD); break; \
+    case ErrCode_Long: BIT_VECTOR_ERROR(name,ERRCODE_LONG); break; \
+    case ErrCode_Powr: BIT_VECTOR_ERROR(name,ERRCODE_POWR); break; \
+    case ErrCode_Loga: BIT_VECTOR_ERROR(name,ERRCODE_LOGA); break; \
+    case ErrCode_Null: BIT_VECTOR_ERROR(name,ERRCODE_NULL); break; \
+    case ErrCode_Indx: BIT_VECTOR_ERROR(name,ERRCODE_INDX); break; \
+    case ErrCode_Ordr: BIT_VECTOR_ERROR(name,ERRCODE_ORDR); break; \
+    case ErrCode_Size: BIT_VECTOR_ERROR(name,ERRCODE_SIZE); break; \
+    case ErrCode_Pars: BIT_VECTOR_ERROR(name,ERRCODE_PARS); break; \
+    case ErrCode_Ovfl: BIT_VECTOR_ERROR(name,ERRCODE_OVFL); break; \
+    case ErrCode_Same: BIT_VECTOR_ERROR(name,ERRCODE_SAME); break; \
+    case ErrCode_Expo: BIT_VECTOR_ERROR(name,ERRCODE_EXPO); break; \
+    case ErrCode_Zero: BIT_VECTOR_ERROR(name,ERRCODE_ZERO); break; \
+    default:           BIT_VECTOR_ERROR(name,ERRCODE_OOPS); break; } }
 
 
 MODULE = Bit::Vector		PACKAGE = Bit::Vector		PREFIX = BitVector_
@@ -155,36 +153,10 @@ BOOT:
 {
     ErrCode rc;
 
-    if (rc = BitVector_Boot())
+    if ((rc = BitVector_Boot()))
     {
-        switch (rc)
-        {
-            case ErrCode_Type:
-                BIT_VECTOR_ERROR("Boot","sizeof(word) > sizeof(size_t)");
-                break;
-            case ErrCode_Bits:
-                BIT_VECTOR_ERROR("Boot","bits(word) != sizeof(word)*8");
-                break;
-            case ErrCode_Word:
-                BIT_VECTOR_ERROR("Boot","bits(word) < 16");
-                break;
-            case ErrCode_Long:
-                BIT_VECTOR_ERROR("Boot","bits(word) > bits(long)");
-                break;
-            case ErrCode_Powr:
-                BIT_VECTOR_ERROR("Boot","bits(word) != 2^x");
-                break;
-            case ErrCode_Loga:
-                BIT_VECTOR_ERROR("Boot","bits(word) != 2^ld(bits(word))");
-                break;
-            case ErrCode_Null:
-                BIT_VECTOR_MEMORY_ERROR("Boot");
-                break;
-            default:
-                BIT_VECTOR_INTERNAL_ERROR("Boot");
-                break;
-        }
-        exit(rc);
+        BIT_VECTOR_EXCEPTION(rc,"Boot");
+        exit((int)rc);
     }
     BitVector_Stash = gv_stashpv(BitVector_Class,1);
 }
@@ -288,7 +260,7 @@ PPCODE:
         {
             if ((address = BitVector_Create(size,false)) != NULL)
             {
-                if (code = BitVector_from_Hex(address,pointer))
+                if ((code = BitVector_from_Hex(address,pointer)))
                 {
                     BitVector_Destroy(address);
                     BIT_VECTOR_EXCEPTION(code,"new_Hex");
@@ -331,7 +303,7 @@ PPCODE:
         {
             if ((address = BitVector_Create(size,false)) != NULL)
             {
-                if (code = BitVector_from_Bin(address,pointer))
+                if ((code = BitVector_from_Bin(address,pointer)))
                 {
                     BitVector_Destroy(address);
                     BIT_VECTOR_EXCEPTION(code,"new_Bin");
@@ -374,7 +346,7 @@ PPCODE:
         {
             if ((address = BitVector_Create(size,false)) != NULL)
             {
-                if (code = BitVector_from_Dec(address,pointer))
+                if ((code = BitVector_from_Dec(address,pointer)))
                 {
                     BitVector_Destroy(address);
                     BIT_VECTOR_EXCEPTION(code,"new_Dec");
@@ -417,7 +389,7 @@ PPCODE:
         {
             if ((address = BitVector_Create(size,false)) != NULL)
             {
-                if (code = BitVector_from_Enum(address,pointer))
+                if ((code = BitVector_from_Enum(address,pointer)))
                 {
                     BitVector_Destroy(address);
                     BIT_VECTOR_EXCEPTION(code,"new_Enum");
@@ -1170,7 +1142,7 @@ CODE:
     {
         if ( BIT_VECTOR_STRING(string,pointer) )
         {
-            if (code = BitVector_from_Hex(address,pointer))
+            if ((code = BitVector_from_Hex(address,pointer)))
             {
                 BIT_VECTOR_EXCEPTION(code,"from_Hex");
             }
@@ -1220,7 +1192,7 @@ CODE:
     {
         if ( BIT_VECTOR_STRING(string,pointer) )
         {
-            if (code = BitVector_from_Bin(address,pointer))
+            if ((code = BitVector_from_Bin(address,pointer)))
             {
                 BIT_VECTOR_EXCEPTION(code,"from_Bin");
             }
@@ -1270,7 +1242,7 @@ CODE:
     {
         if ( BIT_VECTOR_STRING(string,pointer) )
         {
-            if (code = BitVector_from_Dec(address,pointer))
+            if ((code = BitVector_from_Dec(address,pointer)))
             {
                 BIT_VECTOR_EXCEPTION(code,"from_Dec");
             }
@@ -1324,7 +1296,7 @@ CODE:
     {
         if ( BIT_VECTOR_STRING(string,pointer) )
         {
-            if (code = BitVector_from_Enum(address,pointer))
+            if ((code = BitVector_from_Enum(address,pointer)))
             {
                 BIT_VECTOR_EXCEPTION(code,"from_Enum");
             }
@@ -1779,7 +1751,7 @@ OUTPUT:
 RETVAL
 
 
-boolean
+void
 BitVector_add(Xref,Yref,Zref,carry)
 BitVector_Object	Xref
 BitVector_Object	Yref
@@ -1825,7 +1797,7 @@ PPCODE:
 }
 
 
-boolean
+void
 BitVector_subtract(Xref,Yref,Zref,carry)
 BitVector_Object	Xref
 BitVector_Object	Yref
@@ -1957,6 +1929,8 @@ void
 BitVector_Absolute(Xref,Yref)
 BitVector_Object	Xref
 BitVector_Object	Yref
+ALIAS:
+  Abs = 1
 CODE:
 {
     BitVector_Handle  Xhdl;
@@ -2016,7 +1990,7 @@ CODE:
     {
         if ((bits_(Xadr) >= bits_(Yadr)) and (bits_(Yadr) == bits_(Zadr)))
         {
-            if (code = BitVector_Multiply(Xadr,Yadr,Zadr))
+            if ((code = BitVector_Multiply(Xadr,Yadr,Zadr)))
                 BIT_VECTOR_EXCEPTION(code,"Multiply");
         }
         else BIT_VECTOR_SIZE_ERROR("Multiply");
@@ -2048,21 +2022,8 @@ CODE:
          BIT_VECTOR_OBJECT(Yref,Yhdl,Yadr) &&
          BIT_VECTOR_OBJECT(Rref,Rhdl,Radr) )
     {
-        if ((bits_(Qadr) == bits_(Xadr)) and
-            (bits_(Qadr) == bits_(Yadr)) and (bits_(Qadr) == bits_(Radr)))
-        {
-            if (Qadr != Radr)
-            {
-                if (not BitVector_is_empty(Yadr))
-                {
-                    if (code = BitVector_Divide(Qadr,Xadr,Yadr,Radr))
-                        BIT_VECTOR_EXCEPTION(code,"Divide");
-                }
-                else BIT_VECTOR_ZERO_ERROR("Divide");
-            }
-            else BIT_VECTOR_DISTINCT_ERROR("Divide");
-        }
-        else BIT_VECTOR_SIZE_ERROR("Divide");
+        if ((code = BitVector_Divide(Qadr,Xadr,Yadr,Radr)))
+            BIT_VECTOR_EXCEPTION(code,"Divide");
     }
     else BIT_VECTOR_OBJECT_ERROR("Divide");
 }
@@ -2087,17 +2048,8 @@ CODE:
          BIT_VECTOR_OBJECT(Yref,Yhdl,Yadr) &&
          BIT_VECTOR_OBJECT(Zref,Zhdl,Zadr) )
     {
-        if ((bits_(Xadr) == bits_(Yadr)) and (bits_(Xadr) == bits_(Zadr)))
-        {
-            if ((not BitVector_is_empty(Yadr)) and
-                (not BitVector_is_empty(Zadr)))
-            {
-                if (code = BitVector_GCD(Xadr,Yadr,Zadr))
-                    BIT_VECTOR_EXCEPTION(code,"GCD");
-            }
-            else BIT_VECTOR_ZERO_ERROR("GCD");
-        }
-        else BIT_VECTOR_SIZE_ERROR("GCD");
+        if ((code = BitVector_GCD(Xadr,Yadr,Zadr)))
+            BIT_VECTOR_EXCEPTION(code,"GCD");
     }
     else BIT_VECTOR_OBJECT_ERROR("GCD");
 }
@@ -2122,7 +2074,7 @@ CODE:
          BIT_VECTOR_OBJECT(Yref,Yhdl,Yadr) &&
          BIT_VECTOR_OBJECT(Zref,Zhdl,Zadr) )
     {
-        if (code = BitVector_Power(Xadr,Yadr,Zadr))
+        if ((code = BitVector_Power(Xadr,Yadr,Zadr)))
             BIT_VECTOR_EXCEPTION(code,"Power");
     }
     else BIT_VECTOR_OBJECT_ERROR("Power");
@@ -2168,7 +2120,7 @@ PPCODE:
         if (string != NULL)
         {
             EXTEND(sp,1);
-            PUSHs(sv_2mortal(newSVpv((char *)string,(int)length)));
+            PUSHs(sv_2mortal(newSVpv((char *)string,length)));
             BitVector_Dispose(string);
         }
         else BIT_VECTOR_MEMORY_ERROR("Block_Read");
@@ -2301,7 +2253,7 @@ PPCODE:
     if ( BIT_VECTOR_OBJECT(reference,handle,address) )
     {
         size = size_(address);
-        EXTEND(sp,size);
+        EXTEND(sp,(int)size);
         for ( offset = 0; (offset < size); offset++ )
         {
             value = BitVector_Word_Read(address,offset);
@@ -2559,7 +2511,7 @@ PPCODE:
                 size = size_(address);
                 length = (N_int) (bits / chunkspan);
                 if ((length * chunkspan) < bits) length++;
-                EXTEND(sp,length);
+                EXTEND(sp,(int)length);
                 chunk = 0L;
                 value = 0L;
                 index = 0;
@@ -2699,7 +2651,7 @@ PPCODE:
         norm = Set_Norm(address);
         if (norm > 0)
         {
-            EXTEND(sp,norm);
+            EXTEND(sp,(int)norm);
             for ( base = word = 0; word < size; word++, base += bits )
             {
                 index = base;

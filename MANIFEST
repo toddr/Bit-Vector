@@ -16,6 +16,7 @@ Vector.xs
 examples/SetObject.pl
 examples/benchmark.pl
 examples/primes.pl
+examples/test.c
 lib/Bit/Vector/Overload.pm
 lib/Bit/Vector/Overload.pod
 lib/Carp/Clan.pm

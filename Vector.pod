@@ -163,7 +163,8 @@ See L<Bit::Vector::Overload(3)>.
   bit_flip
       $bit = $vector->bit_flip($index);
 
-  bit_test, contains
+  bit_test
+  contains
       $bit = $vector->bit_test($index);
       $bit = $vector->contains($index);
       if ($vector->bit_test($index))
@@ -228,10 +229,14 @@ See L<Bit::Vector::Overload(3)>.
       $carry = $vec3->subtract($vec1,$vec2,$carry);
       ($carry,$overflow) = $vec3->subtract($vec1,$vec2,$carry);
 
+  Neg
   Negate
+      $vec2->Neg($vec1);
       $vec2->Negate($vec1);
 
+  Abs
   Absolute
+      $vec2->Abs($vec1);
       $vec2->Absolute($vec1);
 
   Sign
@@ -302,19 +307,29 @@ See L<Bit::Vector::Overload(3)>.
   Index_List_Read
       @indices = $vector->Index_List_Read();
 
+  Or
   Union
+      $vec3->Or($vec1,$vec2);
       $set3->Union($set1,$set2);
 
+  And
   Intersection
+      $vec3->And($vec1,$vec2);
       $set3->Intersection($set1,$set2);
 
+  AndNot
   Difference
+      $vec3->AndNot($vec1,$vec2);
       $set3->Difference($set1,$set2);
 
+  Xor
   ExclusiveOr
+      $vec3->Xor($vec1,$vec2);
       $set3->ExclusiveOr($set1,$set2);
 
+  Not
   Complement
+      $vec2->Not($vec1);
       $set2->Complement($set1);
 
   subset
@@ -1552,6 +1567,8 @@ cleared or "C<1>" if the bit is set (B<AFTER> flipping it).
 
 C<if ($vector-E<gt>bit_test($index))>
 
+C<if ($vector-E<gt>contains($index))>
+
 Returns the current state of the bit with index "C<$index>"
 in the given vector, i.e., returns "C<0>" if it is cleared
 (in the "off" state) or "C<1>" if it is set (in the "on" state).
@@ -2023,6 +2040,8 @@ bit position.
 
 =item *
 
+C<$vec2-E<gt>Neg($vec1);>
+
 C<$vec2-E<gt>Negate($vec1);>
 
 This method calculates the two's complement of the number in bit
@@ -2044,6 +2063,8 @@ result if the number contained in bit vector "C<$vec1>" is C<2 ^ (n-1)>
 vector contains: The negated value of this number is the number itself!
 
 =item *
+
+C<$vec2-E<gt>Abs($vec1);>
 
 C<$vec2-E<gt>Absolute($vec1);>
 
@@ -2182,12 +2203,7 @@ The method uses Euklid's algorithm internally:
         return(a);
     }
 
-Note that a fatal "division by zero error" will occur if any of the two
-numbers is equal to zero.
-
-Note also that this method regards its two arguments as B<SIGNED> but
-that it actually uses the B<ABSOLUTE VALUE> of its two arguments internally,
-i.e., the B<RESULT> of this method will B<ALWAYS> be B<POSITIVE>.
+Note that C<GCD(x,0) == GCD(0,x) == x>.
 
 =item *
 
@@ -2713,6 +2729,8 @@ prime numbers:
 
 =item *
 
+C<$vec3-E<gt>Or($vec1,$vec2);>
+
 C<$set3-E<gt>Union($set1,$set2);>
 
 This method calculates the union of "C<$set1>" and "C<$set2>" and stores
@@ -2728,6 +2746,8 @@ In-place calculation is also possible, i.e., "C<$set3>" may be identical
 with "C<$set1>" or "C<$set2>" or both.
 
 =item *
+
+C<$vec3-E<gt>And($vec1,$vec2);>
 
 C<$set3-E<gt>Intersection($set1,$set2);>
 
@@ -2745,6 +2765,8 @@ with "C<$set1>" or "C<$set2>" or both.
 
 =item *
 
+C<$vec3-E<gt>AndNot($vec1,$vec2);>
+
 C<$set3-E<gt>Difference($set1,$set2);>
 
 This method calculates the difference of "C<$set1>" less "C<$set2>" and
@@ -2757,6 +2779,8 @@ In-place calculation is also possible, i.e., "C<$set3>" may be identical
 with "C<$set1>" or "C<$set2>" or both.
 
 =item *
+
+C<$vec3-E<gt>Xor($vec1,$vec2);>
 
 C<$set3-E<gt>ExclusiveOr($set1,$set2);>
 
@@ -2778,6 +2802,8 @@ In-place calculation is also possible, i.e., "C<$set3>" may be identical
 with "C<$set1>" or "C<$set2>" or both.
 
 =item *
+
+C<$vec2-E<gt>Not($vec1);>
 
 C<$set2-E<gt>Complement($set1);>
 
@@ -2979,7 +3005,7 @@ perlxstut(1), perlguts(1), overload(3).
 
 =head1 VERSION
 
-This man page documents "Bit::Vector" version 6.1.
+This man page documents "Bit::Vector" version 6.2.
 
 =head1 AUTHOR
 
@@ -2989,7 +3015,7 @@ This man page documents "Bit::Vector" version 6.1.
 
 =head1 COPYRIGHT
 
-Copyright (c) 1995 - 2001 by Steffen Beyer. All rights reserved.
+Copyright (c) 1995 - 2002 by Steffen Beyer. All rights reserved.
 
 =head1 LICENSE
 

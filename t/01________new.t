@@ -2,6 +2,7 @@
 
 use strict;
 no strict "vars";
+use integer;
 
 use Bit::Vector;
 

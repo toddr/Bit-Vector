@@ -1,9 +1,9 @@
                     =====================================
-                      Package "Bit::Vector" Version 6.1
+                      Package "Bit::Vector" Version 6.2
                     =====================================
 
 
-                 Copyright (c) 1995 - 2001 by Steffen Beyer.
+                 Copyright (c) 1995 - 2002 by Steffen Beyer.
                              All rights reserved.
 
 
@@ -149,5 +149,20 @@ Many thanks to John Peacock <jpeacock@rowman.com> for reporting a
 problem with the VMS linker which is unable to differentiate case -
 in violation of the ANSI C standard - and for sending a patch to fix
 this problem.
+
+Many thanks to Tom Oelke <toelke@mipos2.intel.com> for reporting a
+problem with test "t/01________new.t" when Perl was built to use
+64 bit integers and for suggesting two possible fixes. The second
+one (adding "use integer;" at the top of the script) was adopted
+in version 6.2.
+
+Many thanks to Clint Olsen <clint@0lsen.net> for his many interesting
+questions and suggestions, one of which led to my writing the new
+example file "examples/test.c" in version 6.2.
+
+Many thanks to Tels <tels@bloodgate.com> for his criticism of "GCD()"
+and the documentation (with respect to common method name aliases
+such as Or, And, Xor, etc.). Both weaknesses have been fixed in
+version 6.2.
 
 
