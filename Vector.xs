@@ -2,7 +2,7 @@
 
 /*****************************************************************************/
 /*                                                                           */
-/*    Copyright (c) 1995 - 2000 by Steffen Beyer.                            */
+/*    Copyright (c) 1995 - 2001 by Steffen Beyer.                            */
 /*    All rights reserved.                                                   */
 /*                                                                           */
 /*    This package is free software; you can redistribute it                 */
@@ -10,28 +10,29 @@
 /*                                                                           */
 /*****************************************************************************/
 
+
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
 
 
-#include "BitVector.h"
-
-// ###TOM added
-// The following is required for (Mac-) Perl 5.004:
-// With version 5.8 of this module, the author has replaced the global 
-// variable 'na' with 'PL_na',(see perlguts.pod) to make the module 
-// ready for Perl 5.6.0 (see Changes.txt and INSTALL.txt). Perl versions  
-// < 5.005 don't know about the 'PL_na' variable. I use the following 
-// conditional #define for Perl versions with PATCHLEVEL < 5.
-
 #include "patchlevel.h"
-
-#if (PATCHLEVEL < 5)
-#define PL_na na
+#if ((PATCHLEVEL < 4) || ((PATCHLEVEL == 4) && (SUBVERSION < 5)))
+/* PL_na was introduced in perl5.004_05 */
+#ifndef PL_na
+    #define PL_na na
+#endif
+#endif
+#if (PATCHLEVEL < 4)
+/* GIMME_V was introduced in perl5.004 */
+#ifndef GIMME_V
+    #define GIMME_V GIMME
+#endif
 #endif
 
-// end ###TOM added
+
+#include "BitVector.h"
+
 
 static    char *BitVector_Class = "Bit::Vector";
 static      HV *BitVector_Stash;
@@ -1530,7 +1531,7 @@ CODE:
 
     if ( BIT_VECTOR_OBJECT(reference,handle,address) )
     {
-        RETVAL = BitVector_lsb(address);
+        RETVAL = BitVector_lsb_(address);
     }
     else BIT_VECTOR_OBJECT_ERROR("lsb");
 }
@@ -1548,7 +1549,7 @@ CODE:
 
     if ( BIT_VECTOR_OBJECT(reference,handle,address) )
     {
-        RETVAL = BitVector_msb(address);
+        RETVAL = BitVector_msb_(address);
     }
     else BIT_VECTOR_OBJECT_ERROR("msb");
 }
@@ -1804,7 +1805,7 @@ PPCODE:
             if ((bits_(Xadr) == bits_(Yadr)) and (bits_(Xadr) == bits_(Zadr)))
             {
                 v = BitVector_compute(Xadr,Yadr,Zadr,false,&c);
-                if (GIMME == G_ARRAY)
+                if (GIMME_V == G_ARRAY)
                 {
                     EXTEND(sp,2);
                     PUSHs(sv_2mortal(newSViv((IV)c)));
@@ -1852,7 +1853,7 @@ PPCODE:
             if ((bits_(Xadr) == bits_(Yadr)) and (bits_(Xadr) == bits_(Zadr)))
             {
                 v = BitVector_compute(Xadr,Yadr,Zadr,true,&c);
-                if (GIMME == G_ARRAY)
+                if (GIMME_V == G_ARRAY)
                 {
                     EXTEND(sp,2);
                     PUSHs(sv_2mortal(newSViv((IV)c)));

@@ -11,8 +11,6 @@ $Bit::Vector::CONFIG[2] = 3;
 #   test overloaded operators
 # ======================================================================
 
-$prefix = 'Bit::Vector';
-
 $operator_list{'+='}  = 1;
 $operator_list{'|='}  = 1;
 $operator_list{'-='}  = 1;
@@ -969,32 +967,32 @@ foreach $bits (0,1,2,3,4,16,32,61,97,256,257,499,512)
 }
 
 eval { $shift = (0 << $primes); };
-if ($@ =~ /Bit::Vector \"<<\": reversed operands error/)
+if ($@ =~ /\billegal reversed operands in overloaded '<<' operator\b/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
 eval { $shift = (1 << $primes); };
-if ($@ =~ /Bit::Vector \"<<\": reversed operands error/)
+if ($@ =~ /\billegal reversed operands in overloaded '<<' operator\b/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
 eval { $shift = (0 >> $primes); };
-if ($@ =~ /Bit::Vector \">>\": reversed operands error/)
+if ($@ =~ /\billegal reversed operands in overloaded '>>' operator\b/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
 eval { $shift = (1 >> $primes); };
-if ($@ =~ /Bit::Vector \">>\": reversed operands error/)
+if ($@ =~ /\billegal reversed operands in overloaded '>>' operator\b/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
 eval { $shift = (0 x $primes); };
-if ($@ =~ /Bit::Vector \"x\": reversed operands error/)
+if ($@ =~ /\billegal reversed operands in overloaded 'x' operator\b/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
 eval { $shift = (1 x $primes); };
-if ($@ =~ /Bit::Vector \"x\": reversed operands error/)
+if ($@ =~ /\billegal reversed operands in overloaded 'x' operator\b/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
@@ -1008,7 +1006,7 @@ sub test_fake
     $op = $operator;
     $op =~ s/^[a-wyz]+$/cmp/;
 
-    $message = quotemeta("$prefix \"$op\": illegal operand type error");
+    $message = quotemeta("illegal operand type in overloaded '$op' operator");
     if ($parms == 1)
     {
         $action = "\$set $operator \$fake";

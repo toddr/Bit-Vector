@@ -2979,7 +2979,7 @@ perlxstut(1), perlguts(1), overload(3).
 
 =head1 VERSION
 
-This man page documents "Bit::Vector" version 6.0.
+This man page documents "Bit::Vector" version 6.1.
 
 =head1 AUTHOR
 
@@ -2989,7 +2989,7 @@ This man page documents "Bit::Vector" version 6.0.
 
 =head1 COPYRIGHT
 
-Copyright (c) 1995 - 2000 by Steffen Beyer. All rights reserved.
+Copyright (c) 1995 - 2001 by Steffen Beyer. All rights reserved.
 
 =head1 LICENSE
 

@@ -1,7 +1,7 @@
 
 ###############################################################################
 ##                                                                           ##
-##    Copyright (c) 2000 by Steffen Beyer.                                   ##
+##    Copyright (c) 2000 - 2001 by Steffen Beyer.                            ##
 ##    All rights reserved.                                                   ##
 ##                                                                           ##
 ##    This package is free software; you can redistribute it                 ##
@@ -24,11 +24,11 @@ require Exporter;
 
 @EXPORT_OK = qw();
 
-$VERSION = '6.0';
+$VERSION = '6.1';
 
 package Bit::Vector;
 
-use Carp;
+use Carp::Clan '^Bit::Vector\b';
 
 use overload
       '""' => '_stringify',
@@ -196,7 +196,7 @@ sub Configuration
         }
         unless ($ok)
         {
-            croak('Bit::Vector::Configuration(): configuration string syntax error');
+            croak('configuration string syntax error');
         }
     }
     return($result);
@@ -207,31 +207,20 @@ sub _error
     my($name,$code) = @_;
     my($text);
 
-    if    ($code == 1) { $text = 'illegal operand type error'; }
-    elsif ($code == 2) { $text = 'reversed operands error'; }
-    else               { $text = 'unexpected internal error - please contact author'; }
-    croak("Bit::Vector \"$name\": $text");
-}
-
-sub _exception
-{
-    my($name) = @_;
-    my($text);
-
-    if ($@ =~ /^(?:Bit::Vector::)?([a-z0-9_]+)\(\):\s+(.+?)\s+at\s/i)
+    if ($code == 0)
     {
-        $text = "Bit::Vector::$1(): $2 in ";
-        if (length($name) > 5) { $text .= $name; }
-        else                   { $text .= "\"$name\""; }
+        $text = $@;
+        $text =~ s!\s+! !g;
+        $text =~ s!\s+at\s.*$!!;
+        $text =~ s!^(?:Bit::Vector::)?[a-zA-Z0-9_]+\(\):\s*!!i;
+        $text =~ s!\s+$!!;
     }
-    else
-    {
-        $text = "Bit::Vector ";
-        if (length($name) > 5) { $text .= $name; }
-        else                   { $text .= "\"$name\""; }
-        $@ =~ s/\s+$//;
-        $text .= ": $@";
-    }
+    elsif ($code == 1) { $text = 'illegal operand type'; }
+    elsif ($code == 2) { $text = 'illegal reversed operands'; }
+    else               { croak('unexpected internal error - please contact author'); }
+    $text .= " in overloaded ";
+    if (length($name) > 5) { $text .= "$name operation";  }
+    else                   { $text .= "'$name' operator"; }
     croak($text);
 }
 
@@ -271,7 +260,7 @@ sub _fetch_operand
             }
             else { $operand = $argument; }
         };
-        if ($@) { &_exception($name); }
+        if ($@) { &_error($name,0); }
     }
     elsif ((defined $argument) && (!ref($argument)))
     {
@@ -280,7 +269,7 @@ sub _fetch_operand
             $operand = $object->Shadow();
             &_vectorize_($operand,$argument);
         };
-        if ($@) { &_exception($name); }
+        if ($@) { &_error($name,0); }
     }
     else { &_error($name,1); }
     return($operand);
@@ -307,35 +296,35 @@ sub _stringify
     {
         $result = &_scalarize_($vector);
     };
-    if ($@) { &_exception($name); }
+    if ($@) { &_error($name,0); }
     return($result);
 }
 
 sub _boolean
 {
     my($object) = @_;
-    my($name) = 'boolean expression';
+    my($name) = 'boolean test';
     my($result);
 
     eval
     {
         $result = $object->is_empty();
     };
-    if ($@) { &_exception($name); }
+    if ($@) { &_error($name,0); }
     return(! $result);
 }
 
 sub _not_boolean
 {
     my($object) = @_;
-    my($name) = 'boolean expression';
+    my($name) = 'negated boolean test';
     my($result);
 
     eval
     {
         $result = $object->is_empty();
     };
-    if ($@) { &_exception($name); }
+    if ($@) { &_error($name,0); }
     return($result);
 }
 
@@ -350,7 +339,7 @@ sub _complement
         $result = $object->Shadow();
         $result->Complement($object);
     };
-    if ($@) { &_exception($name); }
+    if ($@) { &_error($name,0); }
     return($result);
 }
 
@@ -365,7 +354,7 @@ sub _negate
         $result = $object->Shadow();
         $result->Negate($object);
     };
-    if ($@) { &_exception($name); }
+    if ($@) { &_error($name,0); }
     return($result);
 }
 
@@ -387,7 +376,7 @@ sub _absolute
             $result = $object->Norm();
         }
     };
-    if ($@) { &_exception($name); }
+    if ($@) { &_error($name,0); }
     return($result);
 }
 
@@ -413,7 +402,7 @@ sub _concat
                 $result = $object;
             }
         };
-        if ($@) { &_exception($name); }
+        if ($@) { &_error($name,0); }
         return($result);
     }
     elsif ((defined $argument) && (!ref($argument)))
@@ -435,7 +424,7 @@ sub _concat
                 $result = $object;
             }
         };
-        if ($@) { &_exception($name); }
+        if ($@) { &_error($name,0); }
         return($result);
     }
     else { &_error($name,1); }
@@ -473,7 +462,7 @@ sub _xerox  #  (in Brazil, a photocopy is called a "xerox")
             $result->Interval_Copy($object,$offset,0,$size);
         }
     };
-    if ($@) { &_exception($name); }
+    if ($@) { &_error($name,0); }
     return($result);
 }
 
@@ -500,7 +489,7 @@ sub _shift_left
             $result = $object;
         }
     };
-    if ($@) { &_exception($name); }
+    if ($@) { &_error($name,0); }
     return($result);
 }
 
@@ -527,7 +516,7 @@ sub _shift_right
             $result = $object;
         }
     };
-    if ($@) { &_exception($name); }
+    if ($@) { &_error($name,0); }
     return($result);
 }
 
@@ -559,7 +548,7 @@ sub _union
     {
         $operand = &_union_($object,$operand,$flag);
     };
-    if ($@) { &_exception($name); }
+    if ($@) { &_error($name,0); }
     return($operand);
 }
 
@@ -591,7 +580,7 @@ sub _intersection
     {
         $operand = &_intersection_($object,$operand,$flag);
     };
-    if ($@) { &_exception($name); }
+    if ($@) { &_error($name,0); }
     return($operand);
 }
 
@@ -615,7 +604,7 @@ sub _exclusive_or
             $operand = $object;
         }
     };
-    if ($@) { &_exception($name); }
+    if ($@) { &_error($name,0); }
     return($operand);
 }
 
@@ -646,7 +635,7 @@ sub _add
             $operand = &_union_($object,$operand,$flag);
         }
     };
-    if ($@) { &_exception($name); }
+    if ($@) { &_error($name,0); }
     return($operand);
 }
 
@@ -687,7 +676,7 @@ sub _sub
             }
         }
     };
-    if ($@) { &_exception($name); }
+    if ($@) { &_error($name,0); }
     return($operand);
 }
 
@@ -718,7 +707,7 @@ sub _mul
             $operand = &_intersection_($object,$operand,$flag);
         }
     };
-    if ($@) { &_exception($name); }
+    if ($@) { &_error($name,0); }
     return($operand);
 }
 
@@ -745,7 +734,7 @@ sub _div
             $operand = $object;
         }
     };
-    if ($@) { &_exception($name); }
+    if ($@) { &_error($name,0); }
     return($operand);
 }
 
@@ -772,7 +761,7 @@ sub _mod
             $operand = $object;
         }
     };
-    if ($@) { &_exception($name); }
+    if ($@) { &_error($name,0); }
     return($operand);
 }
 
@@ -798,7 +787,7 @@ sub _pow
             $result = $object;
         }
     };
-    if ($@) { &_exception($name); }
+    if ($@) { &_error($name,0); }
     return($result);
 }
 
@@ -903,7 +892,7 @@ sub _increment
     {
         $result = $object->increment();
     };
-    if ($@) { &_exception($name); }
+    if ($@) { &_error($name,0); }
     return($result);
 }
 
@@ -917,7 +906,7 @@ sub _decrement
     {
         $result = $object->decrement();
     };
-    if ($@) { &_exception($name); }
+    if ($@) { &_error($name,0); }
     return($result);
 }
 
@@ -940,7 +929,7 @@ sub _lexicompare
             $result = $object->Lexicompare($operand);
         }
     };
-    if ($@) { &_exception($name); }
+    if ($@) { &_error($name,0); }
     return($result);
 }
 
@@ -963,7 +952,7 @@ sub _compare
             $result = $object->Compare($operand);
         }
     };
-    if ($@) { &_exception($name); }
+    if ($@) { &_error($name,0); }
     return($result);
 }
 
@@ -979,7 +968,7 @@ sub _equal
     {
         $result = $object->equal($operand);
     };
-    if ($@) { &_exception($name); }
+    if ($@) { &_error($name,0); }
     return($result);
 }
 
@@ -995,7 +984,7 @@ sub _not_equal
     {
         $result = $object->equal($operand);
     };
-    if ($@) { &_exception($name); }
+    if ($@) { &_error($name,0); }
     return(! $result);
 }
 
@@ -1034,7 +1023,7 @@ sub _less_than
             }
         }
     };
-    if ($@) { &_exception($name); }
+    if ($@) { &_error($name,0); }
     return($result);
 }
 
@@ -1071,7 +1060,7 @@ sub _less_equal
             }
         }
     };
-    if ($@) { &_exception($name); }
+    if ($@) { &_error($name,0); }
     return($result);
 }
 
@@ -1110,7 +1099,7 @@ sub _greater_than
             }
         }
     };
-    if ($@) { &_exception($name); }
+    if ($@) { &_error($name,0); }
     return($result);
 }
 
@@ -1147,7 +1136,7 @@ sub _greater_equal
             }
         }
     };
-    if ($@) { &_exception($name); }
+    if ($@) { &_error($name,0); }
     return($result);
 }
 
@@ -1161,7 +1150,7 @@ sub _clone
     {
         $result = $object->Clone();
     };
-    if ($@) { &_exception($name); }
+    if ($@) { &_error($name,0); }
     return($result);
 }
 

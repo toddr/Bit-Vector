@@ -137,8 +137,8 @@ void    BitVector_Bit_Copy(wordptr addr, N_int index, boolean bit);
 
 void    BitVector_LSB         (wordptr addr, boolean bit);
 void    BitVector_MSB         (wordptr addr, boolean bit);
-boolean BitVector_lsb         (wordptr addr);
-boolean BitVector_msb         (wordptr addr);
+boolean BitVector_lsb_        (wordptr addr);
+boolean BitVector_msb_        (wordptr addr);
 boolean BitVector_rotate_left (wordptr addr);
 boolean BitVector_rotate_right(wordptr addr);
 boolean BitVector_shift_left  (wordptr addr, boolean carry_in);
@@ -514,7 +514,7 @@ N_word BitVector_Mask(N_int bits)           /* bit vector mask (unused bits) */
 
 charptr BitVector_Version(void)
 {
-    return((charptr)"6.0");
+    return((charptr)"6.1");
 }
 
 N_int BitVector_Word_Bits(void)
@@ -2137,13 +2137,13 @@ void BitVector_MSB(wordptr addr, boolean bit)
     }
 }
 
-boolean BitVector_lsb(wordptr addr)
+boolean BitVector_lsb_(wordptr addr)
 {
     if (size_(addr) > 0) return( (*addr AND LSB) != 0 );
     else                 return( false );
 }
 
-boolean BitVector_msb(wordptr addr)
+boolean BitVector_msb_(wordptr addr)
 {
     N_word size = size_(addr);
     N_word mask = mask_(addr);
@@ -2875,7 +2875,7 @@ ErrCode BitVector_Power(wordptr X, wordptr Y, wordptr Z)
 
     if (X == Z) return(ErrCode_Same);
     if (bits < bits_(Y)) return(ErrCode_Size);
-    if (BitVector_msb(Z)) return(ErrCode_Expo);
+    if (BitVector_msb_(Z)) return(ErrCode_Expo);
     if ((last = Set_Max(Z)) < 0L)
     {
         if (bits < 2) return(ErrCode_Ovfl);
@@ -3446,11 +3446,12 @@ void Matrix_Transpose(wordptr X, N_int rowsX, N_int colsX,
 }
 
 /*****************************************************************************/
-/*  VERSION:  6.0                                                            */
+/*  VERSION:  6.1                                                            */
 /*****************************************************************************/
 /*  VERSION HISTORY:                                                         */
 /*****************************************************************************/
 /*                                                                           */
+/*    Version 6.1  30.09.01  Make VMS linker happy: _lsb,_msb => _lsb_,_msb_ */
 /*    Version 6.0  08.10.00  Corrected overflow handling.                    */
 /*    Version 5.8  14.07.00  Added "Power()". Changed "Copy()".              */
 /*    Version 5.7  19.05.99  Quickened "Div_Pos()". Added "Product()".       */
@@ -3478,10 +3479,6 @@ void Matrix_Transpose(wordptr X, N_int rowsX, N_int colsX,
 /*****************************************************************************/
 /*                                                                           */
 /*    Steffen Beyer                                                          */
-/*    Ainmillerstr. 5 / App. 513                                             */
-/*    D-80801 Munich                                                         */
-/*    Germany                                                                */
-/*                                                                           */
 /*    mailto:sb@engelschall.com                                              */
 /*    http://www.engelschall.com/u/sb/download/                              */
 /*                                                                           */
@@ -3489,7 +3486,7 @@ void Matrix_Transpose(wordptr X, N_int rowsX, N_int colsX,
 /*  COPYRIGHT:                                                               */
 /*****************************************************************************/
 /*                                                                           */
-/*    Copyright (c) 1995 - 2000 by Steffen Beyer.                            */
+/*    Copyright (c) 1995 - 2001 by Steffen Beyer.                            */
 /*    All rights reserved.                                                   */
 /*                                                                           */
 /*****************************************************************************/

@@ -1,9 +1,9 @@
                     =====================================
-                      Package "Bit::Vector" Version 6.0
+                      Package "Bit::Vector" Version 6.1
                     =====================================
 
 
-                 Copyright (c) 1995 - 2000 by Steffen Beyer.
+                 Copyright (c) 1995 - 2001 by Steffen Beyer.
                              All rights reserved.
 
 
@@ -144,5 +144,10 @@ Lots of thanks also to Yitzchak Scott-Thoennes <sthoenna@efn.org> for
 sending in a patch to make this module ready for Perl 5.6.0 and for
 extremely useful hints (and a patch) as to why the test suite had
 failures with Perl 5.6.0 all of a sudden.
+
+Many thanks to John Peacock <jpeacock@rowman.com> for reporting a
+problem with the VMS linker which is unable to differentiate case -
+in violation of the ANSI C standard - and for sending a patch to fix
+this problem.
 
 

@@ -1,88 +1,5 @@
-Thursday, January 25, 2001
-
-Dear MacPerl Users,
-
-this is the Bit::Vector module with shared libraries compiled for MacPerl. Shared 
-libraries run only on PPC and CFM68K versions of MacPerl, not non-CFM 68K versions.
-
-This was compiled with MPW's MrC (PPC) and SC (68K). Passed all tests on both
-architectures (thanks to my old Mac LC :). However, let me know of any problems you
-might encounter.
-
-Currently, you can download the module and the readme from my website via:
-
-http://usemacperl.webjump.com/index.html
-
-
-INSTALLATION
-============
-The module is best installed using Chris Nandor's installme.plx droplet. Simply 
-drop the packed archive or the unpacked folder on the droplet. Answer the 
-upcoming question "Convert all text and MacBinary files?" with "Yes". This should 
-install the module properly. 
-
-The installer is part of the cpan-mac module, available from CPAN 
-
-    http://www.perl.com/CPAN-local/authors/id/CNANDOR/
-
-or via Chris Nandor's MacPerl page 
-
-    http://pudge.net/macperl/ .
-	
-
-CHANGES
-=======
-In the 'Mac_changed' folder, you will find a back-up of all the *ORIGINAL* files, 
-that have been changed:
-
-MANIFEST
-README.txt
-Toolbox.h
-Vector.xs
-
-Actually, the source files I've changed are 'Toolbox.h' and 'Vector.xs'. All the 
-changes I've made can be found by searching for the phrase '###TOM', if you are 
-interested in.
-
-I've added two MPW worksheets (PPC and 68K) to the distribution. This way you can
-build the module yourself, if you like. However, you will need the MacPerl source 
-distribution [1] and the FREE MPW development environment, available from Apple [2]. 
-You may also want to take a look at the Macintosh Perl XS Tutorial [3]. It's best 
-to open the worksheet and execute the commands step by step. Read and follow the 
-instructions I've provided for each step of the build process.
-
-In the build process for CFM68K some extra preparation is required for the source 
-file(s). To help you in this procedure, I've added the file 'Vector_68K.xs'. This 
-should be the input file for the XSUBpp compiler in the CFM68K build process.
-
-In that 68K XS file, the header declarations are bracketed with #import pragmas.
-This special pragma treatment is needed for the SC compiler and the ILink linker  
-(see the Macintosh Perl XS tutorial for details). Follow the steps in the 68K MPW
-worksheet and everything should be fine.
-
-Have fun.
-
---
-Thomas Wegner
-
-toms_email@gmx.de
-
-
-References:
-
-[1] MacPerl 5.004 source  <ftp://sunsite.cnlab-switch.ch/software/platform/macos/perl/Mac_Perl_520r4_src.bin>
-[2] Apple's MPW  <http://developer.apple.com/tools/mpw-tools/>
-[3] Macintosh Perl XS Tutorial  <http://macperl.com/depts/Tutorials/XS/Mac_XS.sea.hqx>
-
-
-
-
-############################ ORIGINAL FOLLOWS ####################################################################
-
-
-
                     =====================================
-                      Package "Bit::Vector" Version 6.0
+                      Package "Bit::Vector" Version 6.1
                     =====================================
 
 
@@ -113,12 +30,23 @@ overloaded operators for maximum ease of use.
 The C library can nevertheless be used stand-alone, without Perl.
 
 
+What's new in version 6.1:
+--------------------------
+
+Version 6.1 is a bugfix release.
+
+Two bugs have been fixed: The failing tests with overloaded
+operators under Perl 5.7.1 and Perl 5.7.2, and the problem
+with the VMS linker which can't differentiate case (in
+violation of the ANSI C standard).
+
+
 Legal issues:
 -------------
 
 This package with all its parts is
 
-Copyright (c) 1995 - 2000 by Steffen Beyer.
+Copyright (c) 1995 - 2001 by Steffen Beyer.
 All rights reserved.
 
 This package is free software; you can use, modify and redistribute
@@ -136,30 +64,50 @@ Please refer to the files "Artistic.txt", "GNU_GPL.txt" and
 Prerequisites:
 --------------
 
-Perl version 5.000 or higher, and an ANSI C compiler (!)
+Perl version 5.000 or higher, and an ANSI C compiler. (!)
                                      ^^^^^^
-
 If you compile under Windows, note that you will need
 exactly the same compiler your Perl itself was compiled
 with! (This is also true for Unix, but rarely a problem.)
 
 Moreover, you usually cannot build any modules under
-Windows 95/98, the Win 95/98 command shell is too dumb.
-You will need the Windows NT command shell ("command.com")
-or the "4DOS" shell.
+Windows 95/98, the Win 95/98 command shell doesn't
+grok the "&&" operator. You will need the Windows NT
+command shell ("cmd.exe") or the "4DOS" shell.
 
 Note that ActiveState provides precompiled binaries of
 this module for their Win32 port of Perl ("ActivePerl")
 on their web site, which you should be able to install
 simply by typing "ppm install Bit-Vector" in your MS-DOS
-command shell. This also works under Windows 95/98.
+command shell (but note the "-" instead of "::" in the
+package name!). This also works under Windows 95/98.
 
-If your firewall prevents "ppm" from downloading this
-package, you can also download it manually from
+If your firewall prevents "ppm" from downloading
+this package, you can also download it manually from
 http://www.activestate.com/ppmpackages/5.005/zips/ or
 http://www.activestate.com/ppmpackages/5.6/zips/.
 Follow the installation instructions included in
 the "zip" archive.
+
+
+Note to CPAN Testers:
+---------------------
+
+Version 6.1 of this module has already been tested successfully
+during development with the following configurations:
+
+  Perl 5.003     -  Solaris 2.6 (SunOS 5.6)
+  Perl 5.003_07  -  Solaris 2.6 (SunOS 5.6)
+  Perl 5.004_04  -  Solaris 2.6 (SunOS 5.6)
+  Perl 5.004_05  -  Solaris 2.6 (SunOS 5.6)
+  Perl 5.005_03  -  FreeBSD 4.1.1-RELEASE (with "dlopen() relative paths" patch)
+  Perl 5.005_03  -  Windows NT 4.0 & MS VC++ 6.0 (native Perl build)
+  Perl 5.6.0     -  FreeBSD 4.1.1-RELEASE
+  Perl 5.6.1     -  FreeBSD 4.1.1-RELEASE
+  Perl 5.6.1     -  Windows NT 4.0 & ActivePerl 5.6.1.626 (multi-thread)
+  Perl 5.7.0     -  FreeBSD 4.1.1-RELEASE
+  Perl 5.7.1     -  FreeBSD 4.1.1-RELEASE
+  Perl 5.7.2     -  FreeBSD 4.1.1-RELEASE
 
 
 Installation:
@@ -176,26 +124,37 @@ under Windows.
 Changes over previous versions:
 -------------------------------
 
-Please refer to the file "CHANGES.txt" in this distribution for a detailed
-version history.
+Please refer to the file "CHANGES.txt" in this distribution for a more
+detailed version history log.
 
 
 Documentation:
 --------------
 
 The documentation of this package is included in POD format (= "Plain
-Old Documentation") in the files "Vector.pod" and "Overload.pod" in
-this distribution, the human-readable markup-language standard for
-Perl documentation.
+Old Documentation") in the files with the extension ".pod" in this
+distribution, the human-readable markup-language standard for Perl
+documentation.
 
 By building this package, this documentation will automatically be
-converted into a man page, which will automatically be installed in
-your Perl tree through the installation process for further reference,
-where it can be accessed by the commands "man Bit::Vector" (UNIX) and
-"perldoc Bit::Vector" (UNIX and Win32), or "man Bit::Vector::Overload"
-(UNIX) and "perldoc Bit::Vector::Overload" (UNIX and Win32).
+converted into man pages, which will automatically be installed in
+your Perl tree for further reference through the installation process,
+where they can be accessed by the commands "man Bit::Vector" (Unix)
+and "perldoc Bit::Vector" (Unix and Win32 alike), for example.
 
-If Perl is not available on your system, you can also read these files
+Available man pages:
+
+    Bit::Vector(3)
+    Bit::Vector::Overload(3)
+    Carp::Clan(3)
+
+If Perl is not available on your system, you can also read the ".pod"
+files
+
+    ./Vector.pod
+    ./lib/Bit/Vector/Overload.pod
+    ./lib/Carp/Clan.pod
+
 directly.
 
 
@@ -394,7 +353,7 @@ let me know!
 Please do send feedback, this is essential for improving this module
 according to your needs!
 
-I hope you will find this module beneficial.
+I hope you will find this module useful. Enjoy!
 
 Yours,
 --

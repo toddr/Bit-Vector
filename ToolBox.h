@@ -79,22 +79,7 @@ typedef  Z_longword         *Z_longwordptr;
 #undef  TRUE
 #define TRUE        (0==0)
 
-// ###TOM changed
-// MPW already defines the boolean datatype in MacTypes.h, it's spelled Boolean.
-// Thus here you will get an "Type already defined" error when compiling Vector.c,
-// but not for BitVector.c, because it doesn't include MacTypes.h. I've declared
-// a define switch MPW_HAS_BOOL, which must be set to 1 while compiling Vector.c, 
-// i.e. while building the shared lib for Perl
-
-#ifndef MPW_HAS_BOOL
 typedef enum { false = FALSE , true = TRUE } boolean;
-#else
-#define boolean Boolean
-#endif  /* MPW_HAS_BOOL */
-
-//typedef enum { false = FALSE , true = TRUE } boolean;
-// END ###TOM changed
-
 
 #define and         &&      /* logical (boolean) operators: lower case */
 #define or          ||
@@ -140,10 +125,6 @@ typedef enum { false = FALSE , true = TRUE } boolean;
 /*****************************************************************************/
 /*                                                                           */
 /*    Steffen Beyer                                                          */
-/*    Ainmillerstr. 5 / App. 513                                             */
-/*    D-80801 Munich                                                         */
-/*    Germany                                                                */
-/*                                                                           */
 /*    mailto:sb@engelschall.com                                              */
 /*    http://www.engelschall.com/u/sb/download/                              */
 /*                                                                           */
@@ -151,7 +132,7 @@ typedef enum { false = FALSE , true = TRUE } boolean;
 /*  COPYRIGHT:                                                               */
 /*****************************************************************************/
 /*                                                                           */
-/*    Copyright (c) 1995 - 2000 by Steffen Beyer.                            */
+/*    Copyright (c) 1995 - 2001 by Steffen Beyer.                            */
 /*    All rights reserved.                                                   */
 /*                                                                           */
 /*****************************************************************************/
@@ -172,7 +153,6 @@ typedef enum { false = FALSE , true = TRUE } boolean;
 /*    License along with this library; if not, write to the                  */
 /*    Free Software Foundation, Inc.,                                        */
 /*    59 Temple Place, Suite 330, Boston, MA 02111-1307 USA                  */
-/*                                                                           */
 /*    or download a copy from ftp://ftp.gnu.org/pub/gnu/COPYING.LIB-2.0      */
 /*                                                                           */
 /*****************************************************************************/

@@ -137,8 +137,8 @@ void    BitVector_Bit_Copy(wordptr addr, N_int index, boolean bit);
 
 void    BitVector_LSB         (wordptr addr, boolean bit);
 void    BitVector_MSB         (wordptr addr, boolean bit);
-boolean BitVector_lsb         (wordptr addr);
-boolean BitVector_msb         (wordptr addr);
+boolean BitVector_lsb_        (wordptr addr);
+boolean BitVector_msb_        (wordptr addr);
 boolean BitVector_rotate_left (wordptr addr);
 boolean BitVector_rotate_right(wordptr addr);
 boolean BitVector_shift_left  (wordptr addr, boolean carry_in);
@@ -241,11 +241,12 @@ void    Matrix_Transpose     (wordptr X, N_int rowsX, N_int colsX,
 /*****************************************************************************/
 
 /*****************************************************************************/
-/*  VERSION:  6.0                                                            */
+/*  VERSION:  6.1                                                            */
 /*****************************************************************************/
 /*  VERSION HISTORY:                                                         */
 /*****************************************************************************/
 /*                                                                           */
+/*    Version 6.1  30.09.01  Make VMS linker happy: _lsb,_msb => _lsb_,_msb_ */
 /*    Version 6.0  08.10.00  Corrected overflow handling.                    */
 /*    Version 5.8  14.07.00  Added "Power()". Changed "Copy()".              */
 /*    Version 5.7  19.05.99  Quickened "Div_Pos()". Added "Product()".       */
@@ -273,10 +274,6 @@ void    Matrix_Transpose     (wordptr X, N_int rowsX, N_int colsX,
 /*****************************************************************************/
 /*                                                                           */
 /*    Steffen Beyer                                                          */
-/*    Ainmillerstr. 5 / App. 513                                             */
-/*    D-80801 Munich                                                         */
-/*    Germany                                                                */
-/*                                                                           */
 /*    mailto:sb@engelschall.com                                              */
 /*    http://www.engelschall.com/u/sb/download/                              */
 /*                                                                           */
@@ -284,7 +281,7 @@ void    Matrix_Transpose     (wordptr X, N_int rowsX, N_int colsX,
 /*  COPYRIGHT:                                                               */
 /*****************************************************************************/
 /*                                                                           */
-/*    Copyright (c) 1995 - 2000 by Steffen Beyer.                            */
+/*    Copyright (c) 1995 - 2001 by Steffen Beyer.                            */
 /*    All rights reserved.                                                   */
 /*                                                                           */
 /*****************************************************************************/
