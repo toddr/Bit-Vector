@@ -1770,7 +1770,7 @@ BitVector_Object	Xref
 BitVector_Object	Yref
 BitVector_Object	Zref
 BitVector_Scalar	carry
-CODE:
+PPCODE:
 {
     BitVector_Handle  Xhdl;
     BitVector_Address Xadr;
@@ -1779,6 +1779,7 @@ CODE:
     BitVector_Handle  Zhdl;
     BitVector_Address Zadr;
     boolean c;
+    boolean v;
 
     if ( BIT_VECTOR_OBJECT(Xref,Xhdl,Xadr) &&
          BIT_VECTOR_OBJECT(Yref,Yhdl,Yadr) &&
@@ -1788,7 +1789,18 @@ CODE:
         {
             if ((bits_(Xadr) == bits_(Yadr)) and (bits_(Xadr) == bits_(Zadr)))
             {
-                RETVAL = BitVector_add(Xadr,Yadr,Zadr,c);
+                v = BitVector_compute(Xadr,Yadr,Zadr,false,&c);
+                if (GIMME == G_ARRAY)
+                {
+                    EXTEND(sp,2);
+                    PUSHs(sv_2mortal(newSViv((IV)c)));
+                    PUSHs(sv_2mortal(newSViv((IV)v)));
+                }
+                else
+                {
+                    EXTEND(sp,1);
+                    PUSHs(sv_2mortal(newSViv((IV)c)));
+                }
             }
             else BIT_VECTOR_SIZE_ERROR("add");
         }
@@ -1796,8 +1808,6 @@ CODE:
     }
     else BIT_VECTOR_OBJECT_ERROR("add");
 }
-OUTPUT:
-RETVAL
 
 
 boolean
@@ -1806,7 +1816,9 @@ BitVector_Object	Xref
 BitVector_Object	Yref
 BitVector_Object	Zref
 BitVector_Scalar	carry
-CODE:
+ALIAS:
+  sub = 2
+PPCODE:
 {
     BitVector_Handle  Xhdl;
     BitVector_Address Xadr;
@@ -1815,6 +1827,7 @@ CODE:
     BitVector_Handle  Zhdl;
     BitVector_Address Zadr;
     boolean c;
+    boolean v;
 
     if ( BIT_VECTOR_OBJECT(Xref,Xhdl,Xadr) &&
          BIT_VECTOR_OBJECT(Yref,Yhdl,Yadr) &&
@@ -1824,13 +1837,76 @@ CODE:
         {
             if ((bits_(Xadr) == bits_(Yadr)) and (bits_(Xadr) == bits_(Zadr)))
             {
-                RETVAL = BitVector_subtract(Xadr,Yadr,Zadr,c);
+                v = BitVector_compute(Xadr,Yadr,Zadr,true,&c);
+                if (GIMME == G_ARRAY)
+                {
+                    EXTEND(sp,2);
+                    PUSHs(sv_2mortal(newSViv((IV)c)));
+                    PUSHs(sv_2mortal(newSViv((IV)v)));
+                }
+                else
+                {
+                    EXTEND(sp,1);
+                    PUSHs(sv_2mortal(newSViv((IV)c)));
+                }
             }
             else BIT_VECTOR_SIZE_ERROR("subtract");
         }
         else BIT_VECTOR_SCALAR_ERROR("subtract");
     }
     else BIT_VECTOR_OBJECT_ERROR("subtract");
+}
+
+
+boolean
+BitVector_inc(Xref,Yref)
+BitVector_Object	Xref
+BitVector_Object	Yref
+CODE:
+{
+    BitVector_Handle  Xhdl;
+    BitVector_Address Xadr;
+    BitVector_Handle  Yhdl;
+    BitVector_Address Yadr;
+    boolean c = true;
+
+    if ( BIT_VECTOR_OBJECT(Xref,Xhdl,Xadr) &&
+         BIT_VECTOR_OBJECT(Yref,Yhdl,Yadr) )
+    {
+        if (bits_(Xadr) == bits_(Yadr))
+        {
+            RETVAL = BitVector_compute(Xadr,Yadr,NULL,false,&c);
+        }
+        else BIT_VECTOR_SIZE_ERROR("inc");
+    }
+    else BIT_VECTOR_OBJECT_ERROR("inc");
+}
+OUTPUT:
+RETVAL
+
+
+boolean
+BitVector_dec(Xref,Yref)
+BitVector_Object	Xref
+BitVector_Object	Yref
+CODE:
+{
+    BitVector_Handle  Xhdl;
+    BitVector_Address Xadr;
+    BitVector_Handle  Yhdl;
+    BitVector_Address Yadr;
+    boolean c = true;
+
+    if ( BIT_VECTOR_OBJECT(Xref,Xhdl,Xadr) &&
+         BIT_VECTOR_OBJECT(Yref,Yhdl,Yadr) )
+    {
+        if (bits_(Xadr) == bits_(Yadr))
+        {
+            RETVAL = BitVector_compute(Xadr,Yadr,NULL,true,&c);
+        }
+        else BIT_VECTOR_SIZE_ERROR("dec");
+    }
+    else BIT_VECTOR_OBJECT_ERROR("dec");
 }
 OUTPUT:
 RETVAL

@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 5.8
+                      Package "Bit::Vector" Version 6.0
                     =====================================
 
 
@@ -9,6 +9,24 @@
 
 Version history:
 ----------------
+
+Version 6.0   08.10.2000
+
+ +  Splitted the Vector.pm module; separated XS and overloaded Perl
+    part for improved performance (reduces loading time for XS part).
+ +  Corrected the handling of numerical overflow in arithmetic methods
+    ("add()", "subtract()", "Multiply()", "from_Dec()", "new_Dec()").
+ +  Methods "add()" and "subtract()" now return the carry as well as
+    the overflow flag if called in list context (only the carry in
+    scalar context, as before).
+ +  Added two new methods "inc()" and "dec()", which return the overflow
+    flag (whereas "increment()" and "decrement()" return the carry flag).
+    The new methods also allow to copy-and-increment/decrement in addition
+    to in-place operation.
+ +  Methods "from_Dec()" and "new_Dec()" now allow you to enter large
+    positive numbers which will have the MSB set (this was forbidden
+    previously because these numbers are considered to be negative in
+    two's complement binary representation).
 
 Version 5.8   14.07.2000
 

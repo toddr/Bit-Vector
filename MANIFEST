@@ -13,7 +13,11 @@ ToolBox.h
 Vector.pm
 Vector.pod
 Vector.xs
+examples/SetObject.pl
+examples/benchmark.pl
 examples/primes.pl
+lib/Bit/Vector/Overload.pm
+lib/Bit/Vector/Overload.pod
 t/00____version.t
 t/01________new.t
 t/02____destroy.t

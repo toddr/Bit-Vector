@@ -3,7 +3,7 @@
 use strict;
 no strict "vars";
 
-use Bit::Vector;
+use Bit::Vector::Overload;
 
 $Bit::Vector::CONFIG[2] = 3;
 

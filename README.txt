@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 5.8
+                      Package "Bit::Vector" Version 6.0
                     =====================================
 
 
@@ -24,8 +24,8 @@ and therefore fast (in terms of execution speed) for instance
 through the widespread use of divide-and-conquer algorithms.
 
 The package also includes an object-oriented Perl module for
-accessing the C library from Perl, and features overloaded
-operators for maximum ease of use.
+accessing the C library from Perl, and optionally features
+overloaded operators for maximum ease of use.
 
 The C library can nevertheless be used stand-alone, without Perl.
 
@@ -56,6 +56,28 @@ Prerequisites:
 Perl version 5.000 or higher, and an ANSI C compiler (!)
                                      ^^^^^^
 
+If you compile under Windows, note that you will need
+exactly the same compiler your Perl itself was compiled
+with! (This is also true for Unix, but rarely a problem.)
+
+Moreover, you usually cannot build any modules under
+Windows 95/98, the Win 95/98 command shell is too dumb.
+You will need the Windows NT command shell ("command.com")
+or the "4DOS" shell.
+
+Note that ActiveState provides precompiled binaries of
+this module for their Win32 port of Perl ("ActivePerl")
+on their web site, which you should be able to install
+simply by typing "ppm install Bit-Vector" in your MS-DOS
+command shell. This also works under Windows 95/98.
+
+If your firewall prevents "ppm" from downloading this
+package, you can also download it manually from
+http://www.activestate.com/ppmpackages/5.005/zips/ or
+http://www.activestate.com/ppmpackages/5.6/zips/.
+Follow the installation instructions included in
+the "zip" archive.
+
 
 Installation:
 -------------
@@ -79,21 +101,45 @@ Documentation:
 --------------
 
 The documentation of this package is included in POD format (= "Plain
-Old Documentation") in the file "Vector.pod" in this distribution,
-the human-readable markup-language standard for Perl documentation.
+Old Documentation") in the files "Vector.pod" and "Overload.pod" in
+this distribution, the human-readable markup-language standard for
+Perl documentation.
 
 By building this package, this documentation will automatically be
 converted into a man page, which will automatically be installed in
-your Perl tree for further reference through the installation process,
-where it can be accessed by the commands "man Bit::Vector" (UNIX)
-and "perldoc Bit::Vector" (UNIX and Win32).
+your Perl tree through the installation process for further reference,
+where it can be accessed by the commands "man Bit::Vector" (UNIX) and
+"perldoc Bit::Vector" (UNIX and Win32), or "man Bit::Vector::Overload"
+(UNIX) and "perldoc Bit::Vector::Overload" (UNIX and Win32).
 
-If Perl is not available on your system, you can also read this file
+If Perl is not available on your system, you can also read these files
 directly.
 
 
 What does it do:
 ----------------
+
+This module implements bit vectors of arbitrary size and provides efficient
+methods for handling them.
+
+This goes far beyond the built-in capabilities of Perl for handling bit
+vectors (compare with the method list below!).
+
+Moreover, the C core of this module can be used "stand-alone" in other
+C applications; Perl is not necessarily required.
+
+The module is intended to serve as a base class for other applications
+or application classes, such as implementing sets or performing big
+integer arithmetic.
+
+All methods are implemented in C internally for maximum performance.
+
+An add-on module (named "Bit::Vector::Overload") provides overloaded
+arithmetic and relational operators for maximum ease of use (Perl only).
+
+Note that there is (of course) a little speed penalty to pay for
+overloaded operators. If speed is crucial, use the "Bit::Vector"
+module alone!
 
 This module is useful for a large range of different tasks:
 
@@ -182,19 +228,20 @@ lsb()                    msb()                    rotate_left()
 rotate_right()           shift_left()             shift_right()
 Move_Left()              Move_Right()             Insert()
 Delete()                 increment()              decrement()
-add()                    subtract()               Negate()
-Absolute()               Sign()                   Multiply()
-Divide()                 GCD()                    Power()
-Block_Store()            Block_Read()             Word_Size()
-Word_Store()             Word_Read()              Word_List_Store()
-Word_List_Read()         Word_Insert()            Word_Delete()
-Chunk_Store()            Chunk_Read()             Chunk_List_Store()
-Chunk_List_Read()        Index_List_Remove()      Index_List_Store()
-Index_List_Read()        Union()                  Intersection()
-Difference()             ExclusiveOr()            Complement()
-subset()                 Norm()                   Min()
-Max()                    Multiplication()         Product()
-Closure()                Transpose()
+inc()                    dec()                    add()
+subtract()               Negate()                 Absolute()
+Sign()                   Multiply()               Divide()
+GCD()                    Power()                  Block_Store()
+Block_Read()             Word_Size()              Word_Store()
+Word_Read()              Word_List_Store()        Word_List_Read()
+Word_Insert()            Word_Delete()            Chunk_Store()
+Chunk_Read()             Chunk_List_Store()       Chunk_List_Read()
+Index_List_Remove()      Index_List_Store()       Index_List_Read()
+Union()                  Intersection()           Difference()
+ExclusiveOr()            Complement()             subset()
+Norm()                   Min()                    Max()
+Multiplication()         Product()                Closure()
+Transpose()
 
 
 Note to C developers:
@@ -216,12 +263,18 @@ Example applications:
 ---------------------
 
 See the module "Set::IntRange" for an easy-to-use module for sets
-of integers of arbitrary ranges.
+of integers within arbitrary ranges.
 
 See the module "Math::MatrixBool" for an efficient implementation
 of boolean matrices and boolean matrix operations.
 
-(Both modules are also available from my web site or any CPAN server.)
+(Both modules are also available from my web site at
+http://www.engelschall.com/u/sb/download/ or any CPAN server.)
+
+See the file "SetObject.pl" in the "examples" subdirectory of this
+distribution for a way to emulate the "Set::Object" module from CPAN
+using "Bit::Vector" - this is a way to perform set operations on sets
+of arbitrary objects (any Perl objects or Perl data structures you want!).
 
 An application relying crucially on this "Bit::Vector" module is "Slice",
 a tool for generating different document versions out of a single
@@ -263,5 +316,5 @@ I hope you will find this module beneficial.
 Yours,
 --
   Steffen Beyer <sb@engelschall.com> http://www.engelschall.com/u/sb/
-       "There is enough for the need of everyone in this world,
-         but not for the greed of everyone." - Mahatma Gandhi
+  "There is enough for the need of everyone in this world, but not
+   for the greed of everyone." - Mohandas Karamchand "Mahatma" Gandhi
