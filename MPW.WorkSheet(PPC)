@@ -1,0 +1,96 @@
+# INSTRUCTIONS FOR BUILDING THE Bit::Vector PPC SHARED LIBRARY
+	
+
+
+# (1) Copy the Bit-Vector-6.0 folder from the expanded Bit-Vector-6.0.tar.gz archive into the 
+#     :MacPerl_Src:perl:ext folder of the MacPerl source distribution.
+#  
+#     and then
+#
+#     Set the current directory to the Bit-Vector-6.0 folder (via Directory menu).
+
+
+# (2) Build the BitVector.o object file 
+
+MrC BitVector.c -o :BitVector.o  -sym off -w off -t
+
+
+
+
+
+# (3) Set the MPW variable 'MPSrc' to the path to your MacPerl_Src folder, for example     
+
+Set MPSrc "MacintoshHD:MacPerl_Src"     # (change the path accordingly)
+
+
+
+
+# (4) Run the XSUBpp compiler for Vector.xs
+
+perl :::lib:ExtUtils:xsubpp -typemap :::lib:ExtUtils:typemap -typemap :typemap  Vector.xs >Vector.tc && Rename -y Vector.tc Vector.c
+
+
+
+
+# (5) If you like, take a look at the resulting C source file Vector.c
+
+open Vector.c
+
+
+
+# (6) Compile Vector.c (with symbol export for shared lib):
+
+MrC -inclpath ignoresys -sym off -d __STD_C -d MULTIPLICITY  -w off -opt size -t -fatext ¶
+	-d MPW_HAS_BOOL ¶
+	-i {MPSrc}: ¶
+	-i {MPSrc}:sfio:include: ¶
+	-i {MPSrc}:GUSI:include: ¶
+	-i {MPSrc}:perl: ¶
+	-i : ¶
+	-shared_lib_export on ¶
+	-export_list Vector.exp "Vector".c
+Compilation time: 86.281 seconds.  25200 lines.
+
+
+
+
+
+# (7) Open the file which contains a list of the shared library's exported entry points (symbols).
+#     Delete every line except the last, which is:
+#      
+#	  boot_Bit__Vector
+#
+#     Be sure to save your changes.
+
+open Vector.exp
+
+
+
+
+
+# (8) Link Vector.c.ppc.o as shared lib. Link against the BitVector.o object file from step (2)
+
+
+PPCLink -w -xm sharedlibrary -sym on -@export Vector.exp ¶
+:Vector.c.ppc.o ¶
+:BitVector.o ¶
+{MPSrc}:perl:PerlStub ¶
+{SharedLibraries}InterfaceLib ¶
+{SharedLibraries}StdCLib ¶
+{SharedLibraries}MathLib ¶
+"{PPCLibraries}PPCCRuntime.o" ¶
+-c 'cfmg' -t 'shlb' -fragname "Vector" -o Vector.shlb.PPC
+
+
+	
+
+# (9) Rename the shared library 'Vector.shlb.PPC' to 'Vector'
+
+Rename -y Vector.shlb.PPC Vector
+
+
+
+
+#  Done. The shared library 'Vector' must be installed in the ':site_perl:MacPPC:auto:Bit:Vector' folder.
+
+

@@ -10,6 +10,7 @@
 /*                                                                           */
 /*****************************************************************************/
 
+
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
@@ -17,21 +18,6 @@
 
 #include "BitVector.h"
 
-// ###TOM added
-// The following is required for (Mac-) Perl 5.004:
-// With version 5.8 of this module, the author has replaced the global 
-// variable 'na' with 'PL_na',(see perlguts.pod) to make the module 
-// ready for Perl 5.6.0 (see Changes.txt and INSTALL.txt). Perl versions  
-// < 5.005 don't know about the 'PL_na' variable. I use the following 
-// conditional #define for Perl versions with PATCHLEVEL < 5.
-
-#include "patchlevel.h"
-
-#if (PATCHLEVEL < 5)
-#define PL_na na
-#endif
-
-// end ###TOM added
 
 static    char *BitVector_Class = "Bit::Vector";
 static      HV *BitVector_Stash;

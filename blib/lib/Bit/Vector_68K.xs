@@ -10,9 +10,19 @@
 /*                                                                           */
 /*****************************************************************************/
 
+
+#include <ConditionalMacros.h>
+#if PRAGMA_IMPORT
+#pragma import on
+#endif
+    
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
+
+#if PRAGMA_IMPORT
+#pragma import off
+#endif
 
 
 #include "BitVector.h"
