@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 5.0
+                      Package "Bit::Vector" Version 5.1
                     =====================================
 
 
@@ -33,7 +33,7 @@ You may use, copy, modify and redistribute it under the terms of the
 
 Please refer to the file "NONPROFIT" in this distribution for details!
 
-Note that these terms have changed as of version 5.0 of this package.
+Note that these terms have changed since version 5.0 of this package.
 
 
 Prerequisites:

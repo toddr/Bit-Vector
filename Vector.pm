@@ -28,7 +28,7 @@ require DynaLoader;
 
 @EXPORT_OK = qw();
 
-$VERSION = '5.0';
+$VERSION = '5.1';
 
 $CONFIG[0] = 0;
 $CONFIG[1] = 0;
@@ -59,7 +59,7 @@ bootstrap Bit::Vector $VERSION;
 use Carp;
 
 use overload
-      '""' => '_scalarize',
+      '""' => '_stringify',
     'bool' => '_boolean',
        '!' => '_not_boolean',
        '~' => '_complement',
@@ -111,10 +111,10 @@ sub Configuration
     my($result);
     my($ok);
 
-    croak
-'Usage: $configuration = Bit::Vector->Configuration( [ $configuration ] );'
-    if (@_ > 2);
-
+    if (@_ > 2)
+    {
+        croak('Usage: $oldconfig = Bit::Vector->Configuration( [ $newconfig ] );');
+    }
     $result  =   "Scalar Input       = ";
     if    ($CONFIG[0] == 4) { $result .= "Enumeration"; }
     elsif ($CONFIG[0] == 3) { $result .= "Decimal"; }
@@ -196,14 +196,48 @@ sub Configuration
             }
             else { $ok = 0; last; }
         }
-        croak
-'Bit::Vector::Configuration(): configuration string syntax error'
-        unless ($ok);
+        unless ($ok)
+        {
+            croak('Bit::Vector::Configuration(): configuration string syntax error');
+        }
     }
     return($result);
 }
 
-sub _vectorize
+sub _error_
+{
+    my($name,$code) = @_;
+    my($text);
+
+    if    ($code == 1) { $text = 'illegal operand type error'; }
+    elsif ($code == 2) { $text = 'reversed operands error'; }
+    else               { $text = 'unexpected internal error - please contact author'; }
+    croak("Bit::Vector \"$name\": $text");
+}
+
+sub _exception_
+{
+    my($name) = @_;
+    my($text);
+
+    if ($@ =~ /^(?:Bit::Vector::)?([a-z0-9_]+)\(\):\s+(.+?)\s+at\s/i)
+    {
+        $text = "Bit::Vector::$1(): $2 in ";
+        if (length($name) > 5) { $text .= $name; }
+        else                   { $text .= "\"$name\""; }
+    }
+    else
+    {
+        $text = "Bit::Vector ";
+        if (length($name) > 5) { $text .= $name; }
+        else                   { $text .= "\"$name\""; }
+        $@ =~ s/\s+$//;
+        $text .= ": $@";
+    }
+    croak($text);
+}
+
+sub _vectorize_
 {
     my($vector,$scalar,$name) = @_;
 
@@ -212,184 +246,211 @@ sub _vectorize
     elsif ($CONFIG[0] == 2) { eval { $vector->from_Bin ($scalar); }; }
     elsif ($CONFIG[0] == 1) { eval { $vector->from_Hex ($scalar); }; }
     else                    { eval { $vector->Bit_On   ($scalar); }; }
-    if ($@)
-    {
-        if ($@ =~ m/^[a-zA-Z0-9_:]+\(\):\s+(.+?)\s+at\s/)
-        {
-            croak "Bit::Vector \"$name\": $1";
-        }
-        else
-        {
-            croak "Bit::Vector \"$name\": scalar operand conversion error";
-        }
-    }
+    if ($@) { &_exception_($name); }
 }
 
-sub _scalarize
+sub _scalarize_
 {
-    my($vector) = @_;
+    my($vector,$name) = @_;
+    my($scalar);
 
-    if    ($CONFIG[2] == 3) { return( $vector->to_Enum() ); }
-    elsif ($CONFIG[2] == 2) { return( $vector->to_Dec () ); }
-    elsif ($CONFIG[2] == 1) { return( $vector->to_Bin () ); }
-    else                    { return( $vector->to_Hex () ); }
+    if    ($CONFIG[2] == 3) { eval { $scalar = $vector->to_Enum(); }; }
+    elsif ($CONFIG[2] == 2) { eval { $scalar = $vector->to_Dec (); }; }
+    elsif ($CONFIG[2] == 1) { eval { $scalar = $vector->to_Bin (); }; }
+    else                    { eval { $scalar = $vector->to_Hex (); }; }
+    if ($@) { &_exception_($name); }
+    return($scalar);
 }
 
-sub _fetch_operand
+sub _fetch_operand_
 {
-    my($name,$object,$argument,$flag,$build) = @_;
+    my($object,$argument,$flag,$name,$build) = @_;
     my($operand);
 
-    $name .= '=' unless (defined $flag);
     if ((defined $argument) && ref($argument) && (ref($argument) !~ /^[A-Z]+$/))
     {
-        if ($build) { $operand = $argument->Clone(); }
-        else        { $operand = $argument; }
+        if ($build && (defined $flag))
+        {
+            eval { $operand = $argument->Clone(); };
+            if ($@) { &_exception_($name); }
+        }
+        else { $operand = $argument; }
     }
-    elsif ((defined $argument) && !(ref($argument)))
+    elsif ((defined $argument) && (!ref($argument)))
     {
-        $operand = $object->Shadow();
-        _vectorize($operand,$argument,$name);
+        eval { $operand = $object->Shadow(); };
+        if ($@) { &_exception_($name); }
+        &_vectorize_($operand,$argument,$name);
     }
-    else { croak "Bit::Vector \"$name\": illegal operand type error"; }
+    else { &_error_($name,1); }
     return($operand);
 }
 
-sub _check_operand
+sub _check_operand_
 {
-    my($name,$argument,$flag) = @_;
+    my($argument,$flag,$name) = @_;
 
-    $name .= '=' unless (defined $flag);
-    if ((defined $argument) && !(ref($argument)))
+    if ((defined $argument) && (!ref($argument)))
     {
-        if ((defined $flag) && $flag)
-        {
-            croak "Bit::Vector \"$name\": reversed operands error";
-        }
+        if ((defined $flag) && $flag) { &_error_($name,2); }
     }
-    else { croak "Bit::Vector \"$name\": illegal operand type error"; }
+    else { &_error_($name,1); }
+}
+
+sub _stringify
+{
+    my($vector) = @_;
+    my($name) = 'string interpolation';
+
+    return( &_scalarize_($vector,$name) );
 }
 
 sub _boolean
 {
     my($object) = @_;
+    my($name) = 'boolean expression';
+    my($result);
 
-    return( ! $object->is_empty() );
+    eval { $result = $object->is_empty(); };
+    if ($@) { &_exception_($name); }
+    return(! $result);
 }
 
 sub _not_boolean
 {
     my($object) = @_;
+    my($name) = 'boolean expression';
+    my($result);
 
-    return( $object->is_empty() );
+    eval { $result = $object->is_empty(); };
+    if ($@) { &_exception_($name); }
+    return($result);
 }
 
 sub _complement
 {
     my($object) = @_;
+    my($name) = '~';
     my($result);
 
-    $result = $object->Shadow();
-    $result->Complement($object);
+    eval { $result = $object->Shadow(); };
+    if ($@) { &_exception_($name); }
+    eval { $result->Complement($object); };
+    if ($@) { &_exception_($name); }
     return($result);
 }
 
 sub _negate
 {
     my($object) = @_;
+    my($name) = 'unary minus';
     my($result);
 
-    $result = $object->Shadow();
-    $result->Negate($object);
+    eval { $result = $object->Shadow(); };
+    if ($@) { &_exception_($name); }
+    eval { $result->Negate($object); };
+    if ($@) { &_exception_($name); }
     return($result);
 }
 
 sub _absolute
 {
     my($object) = @_;
+    my($name) = 'abs()';
     my($result);
 
     if ($CONFIG[1] == 1)
     {
-        $result = $object->Shadow();
-        $result->Absolute($object);
-        return($result);
+        eval { $result = $object->Shadow(); };
+        if ($@) { &_exception_($name); }
+        eval { $result->Absolute($object); };
     }
     else
     {
-        return( $object->Norm() );
+        eval { $result = $object->Norm(); };
     }
+    if ($@) { &_exception_($name); }
+    return($result);
 }
 
 sub _concat
 {
     my($object,$argument,$flag) = @_;
+    my($name) = '.';
     my($result);
-    my($name);
 
-    $name = '.';
     $name .= '=' unless (defined $flag);
     if ((defined $argument) && ref($argument) && (ref($argument) !~ /^[A-Z]+$/))
     {
         if (defined $flag)
         {
-            if ($flag) { $result = $argument->Concat($object); }
-            else       { $result = $object->Concat($argument); }
+            if ($flag) { eval { $result = $argument->Concat($object); }; }
+            else       { eval { $result = $object->Concat($argument); }; }
+            if ($@) { &_exception_($name); }
             return($result);
         }
         else
         {
-            $object->Interval_Substitute($argument,0,0,0,$argument->Size());
+            eval { $object->Interval_Substitute($argument,0,0,0,$argument->Size()); };
+            if ($@) { &_exception_($name); }
             return($object);
         }
     }
-    elsif ((defined $argument) && !(ref($argument)))
+    elsif ((defined $argument) && (!ref($argument)))
     {
         if (defined $flag)
         {
-            if ($flag) { $result = $argument . _scalarize($object); }
-            else       { $result = _scalarize($object) . $argument; }
+            if ($flag) { $result = $argument . &_scalarize_($object,$name); }
+            else       { $result = &_scalarize_($object,$name) . $argument; }
             return($result);
         }
         else
         {
-            if    ($CONFIG[0] == 2) { $result = $object->new( length($argument) ); }
-            elsif ($CONFIG[0] == 1) { $result = $object->new( length($argument) << 2 ); }
-            else                    { $result = $object->Shadow(); }
-            _vectorize($result,$argument,$name);
-            $object->Interval_Substitute($result,0,0,0,$result->Size());
+            if    ($CONFIG[0] == 2) { eval { $result = $object->new( length($argument) ); }; }
+            elsif ($CONFIG[0] == 1) { eval { $result = $object->new( length($argument) << 2 ); }; }
+            else                    { eval { $result = $object->Shadow(); }; }
+            if ($@) { &_exception_($name); }
+            &_vectorize_($result,$argument,$name);
+            eval { $object->Interval_Substitute($result,0,0,0,$result->Size()); };
+            if ($@) { &_exception_($name); }
             return($object);
         }
     }
-    else { croak "Bit::Vector \"$name\": illegal operand type error"; }
+    else { &_error_($name,1); }
 }
 
 sub _xerox  #  (in Brazil, a photocopy is called a "xerox")
 {
     my($object,$argument,$flag) = @_;
+    my($name) = 'x';
     my($result);
     my($offset);
     my($index);
     my($size);
 
-    &_check_operand('x',$argument,$flag);
-    $size = $object->Size();
+    $name .= '=' unless (defined $flag);
+    &_check_operand_($argument,$flag,$name);
+    eval { $size = $object->Size(); };
+    if ($@) { &_exception_($name); }
     if (defined $flag)
     {
-        $result = $object->new($size * $argument);
+        eval { $result = $object->new($size * $argument); };
+        if ($@) { &_exception_($name); }
         $offset = 0;
         $index = 0;
     }
     else
     {
         $result = $object;
-        $result->Resize($size * $argument);
+        eval { $result->Resize($size * $argument); };
+        if ($@) { &_exception_($name); }
         $offset = $size;
         $index = 1;
     }
     for ( ; $index < $argument; $index++, $offset += $size )
     {
-        $result->Interval_Copy($object,$offset,0,$size);
+        eval { $result->Interval_Copy($object,$offset,0,$size); };
+        if ($@) { &_exception_($name); }
     }
     return($result);
 }
@@ -397,18 +458,23 @@ sub _xerox  #  (in Brazil, a photocopy is called a "xerox")
 sub _shift_left
 {
     my($object,$argument,$flag) = @_;
+    my($name) = '<<';
     my($result);
 
-    &_check_operand('<<',$argument,$flag);
+    $name .= '=' unless (defined $flag);
+    &_check_operand_($argument,$flag,$name);
     if (defined $flag)
     {
-        $result = $object->Clone();
-        $result->Move_Left($argument);
+        eval { $result = $object->Clone(); };
+        if ($@) { &_exception_($name); }
+        eval { $result->Move_Left($argument); };
+        if ($@) { &_exception_($name); }
         return($result);
     }
     else
     {
-        $object->Move_Left($argument);
+        eval { $object->Move_Left($argument); };
+        if ($@) { &_exception_($name); }
         return($object);
     }
 }
@@ -416,34 +482,41 @@ sub _shift_left
 sub _shift_right
 {
     my($object,$argument,$flag) = @_;
+    my($name) = '>>';
     my($result);
 
-    &_check_operand('>>',$argument,$flag);
+    $name .= '=' unless (defined $flag);
+    &_check_operand_($argument,$flag,$name);
     if (defined $flag)
     {
-        $result = $object->Clone();
-        $result->Move_Right($argument);
+        eval { $result = $object->Clone(); };
+        if ($@) { &_exception_($name); }
+        eval { $result->Move_Right($argument); };
+        if ($@) { &_exception_($name); }
         return($result);
     }
     else
     {
-        $object->Move_Right($argument);
+        eval { $object->Move_Right($argument); };
+        if ($@) { &_exception_($name); }
         return($object);
     }
 }
 
 sub _union_
 {
-    my($object,$operand,$flag) = @_;
+    my($object,$operand,$flag,$name) = @_;
 
     if (defined $flag)
     {
-        $operand->Union($object,$operand);
+        eval { $operand->Union($object,$operand); };
+        if ($@) { &_exception_($name); }
         return($operand);
     }
     else
     {
-        $object->Union($object,$operand);
+        eval { $object->Union($object,$operand); };
+        if ($@) { &_exception_($name); }
         return($object);
     }
 }
@@ -451,23 +524,28 @@ sub _union_
 sub _union
 {
     my($object,$argument,$flag) = @_;
-    my($operand) = &_fetch_operand('|',$object,$argument,$flag,1);
+    my($name) = '|';
+    my($operand);
 
-    return ( &_union_($object,$operand,$flag) );
+    $name .= '=' unless (defined $flag);
+    $operand = &_fetch_operand_($object,$argument,$flag,$name,1);
+    return( &_union_($object,$operand,$flag,$name) );
 }
 
 sub _intersection_
 {
-    my($object,$operand,$flag) = @_;
+    my($object,$operand,$flag,$name) = @_;
 
     if (defined $flag)
     {
-        $operand->Intersection($object,$operand);
+        eval { $operand->Intersection($object,$operand); };
+        if ($@) { &_exception_($name); }
         return($operand);
     }
     else
     {
-        $object->Intersection($object,$operand);
+        eval { $object->Intersection($object,$operand); };
+        if ($@) { &_exception_($name); }
         return($object);
     }
 }
@@ -475,24 +553,32 @@ sub _intersection_
 sub _intersection
 {
     my($object,$argument,$flag) = @_;
-    my($operand) = &_fetch_operand('&',$object,$argument,$flag,1);
+    my($name) = '&';
+    my($operand);
 
-    return ( &_intersection_($object,$operand,$flag) );
+    $name .= '=' unless (defined $flag);
+    $operand = &_fetch_operand_($object,$argument,$flag,$name,1);
+    return( &_intersection_($object,$operand,$flag,$name) );
 }
 
 sub _exclusive_or
 {
     my($object,$argument,$flag) = @_;
-    my($operand) = &_fetch_operand('^',$object,$argument,$flag,1);
+    my($name) = '^';
+    my($operand);
 
+    $name .= '=' unless (defined $flag);
+    $operand = &_fetch_operand_($object,$argument,$flag,$name,1);
     if (defined $flag)
     {
-        $operand->ExclusiveOr($object,$operand);
+        eval { $operand->ExclusiveOr($object,$operand); };
+        if ($@) { &_exception_($name); }
         return($operand);
     }
     else
     {
-        $object->ExclusiveOr($object,$operand);
+        eval { $object->ExclusiveOr($object,$operand); };
+        if ($@) { &_exception_($name); }
         return($object);
     }
 }
@@ -500,43 +586,53 @@ sub _exclusive_or
 sub _add
 {
     my($object,$argument,$flag) = @_;
-    my($operand) = &_fetch_operand('+',$object,$argument,$flag,1);
+    my($name) = '+';
+    my($operand);
 
+    $name .= '=' unless (defined $flag);
+    $operand = &_fetch_operand_($object,$argument,$flag,$name,1);
     if ($CONFIG[1] == 1)
     {
         if (defined $flag)
         {
-            $operand->add($object,$operand,0);
+            eval { $operand->add($object,$operand,0); };
+            if ($@) { &_exception_($name); }
             return($operand);
         }
         else
         {
-            $object->add($object,$operand,0);
+            eval { $object->add($object,$operand,0); };
+            if ($@) { &_exception_($name); }
             return($object);
         }
     }
     else
     {
-        return( &_union_($object,$operand,$flag) );
+        return( &_union_($object,$operand,$flag,$name) );
     }
 }
 
 sub _sub
 {
     my($object,$argument,$flag) = @_;
-    my($operand) = &_fetch_operand('-',$object,$argument,$flag,1);
+    my($name) = '-';
+    my($operand);
 
+    $name .= '=' unless (defined $flag);
+    $operand = &_fetch_operand_($object,$argument,$flag,$name,1);
     if ($CONFIG[1] == 1)
     {
         if (defined $flag)
         {
-            if ($flag) { $operand->subtract($operand,$object,0); }
-            else       { $operand->subtract($object,$operand,0); }
+            if ($flag) { eval { $operand->subtract($operand,$object,0); }; }
+            else       { eval { $operand->subtract($object,$operand,0); }; }
+            if ($@) { &_exception_($name); }
             return($operand);
         }
         else
         {
-            $object->subtract($object,$operand,0);
+            eval { $object->subtract($object,$operand,0); };
+            if ($@) { &_exception_($name); }
             return($object);
         }
     }
@@ -544,13 +640,15 @@ sub _sub
     {
         if (defined $flag)
         {
-            if ($flag) { $operand->Difference($operand,$object); }
-            else       { $operand->Difference($object,$operand); }
+            if ($flag) { eval { $operand->Difference($operand,$object); }; }
+            else       { eval { $operand->Difference($object,$operand); }; }
+            if ($@) { &_exception_($name); }
             return($operand);
         }
         else
         {
-            $object->Difference($object,$operand);
+            eval { $object->Difference($object,$operand); };
+            if ($@) { &_exception_($name); }
             return($object);
         }
     }
@@ -559,42 +657,54 @@ sub _sub
 sub _mul
 {
     my($object,$argument,$flag) = @_;
-    my($operand) = &_fetch_operand('*',$object,$argument,$flag,1);
+    my($name) = '*';
+    my($operand);
 
+    $name .= '=' unless (defined $flag);
+    $operand = &_fetch_operand_($object,$argument,$flag,$name,1);
     if ($CONFIG[1] == 1)
     {
         if (defined $flag)
         {
-            $operand->Multiply($object,$operand);
+            eval { $operand->Multiply($object,$operand); };
+            if ($@) { &_exception_($name); }
             return($operand);
         }
         else
         {
-            $object->Multiply($object,$operand);
+            eval { $object->Multiply($object,$operand); };
+            if ($@) { &_exception_($name); }
             return($object);
         }
     }
     else
     {
-        return( &_intersection_($object,$operand,$flag) );
+        return( &_intersection_($object,$operand,$flag,$name) );
     }
 }
 
 sub _div
 {
     my($object,$argument,$flag) = @_;
-    my($operand) = &_fetch_operand('/',$object,$argument,$flag,1);
-    my($temp) = $object->Shadow();
+    my($name) = '/';
+    my($operand);
+    my($temp);
 
+    $name .= '=' unless (defined $flag);
+    $operand = &_fetch_operand_($object,$argument,$flag,$name,1);
+    eval { $temp = $object->Shadow(); };
+    if ($@) { &_exception_($name); }
     if (defined $flag)
     {
-        if ($flag) { $operand->Divide($operand,$object,$temp); }
-        else       { $operand->Divide($object,$operand,$temp); }
+        if ($flag) { eval { $operand->Divide($operand,$object,$temp); }; }
+        else       { eval { $operand->Divide($object,$operand,$temp); }; }
+        if ($@) { &_exception_($name); }
         return($operand);
     }
     else
     {
-        $object->Divide($object,$operand,$temp);
+        eval { $object->Divide($object,$operand,$temp); };
+        if ($@) { &_exception_($name); }
         return($object);
     }
 }
@@ -602,18 +712,25 @@ sub _div
 sub _mod
 {
     my($object,$argument,$flag) = @_;
-    my($operand) = &_fetch_operand('%',$object,$argument,$flag,1);
-    my($temp) = $object->Shadow();
+    my($name) = '%';
+    my($operand);
+    my($temp);
 
+    $name .= '=' unless (defined $flag);
+    $operand = &_fetch_operand_($object,$argument,$flag,$name,1);
+    eval { $temp = $object->Shadow(); };
+    if ($@) { &_exception_($name); }
     if (defined $flag)
     {
-        if ($flag) { $temp->Divide($operand,$object,$operand); }
-        else       { $temp->Divide($object,$operand,$operand); }
+        if ($flag) { eval { $temp->Divide($operand,$object,$operand); }; }
+        else       { eval { $temp->Divide($object,$operand,$operand); }; }
+        if ($@) { &_exception_($name); }
         return($operand);
     }
     else
     {
-        $temp->Divide($object,$operand,$object);
+        eval { $temp->Divide($object,$operand,$object); };
+        if ($@) { &_exception_($name); }
         return($object);
     }
 }
@@ -705,188 +822,240 @@ sub _assign_mod
 sub _increment
 {
     my($object) = @_;
+    my($name) = '++';
+    my($result);
 
-    return( $object->increment() );
+    eval { $result = $object->increment(); };
+    if ($@) { &_exception_($name); }
+    return($result);
 }
 
 sub _decrement
 {
     my($object) = @_;
+    my($name) = '--';
+    my($result);
 
-    return( $object->decrement() );
+    eval { $result = $object->decrement(); };
+    if ($@) { &_exception_($name); }
+    return($result);
 }
 
 sub _lexicompare
 {
     my($object,$argument,$flag) = @_;
-    my($operand) = &_fetch_operand('cmp',$object,$argument,$flag,0);
+    my($name) = 'cmp';
+    my($operand);
+    my($result);
 
+    $operand = &_fetch_operand_($object,$argument,$flag,$name,0);
     if ((defined $flag) && $flag)
     {
-        return( $operand->Lexicompare($object) );
+        eval { $result = $operand->Lexicompare($object); };
     }
     else
     {
-        return( $object->Lexicompare($operand) );
+        eval { $result = $object->Lexicompare($operand); };
     }
+    if ($@) { &_exception_($name); }
+    return($result);
 }
 
 sub _compare
 {
     my($object,$argument,$flag) = @_;
-    my($operand) = &_fetch_operand('<=>',$object,$argument,$flag,0);
+    my($name) = '<=>';
+    my($operand);
+    my($result);
 
+    $operand = &_fetch_operand_($object,$argument,$flag,$name,0);
     if ((defined $flag) && $flag)
     {
-        return( $operand->Compare($object) );
+        eval { $result = $operand->Compare($object); };
     }
     else
     {
-        return( $object->Compare($operand) );
+        eval { $result = $object->Compare($operand); };
     }
+    if ($@) { &_exception_($name); }
+    return($result);
 }
 
 sub _equal
 {
     my($object,$argument,$flag) = @_;
-    my($operand) = &_fetch_operand('==',$object,$argument,$flag,0);
+    my($name) = '==';
+    my($operand);
+    my($result);
 
-    return( $object->equal($operand) );
+    $operand = &_fetch_operand_($object,$argument,$flag,$name,0);
+    eval { $result = $object->equal($operand); };
+    if ($@) { &_exception_($name); }
+    return($result);
 }
 
 sub _not_equal
 {
     my($object,$argument,$flag) = @_;
-    my($operand) = &_fetch_operand('!=',$object,$argument,$flag,0);
+    my($name) = '!=';
+    my($operand);
+    my($result);
 
-    return( !$object->equal($operand) );
+    $operand = &_fetch_operand_($object,$argument,$flag,$name,0);
+    eval { $result = $object->equal($operand); };
+    if ($@) { &_exception_($name); }
+    return(! $result);
 }
 
 sub _less_than
 {
     my($object,$argument,$flag) = @_;
-    my($operand) = &_fetch_operand('<',$object,$argument,$flag,0);
+    my($name) = '<';
+    my($operand);
+    my($result);
 
+    $operand = &_fetch_operand_($object,$argument,$flag,$name,0);
     if ($CONFIG[1] == 1)
     {
         if ((defined $flag) && $flag)
         {
-            return( $operand->Compare($object) < 0 );
+            eval { $result = ($operand->Compare($object) < 0); };
         }
         else
         {
-            return( $object->Compare($operand) < 0 );
+            eval { $result = ($object->Compare($operand) < 0); };
         }
     }
     else
     {
         if ((defined $flag) && $flag)
         {
-            return( !($operand->equal($object)) &&
-                     ($operand->subset($object)) );
+            eval { $result = ((!$operand->equal($object)) &&
+                               ($operand->subset($object))); };
         }
         else
         {
-            return( !($object->equal($operand)) &&
-                     ($object->subset($operand)) );
+            eval { $result = ((!$object->equal($operand)) &&
+                               ($object->subset($operand))); };
         }
     }
+    if ($@) { &_exception_($name); }
+    return($result);
 }
 
 sub _less_equal
 {
     my($object,$argument,$flag) = @_;
-    my($operand) = &_fetch_operand('<=',$object,$argument,$flag,0);
+    my($name) = '<=';
+    my($operand);
+    my($result);
 
+    $operand = &_fetch_operand_($object,$argument,$flag,$name,0);
     if ($CONFIG[1] == 1)
     {
         if ((defined $flag) && $flag)
         {
-            return( $operand->Compare($object) <= 0 );
+            eval { $result = ($operand->Compare($object) <= 0); };
         }
         else
         {
-            return( $object->Compare($operand) <= 0 );
+            eval { $result = ($object->Compare($operand) <= 0); };
         }
     }
     else
     {
         if ((defined $flag) && $flag)
         {
-            return( $operand->subset($object) );
+            eval { $result = $operand->subset($object); };
         }
         else
         {
-            return( $object->subset($operand) );
+            eval { $result = $object->subset($operand); };
         }
     }
+    if ($@) { &_exception_($name); }
+    return($result);
 }
 
 sub _greater_than
 {
     my($object,$argument,$flag) = @_;
-    my($operand) = &_fetch_operand('>',$object,$argument,$flag,0);
+    my($name) = '>';
+    my($operand);
+    my($result);
 
+    $operand = &_fetch_operand_($object,$argument,$flag,$name,0);
     if ($CONFIG[1] == 1)
     {
         if ((defined $flag) && $flag)
         {
-            return( $operand->Compare($object) > 0 );
+            eval { $result = ($operand->Compare($object) > 0); };
         }
         else
         {
-            return( $object->Compare($operand) > 0 );
+            eval { $result = ($object->Compare($operand) > 0); };
         }
     }
     else
     {
         if ((defined $flag) && $flag)
         {
-            return( !($object->equal($operand)) &&
-                     ($object->subset($operand)) );
+            eval { $result = ((!$object->equal($operand)) &&
+                               ($object->subset($operand))); };
         }
         else
         {
-            return( !($operand->equal($object)) &&
-                     ($operand->subset($object)) );
+            eval { $result = ((!$operand->equal($object)) &&
+                               ($operand->subset($object))); };
         }
     }
+    if ($@) { &_exception_($name); }
+    return($result);
 }
 
 sub _greater_equal
 {
     my($object,$argument,$flag) = @_;
-    my($operand) = &_fetch_operand('>=',$object,$argument,$flag,0);
+    my($name) = '>=';
+    my($operand);
+    my($result);
 
+    $operand = &_fetch_operand_($object,$argument,$flag,$name,0);
     if ($CONFIG[1] == 1)
     {
         if ((defined $flag) && $flag)
         {
-            return( $operand->Compare($object) >= 0 );
+            eval { $result = ($operand->Compare($object) >= 0); };
         }
         else
         {
-            return( $object->Compare($operand) >= 0 );
+            eval { $result = ($object->Compare($operand) >= 0); };
         }
     }
     else
     {
         if ((defined $flag) && $flag)
         {
-            return( $object->subset($operand) );
+            eval { $result = $object->subset($operand); };
         }
         else
         {
-            return( $operand->subset($object) );
+            eval { $result = $operand->subset($object); };
         }
     }
+    if ($@) { &_exception_($name); }
+    return($result);
 }
 
 sub _clone
 {
     my($object) = @_;
+    my($name) = 'automatic duplication';
+    my($result);
 
-    return( $object->Clone() );
+    eval { $result = $object->Clone(); };
+    if ($@) { &_exception_($name); }
+    return($result);
 }
 
 1;
@@ -3288,6 +3457,10 @@ The method uses Euklid's algorithm internally:
 Note that a fatal "division by zero error" will occur if any of the two
 numbers is equal to zero.
 
+Note also that this method regards its two arguments as B<SIGNED> but
+that it actually uses the B<ABSOLUTE VALUE> of its two arguments internally,
+i.e., the B<RESULT> of this method will B<ALWAYS> be B<POSITIVE>.
+
 =item *
 
 C<$vector-E<gt>Block_Store($buffer);>
@@ -4807,7 +4980,7 @@ perltoot(1), perlxs(1), perlxstut(1), perlguts(1), overload(3).
 
 =head1 VERSION
 
-This man page documents "Bit::Vector" version 5.0.
+This man page documents "Bit::Vector" version 5.1.
 
 =head1 AUTHOR
 

@@ -502,7 +502,7 @@ N_word BitVector_Mask(N_int bits)           /* bit vector mask (unused bits) */
 
 charptr BitVector_Version(void)
 {
-    return((charptr)"5.0");
+    return((charptr)"5.1");
 }
 
 N_int BitVector_Word_Bits(void)
@@ -3259,7 +3259,7 @@ void Matrix_Transpose(wordptr X, N_int rowsX, N_int colsX,
 /*  VERSION HISTORY:                                                         */
 /*****************************************************************************/
 /*                                                                           */
-/*    01.03.98    Version 5.0                                                */
+/*    01.03.98    Version 5.0  major additions, new functions, rewrites      */
 /*    16.07.97    Version 4.2  added is_empty, is_full                       */
 /*    30.06.97    Version 4.1  added word-ins/del, move-left/right, inc/dec  */
 /*    14.04.97    Version 4.0                                                */

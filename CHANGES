@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 5.0
+                      Package "Bit::Vector" Version 5.1
                     =====================================
 
 
@@ -10,6 +10,7 @@
 Contents of this file:
 ----------------------
 
+  -  Changes in version 5.1
   -  New features in version 5.0
   -  Migration strategy to version 5.0 from previous versions
   -  New features in version 4.2
@@ -20,6 +21,16 @@ Contents of this file:
   -  Most important differences between versions 2.x and 3.0
   -  Most important differences between versions 1.x and 2.0
   -  Version history in details
+
+
+Changes in version 5.1:
+-----------------------
+
+In version 5.1, systematic exception handling was added to "Vector.pm" so that
+error conditions arising from method calls in overloaded operators do not show
+error messages anymore pointing to the location in "Vector.pm" where the method
+was called, but rather to the location in your application program where the
+overloaded operator was used.
 
 
 New features in version 5.0:
@@ -876,6 +887,14 @@ And finally, the following methods are gone:
 
   -  lexorder()
   -  new_from_String()
+
+----------------------------------------------------------------------------
+
+In version 5.1, systematic exception handling was added to "Vector.pm" so that
+error conditions arising from method calls in overloaded operators do not show
+error messages anymore pointing to the location in "Vector.pm" where the method
+was called, but rather to the location in your application program where the
+overloaded operator was used.
 
 ----------------------------------------------------------------------------
 
