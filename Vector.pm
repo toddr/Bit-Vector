@@ -7,9 +7,9 @@
 ##    This piece of software is "Non-Profit-Ware" ("NP-ware").               ##
 ##                                                                           ##
 ##    You may use, copy, modify and redistribute it under the terms of the   ##
-##    "Non-Profit License" (NPL).                                            ##
+##    "Non-Profit-License" (NPL).                                            ##
 ##                                                                           ##
-##    Please refer to the file "LICENSE" in this distribution for details!   ##
+##    Please refer to the file "NONPROFIT" in this distribution for details! ##
 ##                                                                           ##
 ###############################################################################
 
@@ -916,7 +916,7 @@ All methods are implemented in C internally for maximum performance.
 The module also provides overloaded arithmetic and relational operators
 for maximum ease of use (Perl only).
 
-(Note that there is (of course) a little speed penalty to pay for
+(Note that - of course - there is a little speed penalty to pay for
 overloaded operators. If speed is crucial, use the methods of this
 module directly instead of their corresponding overloaded operators!)
 
@@ -1618,12 +1618,28 @@ the following:
 NOTE ALSO THAT THESE SCALAR OPERANDS ARE CONVERTED TO BIT VECTORS OF
 THE SAME SIZE AS THE BIT VECTOR WHICH IS THE OTHER OPERAND.
 
-The only exception from this rule are hexadecimal and binary strings
-in connection with the concatenation operator ("C<.>"); these strings
-are converted to bit vectors of a size matching the length of the
-input string, i.e., four times the length for hexadecimal strings
-(because each hexadecimal digit is worth 4 bits) and once the length
-for binary strings.
+The only exception from this rule is the concatenation operator
+("C<.>") and its assignment variant ("C<.=>"):
+
+If one of the two operands of the concatenation operator ("C<.>") is
+not a bit vector object but a Perl scalar, the contents of the remaining
+bit vector operand are converted into a string (the format of which
+depends on the configuration set with the "C<Configuration()>" method),
+which is then concatenated in the proper order (i.e., as indicated by the
+order of the two operands) with the Perl scalar (in other words, a string
+is returned in such a case instead of a bit vector object!).
+
+If the right side operand (the "rvalue") of the assignment variant
+("C<.=>") of the concatenation operator is a Perl scalar, it is converted
+internally to a bit vector of the same size as the left side operand provided
+that the configuration states that scalars are to be regarded as indices,
+decimal strings or enumerations.
+
+If the configuration states that scalars are to be regarded as hexadecimal
+or boolean strings, however, these strings are converted to bit vectors of
+a size matching the length of the input string, i.e., four times the length
+for hexadecimal strings (because each hexadecimal digit is worth 4 bits) and
+once the length for binary strings.
 
 If a decimal number ("big integer") is too large to be stored in a
 bit vector of the given size, a "numeric overflow error" occurs.
@@ -1711,9 +1727,17 @@ on all systems, as prescribed by S<ANSI C>.
 
 Matching sizes
 
-For all methods involving several bit vectors at the same time, except for the
-methods "C<Concat()>" and "C<Concat_List()>", all bit vector arguments must have
-identical sizes (number of bits), or a fatal "size mismatch" error will occur.
+In general, for methods involving several bit vectors at the same time, all
+bit vector arguments must have identical sizes (number of bits), or a fatal
+"size mismatch" error will occur.
+
+Exceptions from this rule are the methods "C<Concat()>", "C<Concat_List()>",
+"C<Interval_Copy()>" and "C<Interval_Substitute()>", where no conditions at
+all are imposed on the size of their bit vector arguments, and the method
+"C<Multiply()>", where all three bit vector arguments must in principle
+obey the rule of matching sizes, but where the bit vector in which the
+result of the multiplication is to be stored may be larger than the two
+bit vector arguments containing the factors for the multiplication.
 
 =item *
 
@@ -1791,7 +1815,7 @@ argument list in concatenated form.
 The argument list may contain any number of arguments (including
 zero); the only condition is that all arguments must be bit vectors.
 
-There is no condition concerning the length (in number of bits) of 
+There is no condition concerning the length (in number of bits) of
 these arguments.
 
 The vectors from the argument list are not changed in any way.
@@ -3168,9 +3192,321 @@ leaves all other aspects unchanged.
 
 =item *
 
-(under construction)
+C<"$vector">
+
+Remember that variables enclosed in double quotes are always
+interpolated in Perl.
+
+Whenever a Perl variable containing the reference of a "Bit::Vector"
+object is enclosed in double quotes (either alone or together with
+other text and/or variables), the contents of the corresponding
+bit vector are converted into a printable string.
+
+Since there are several conversion methods available in this module
+(see the description of the methods "C<to_Hex()>", "C<to_Bin()>",
+"C<to_Dec()>" and "C<to_Enum()>"), it is of course desirable to
+be able to choose which of these methods should be applied in this
+case.
+
+This can actually be done by changing the configuration of this
+module using the method "C<Configure()>" (see the chapter above).
+
+The default is conversion to hexadecimal.
+
+=item *
+
+C<if ($vector)>
+
+It is possible to use a Perl variable containing the reference of a
+"Bit::Vector" object as a boolean expression.
+
+The condition above is true if the corresponding bit vector contains
+at least one set bit, and it is false if B<ALL> bits of the corresponding
+bit vector are cleared.
+
+=item *
+
+C<if (!$vector)>
+
+Since it is possible to use a Perl variable containing the reference of a
+"Bit::Vector" object as a boolean expression, you can of course also negate
+this boolean expression.
+
+The condition above is true if B<ALL> bits of the corresponding bit vector
+are cleared, and it is false if the corresponding bit vector contains at
+least one set bit.
+
+Note that this is B<NOT> the same as using the method "C<is_full()>",
+which returns true if all bits of the corresponding bit vector are B<SET>.
+
+=item *
+
+C<~$vector>
+
+This term returns a new bit vector object which is the (one's) complement
+of the given bit vector.
+
+This is equivalent to inverting all bits.
+
+=item *
+
+C<-$vector> (unary minus)
+
+This term returns a new bit vector object which is the (two's) complement
+of the given bit vector.
+
+This is equivalent to inverting all bits and incrementing the result by one.
+
+(This is the same as changing the sign of a number in two's complement
+binary representation.)
+
+=item *
+
+C<abs($vector)>
+
+Depending on the configuration (see the description of the method
+"C<Configuration()>" for more details), this term either returns
+the number of set bits in the given bit vector (this is the same
+as calculating the number of elements which are contained in the
+given set) - which is the default behaviour, or it returns a new
+bit vector object which contains the absolute value of the number
+stored in the given bit vector.
+
+=item *
+
+C<$vector1 . $vector2>
+
+This term usually returns a new bit vector object which is the
+result of the concatenation of the two bit vector operands.
+
+The left operand becomes the most significant, and the right operand
+becomes the least significant part of the new bit vector object.
+
+If one of the two operands is not a bit vector object but a Perl scalar,
+however, the contents of the remaining bit vector operand are converted
+into a string (the format of which depends on the configuration set with
+the "C<Configuration()>" method), which is then concatenated in the proper
+order (i.e., as indicated by the order of the two operands) with the Perl
+scalar.
+
+In other words, a string is returned in such a case instead of
+a bit vector object!
+
+=item *
+
+C<$vector x $factor>
+
+=item *
+
+C<$vector E<lt>E<lt> $bits>
+
+=item *
+
+C<$vector E<gt>E<gt> $bits>
+
+=item *
+
+C<$vector1 | $vector2>
+
+This term returns a new bit vector object which is the result of
+a bitwise OR operation between the two bit vector operands.
+
+This is the same as calculating the union of two sets.
+
+=item *
+
+C<$vector1 & $vector2>
+
+This term returns a new bit vector object which is the result of
+a bitwise AND operation between the two bit vector operands.
+
+This is the same as calculating the intersection of two sets.
+
+=item *
+
+C<$vector1 ^ $vector2>
+
+This term returns a new bit vector object which is the result of
+a bitwise XOR operation between the two bit vector operands.
+
+This is the same as calculating the symmetric difference of two sets.
+
+=item *
+
+C<$vector1 + $vector2>
+
+Depending on the configuration (see the description of the method
+"C<Configuration()>" for more details), this term either returns
+a new bit vector object which is the result of a bitwise OR operation
+between the two bit vector operands (this is the same as calculating
+the union of two sets) - which is the default behaviour, or it returns
+a new bit vector object which contains the sum of the two numbers
+stored in the two bit vector operands.
+
+=item *
+
+C<$vector1 - $vector2>
+
+Depending on the configuration (see the description of the method
+"C<Configuration()>" for more details), this term either returns
+a new bit vector object which is the set difference of the two sets
+represented in the two bit vector operands - which is the default
+behaviour, or it returns a new bit vector object which contains
+the difference of the two numbers stored in the two bit vector
+operands.
+
+=item *
+
+C<$vector1 * $vector2>
+
+Depending on the configuration (see the description of the method
+"C<Configuration()>" for more details), this term either returns
+a new bit vector object which is the result of a bitwise AND operation
+between the two bit vector operands (this is the same as calculating
+the intersection of two sets) - which is the default behaviour, or it
+returns a new bit vector object which contains the product of the two
+numbers stored in the two bit vector operands.
+
+=item *
+
+C<$vector1 / $vector2>
+
+This term returns a new bit vector object containing the result of the
+division of the two numbers stored in the two bit vector operands.
+
+=item *
+
+C<$vector1 % $vector2>
+
+This term returns a new bit vector object containing the remainder of
+the division of the two numbers stored in the two bit vector operands.
+
+=item *
+
+C<$vector1 .= $vector2;>
+
+If the right side operand (the "rvalue") of the assignment variant
+("C<.=>") of the concatenation operator is a Perl scalar, it is converted
+internally to a bit vector of the same size as the left side operand provided
+that the configuration states that scalars are to be regarded as indices,
+decimal strings or enumerations.
+
+If the configuration states that scalars are to be regarded as hexadecimal
+or boolean strings, however, these strings are converted to bit vectors of
+a size matching the length of the input string, i.e., four times the length
+for hexadecimal strings (because each hexadecimal digit is worth 4 bits) and
+once the length for binary strings.
+
+=item *
+
+C<$vector x= $factor;>
+
+=item *
+
+C<$vector E<lt>E<lt>= $bits;>
+
+=item *
+
+C<$vector E<gt>E<gt>= $bits;>
+
+=item *
+
+C<$vector1 |= $vector2;>
+
+=item *
+
+C<$vector1 &= $vector2;>
+
+=item *
+
+C<$vector1 ^= $vector2;>
+
+=item *
+
+C<$vector1 += $vector2;>
+
+=item *
+
+C<$vector1 -= $vector2;>
+
+=item *
+
+C<$vector1 *= $vector2;>
+
+=item *
+
+C<$vector1 /= $vector2;>
+
+=item *
+
+C<$vector1 %= $vector2;>
+
+=item *
+
+C<$vector++>, C<++$vector>
+
+=item *
+
+C<$vector-->, C<--$vector>
+
+=item *
+
+C<$vector1 cmp $vector2>
+
+=item *
+
+C<if ($vector1 eq $vector2)>
+
+=item *
+
+C<if ($vector1 ne $vector2)>
+
+=item *
+
+C<if ($vector1 lt $vector2)>
+
+=item *
+
+C<if ($vector1 le $vector2)>
+
+=item *
+
+C<if ($vector1 gt $vector2)>
+
+=item *
+
+C<if ($vector1 ge $vector2)>
+
+=item *
+
+C<$vector1 E<lt>=E<gt> $vector2>
+
+=item *
+
+C<if ($vector1 == $vector2)>
+
+=item *
+
+C<if ($vector1 != $vector2)>
+
+=item *
+
+C<if ($vector1 E<lt> $vector2)>
+
+=item *
+
+C<if ($vector1 E<lt>= $vector2)>
+
+=item *
+
+C<if ($vector1 E<gt> $vector2)>
+
+=item *
+
+C<if ($vector1 E<gt>= $vector2)>
 
 =back
+
 
 =head1 SEE ALSO
 
@@ -3198,8 +3534,8 @@ All rights reserved.
 This package is "Non-Profit-Ware" ("NP-ware").
 
 You may use, copy, modify and redistribute it
-under the terms of the "Non-Profit License" (NPL).
+under the terms of the "Non-Profit-License" (NPL).
 
-Please refer to the file "LICENSE" in this module's distribution
-for details!
+Please refer to the file "NONPROFIT" in this module's
+distribution for details!
 

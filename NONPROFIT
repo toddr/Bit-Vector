@@ -8,7 +8,7 @@
 
 
                       =================================
-                          Non-Profit License (NPL):
+                          NON-PROFIT-LICENSE (NPL):
                       =================================
 
 
@@ -35,19 +35,20 @@ charges or royalties under the conditions that follow:
    you are liable to say so explicitly and clearly at a prominent place
    in your documentation and to describe what modifications have been made,
    if applicable. Moreover, and in any case, you are obliged to include
-   this LICENSE file in your distribution and to mention it at a prominent
-   location in your documentation.
+   this "NONPROFIT" license file in your distribution and to mention it
+   at a prominent location in your documentation.
 
-4) YOU ARE NOT ALLOWED TO REMOVE OR ALTER ANY COPYRIGHT NOTICES IN ANY OF
-   THE PARTS OF THIS PACKAGE OR TO CHANGE THIS "LICENSE" FILE IN ANY WAY.
+4) If any program of yours, containing or using this package or any of
+   its parts, displays any copyright notices, an appropriate copyright
+   notice for this package has to be included as well at every such place.
 
-5) You are not allowed to charge for the redistribution of this package
+5) YOU ARE NOT ALLOWED TO REMOVE OR ALTER ANY COPYRIGHT NOTICES IN ANY OF
+   THE PARTS OF THIS PACKAGE OR TO CHANGE THIS "NONPROFIT" LICENSE FILE
+   IN ANY WAY.
+
+6) You are not allowed to charge for the redistribution of this package
    except for the net costs of the media involved (and postage fees and
    packing material, if applicable).
-
-6) If any program of yours, containing all or parts of this package or using
-   it, displays any copyright notices, an appropriate copyright notice for
-   this package has to be included as well at every such place.
 
 7) The very text of this license itself is not copyrighted, i.e., you
    may use this license for your own products without restriction, at

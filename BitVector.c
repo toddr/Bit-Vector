@@ -24,14 +24,14 @@ typedef enum
         ErrCode_Long,     /* size of word is greater than size of long       */
         ErrCode_Powr,     /* number of bits of word is not a power of two    */
         ErrCode_Loga,     /* error in calculation of logarithm               */
-        ErrCode_Null,     /* unable to allocate memory for bitmask table     */
+
+        ErrCode_Null,     /* unable to allocate memory                       */
 
         ErrCode_Size,     /* bit vector size mismatch error                  */
-        ErrCode_Same,     /* operands must (all) be distinct bit vectors     */
+        ErrCode_Same,     /* operands must be distinct                       */
         ErrCode_Zero,     /* division by zero attempted                      */
-        ErrCode_Crea,     /* unable to create temporary bit vector(s)        */
         ErrCode_Ovfl,     /* numerical overflow error                        */
-        ErrCode_Form      /* format error in decimal number input string     */
+        ErrCode_Pars      /* syntax error in decimal input string            */
     } ErrCode;
 
 /* ===> MISCELLANEOUS: <=== */
@@ -1658,11 +1658,10 @@ charptr BitVector_to_Dec(wordptr addr)
 
 ErrCode BitVector_from_dec(wordptr addr, charptr string)
 {
-    ErrCode code = ErrCode_Ok;
+    ErrCode error = ErrCode_Ok;
     N_word  bits = bits_(addr);
     N_word  mask = mask_(addr);
     boolean init = (bits > BITS);
-    boolean ok = true;
     boolean minus;
     boolean shift;
     wordptr term;
@@ -1682,32 +1681,32 @@ ErrCode BitVector_from_dec(wordptr addr, charptr string)
     if (bits > 0)
     {
         length = strlen((char *) string);
-        if (length == 0) return(ErrCode_Form);
+        if (length == 0) return(ErrCode_Pars);
         digit = (int) *string;
         if ((minus = (digit == (int) '-')) or
                      (digit == (int) '+'))
         {
             string++;
-            if (--length == 0) return(ErrCode_Form);
+            if (--length == 0) return(ErrCode_Pars);
         }
         string += length;
         term = BitVector_Create(BITS,false);
         if (term == NULL)
         {
-            return(ErrCode_Crea);
+            return(ErrCode_Null);
         }
         base = BitVector_Create(BITS,false);
         if (base == NULL)
         {
             BitVector_Destroy(term);
-            return(ErrCode_Crea);
+            return(ErrCode_Null);
         }
         prod = BitVector_Create(bits,init);
         if (prod == NULL)
         {
             BitVector_Destroy(term);
             BitVector_Destroy(base);
-            return(ErrCode_Crea);
+            return(ErrCode_Null);
         }
         rank = BitVector_Create(bits,init);
         if (rank == NULL)
@@ -1715,7 +1714,7 @@ ErrCode BitVector_from_dec(wordptr addr, charptr string)
             BitVector_Destroy(term);
             BitVector_Destroy(base);
             BitVector_Destroy(prod);
-            return(ErrCode_Crea);
+            return(ErrCode_Null);
         }
         temp = BitVector_Create(bits,false);
         if (temp == NULL)
@@ -1724,64 +1723,57 @@ ErrCode BitVector_from_dec(wordptr addr, charptr string)
             BitVector_Destroy(base);
             BitVector_Destroy(prod);
             BitVector_Destroy(rank);
-            return(ErrCode_Crea);
+            return(ErrCode_Null);
         }
         last = addr + size_(addr) - 1;
         msb = mask AND NOT (mask >> 1);
         BitVector_Empty(addr);
         *base = EXP10;
         shift = false;
-        while (ok and (length > 0))
+        while (not error and (length > 0))
         {
             accu = 0;
             powr = 1;
             count = LOG10;
-            while (ok and (length > 0) and (count-- > 0))
+            while (not error and (length > 0) and (count-- > 0))
             {
                 digit = (int) *(--string); length--;
                 /* separate because isdigit() is likely a macro! */
-                if (ok = (isdigit(digit) != 0))
+                if (isdigit(digit) != 0)
                 {
                     accu += ((N_word) digit - (N_word) '0') * powr;
                     powr *= 10;
                 }
+                else error = ErrCode_Pars;
             }
-            if (ok)
+            if (not error)
             {
                 if (shift)
                 {
                     *term = accu;
                     BitVector_Copy(temp,rank);
-                    ok = ((code = BitVector_Mul_Pos(prod,temp,term)) == ErrCode_Ok);
+                    error = BitVector_Mul_Pos(prod,temp,term);
                 }
                 else
                 {
                     *prod = accu;
-                    if ((not init) and ((accu AND NOT mask) != 0))
-                    {
-                        ok = false;
-                        code = ErrCode_Ovfl;
-                    }
+                    if ((not init) and ((accu AND NOT mask) != 0)) error = ErrCode_Ovfl;
                 }
-                if (ok)
+                if (not error)
                 {
                     prev = *last AND msb;
                     if (BitVector_add(addr,addr,prod,0) or ((*last AND msb) != prev))
                     {
                         *last ^= msb;
                         if (BitVector_is_empty(addr)) *last ^= msb;
-                        else
-                        {
-                            ok = false;
-                            code = ErrCode_Ovfl;
-                        }
+                        else error = ErrCode_Ovfl;
                     }
                     else if (length > 0)
                     {
                         if (shift)
                         {
                             BitVector_Copy(temp,rank);
-                            ok = ((code = BitVector_Mul_Pos(rank,temp,base)) == ErrCode_Ok);
+                            error = BitVector_Mul_Pos(rank,temp,base);
                         }
                         else
                         {
@@ -1797,24 +1789,13 @@ ErrCode BitVector_from_dec(wordptr addr, charptr string)
         BitVector_Destroy(prod);
         BitVector_Destroy(rank);
         BitVector_Destroy(temp);
-        if (ok)
+        if (not error)
         {
             if (minus) BitVector_Negate(addr,addr);
-            if (minus XOR ((*last AND msb) != 0))
-            {
-                ok = false;
-                code = ErrCode_Ovfl;
-            }
+            if (minus XOR ((*last AND msb) != 0)) error = ErrCode_Ovfl;
         }
     }
-    if (ok) return(ErrCode_Ok);
-    else
-    {
-        if (code == ErrCode_Ok)
-            return(ErrCode_Form);
-        else
-            return(code);
-    }
+    return(error);
 }
 
 charptr BitVector_to_Enum(wordptr addr)
@@ -2451,10 +2432,10 @@ ErrCode BitVector_Multiply(wordptr X, wordptr Y, wordptr Z)
     }
     else
     {
-        A = BitVector_Create((N_int) bit_y, false);
-        if (A == NULL) return(ErrCode_Crea);
-        B = BitVector_Create((N_int) bit_z, false);
-        if (B == NULL) { BitVector_Destroy(A); return(ErrCode_Crea); }
+        A = BitVector_Create(bit_y,false);
+        if (A == NULL) return(ErrCode_Null);
+        B = BitVector_Create(bit_z,false);
+        if (B == NULL) { BitVector_Destroy(A); return(ErrCode_Null); }
         size  = size_(Y);
         mask  = mask_(Y);
         msb   = (mask AND NOT (mask >> 1));
@@ -2476,8 +2457,8 @@ ErrCode BitVector_Multiply(wordptr X, wordptr Y, wordptr Z)
         {
             if (bit_x > bit_y)
             {
-                A = BitVector_Resize(A, (N_int) bit_x);
-                if (A == NULL) { BitVector_Destroy(B); return(ErrCode_Crea); }
+                A = BitVector_Resize(A,bit_x);
+                if (A == NULL) { BitVector_Destroy(B); return(ErrCode_Null); }
             }
             ok = ((BitVector_Mul_Pos(X,A,B) == ErrCode_Ok) and
                 ((*ptr_x AND msb) == 0));
@@ -2486,8 +2467,8 @@ ErrCode BitVector_Multiply(wordptr X, wordptr Y, wordptr Z)
         {
             if (bit_x > bit_z)
             {
-                B = BitVector_Resize(B, (N_int) bit_x);
-                if (B == NULL) { BitVector_Destroy(A); return(ErrCode_Crea); }
+                B = BitVector_Resize(B,bit_x);
+                if (B == NULL) { BitVector_Destroy(A); return(ErrCode_Null); }
             }
             ok = ((BitVector_Mul_Pos(X,B,A) == ErrCode_Ok) and
                ((*ptr_x AND msb) == 0));
@@ -2591,10 +2572,10 @@ ErrCode BitVector_Divide(wordptr Q, wordptr X, wordptr Y, wordptr R)
     }
     else
     {
-        A = BitVector_Create((N_int) bits, false);
-        if (A == NULL) return(ErrCode_Crea);
-        B = BitVector_Create((N_int) bits, false);
-        if (B == NULL) { BitVector_Destroy(A); return(ErrCode_Crea); }
+        A = BitVector_Create(bits,false);
+        if (A == NULL) return(ErrCode_Null);
+        B = BitVector_Create(bits,false);
+        if (B == NULL) { BitVector_Destroy(A); return(ErrCode_Null); }
         size--;
         sgn_x = (((*(X+size) &= mask) AND msb) != 0);
         sgn_y = (((*(Y+size) &= mask) AND msb) != 0);
@@ -2638,20 +2619,20 @@ ErrCode BitVector_GCD(wordptr X, wordptr Y, wordptr Z)
     Q = BitVector_Create(bits,false);
     if (Q == NULL)
     {
-        return(ErrCode_Crea);
+        return(ErrCode_Null);
     }
     R = BitVector_Create(bits,false);
     if (R == NULL)
     {
         BitVector_Destroy(Q);
-        return(ErrCode_Crea);
+        return(ErrCode_Null);
     }
     A = BitVector_Create(bits,false);
     if (A == NULL)
     {
         BitVector_Destroy(Q);
         BitVector_Destroy(R);
-        return(ErrCode_Crea);
+        return(ErrCode_Null);
     }
     B = BitVector_Create(bits,false);
     if (B == NULL)
@@ -2659,7 +2640,7 @@ ErrCode BitVector_GCD(wordptr X, wordptr Y, wordptr Z)
         BitVector_Destroy(Q);
         BitVector_Destroy(R);
         BitVector_Destroy(A);
-        return(ErrCode_Crea);
+        return(ErrCode_Null);
     }
     size--;
     if (((*(Y+size) &= mask) AND msb) != 0) BitVector_Negate(A,Y);
@@ -3193,7 +3174,7 @@ void Matrix_Transpose(wordptr X, N_int rowsX, N_int colsX,
 /*    14.04.97    Version 4.0                                                */
 /*    30.06.97    Version 4.1  added word-ins/del, move-left/right, inc/dec  */
 /*    16.07.97    Version 4.2  added is_empty, is_full                       */
-/*    17.02.98    Version 5.0                                                */
+/*    23.02.98    Version 5.0                                                */
 /*****************************************************************************/
 /*  COPYRIGHT:                                                               */
 /*                                                                           */
@@ -3203,9 +3184,9 @@ void Matrix_Transpose(wordptr X, N_int rowsX, N_int colsX,
 /*    This piece of software is "Non-Profit-Ware" ("NP-ware").               */
 /*                                                                           */
 /*    You may use, copy, modify and redistribute it under the terms of the   */
-/*    "Non-Profit License" (NPL).                                            */
+/*    "Non-Profit-License" (NPL).                                            */
 /*                                                                           */
-/*    Please refer to the file "LICENSE" in this distribution for details!   */
+/*    Please refer to the file "NONPROFIT" in this distribution for details! */
 /*                                                                           */
 /*****************************************************************************/
 #endif

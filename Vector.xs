@@ -8,9 +8,9 @@
 /*    This piece of software is "Non-Profit-Ware" ("NP-ware").               */
 /*                                                                           */
 /*    You may use, copy, modify and redistribute it under the terms of the   */
-/*    "Non-Profit License" (NPL).                                            */
+/*    "Non-Profit-License" (NPL).                                            */
 /*                                                                           */
-/*    Please refer to the file "LICENSE" in this distribution for details!   */
+/*    Please refer to the file "NONPROFIT" in this distribution for details! */
 /*                                                                           */
 /*****************************************************************************/
 
@@ -53,6 +53,9 @@ typedef     SV *BitVector_Scalar;
 #define BIT_VECTOR_ERROR(name,error) \
     croak("Bit::Vector::" name "(): " error)
 
+#define BIT_VECTOR_MEMORY_ERROR(name) \
+    BIT_VECTOR_ERROR(name,"unable to allocate memory")
+
 #define BIT_VECTOR_OBJECT_ERROR(name) \
     BIT_VECTOR_ERROR(name,"item is not a 'Bit::Vector' object")
 
@@ -61,12 +64,6 @@ typedef     SV *BitVector_Scalar;
 
 #define BIT_VECTOR_STRING_ERROR(name) \
     BIT_VECTOR_ERROR(name,"item is not a string")
-
-#define BIT_VECTOR_CREATE_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"unable to create new object")
-
-#define BIT_VECTOR_MEMORY_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"unable to create new string")
 
 #define BIT_VECTOR_INDEX_ERROR(name) \
     BIT_VECTOR_ERROR(name,"index out of range")
@@ -118,10 +115,10 @@ typedef     SV *BitVector_Scalar;
 
 #define BIT_VECTOR_EXCEPTION(code,name) \
     { switch (code) { case ErrCode_Ok: break; \
+    case ErrCode_Null: BIT_VECTOR_MEMORY_ERROR(name); break; \
     case ErrCode_Size: BIT_VECTOR_SIZE_ERROR(name); break; \
     case ErrCode_Same: BIT_VECTOR_DISTINCT_ERROR(name); break; \
     case ErrCode_Zero: BIT_VECTOR_ZERO_ERROR(name); break; \
-    case ErrCode_Crea: BIT_VECTOR_CREATE_ERROR(name); break; \
     case ErrCode_Ovfl: BIT_VECTOR_OVERFLOW_ERROR(name); break; \
     default: BIT_VECTOR_INTERNAL_ERROR(name); break; } }
 
@@ -159,7 +156,7 @@ BOOT:
                 BIT_VECTOR_ERROR("Boot","bits(word) != 2^ld(bits(word))");
                 break;
             case ErrCode_Null:
-                BIT_VECTOR_ERROR("Boot","unable to allocate memory");
+                BIT_VECTOR_MEMORY_ERROR("Boot");
                 break;
             default:
                 BIT_VECTOR_INTERNAL_ERROR("Boot");
@@ -242,7 +239,7 @@ PPCODE:
             SvREADONLY_on(handle);
             PUSHs(reference);
         }
-        else BIT_VECTOR_CREATE_ERROR("new");
+        else BIT_VECTOR_MEMORY_ERROR("new");
     }
     else BIT_VECTOR_SCALAR_ERROR("new");
 }
@@ -267,7 +264,7 @@ PPCODE:
             SvREADONLY_on(handle);
             PUSHs(reference);
         }
-        else BIT_VECTOR_CREATE_ERROR("Shadow");
+        else BIT_VECTOR_MEMORY_ERROR("Shadow");
     }
     else BIT_VECTOR_OBJECT_ERROR("Shadow");
 }
@@ -292,7 +289,7 @@ PPCODE:
             SvREADONLY_on(handle);
             PUSHs(reference);
         }
-        else BIT_VECTOR_CREATE_ERROR("Clone");
+        else BIT_VECTOR_MEMORY_ERROR("Clone");
     }
     else BIT_VECTOR_OBJECT_ERROR("Clone");
 }
@@ -324,7 +321,7 @@ PPCODE:
             SvREADONLY_on(handle);
             PUSHs(reference);
         }
-        else BIT_VECTOR_CREATE_ERROR("Concat");
+        else BIT_VECTOR_MEMORY_ERROR("Concat");
     }
     else BIT_VECTOR_OBJECT_ERROR("Concat");
 }
@@ -381,7 +378,7 @@ PPCODE:
         SvREADONLY_on(handle);
         PUSHs(reference);
     }
-    else BIT_VECTOR_CREATE_ERROR("Concat_List");
+    else BIT_VECTOR_MEMORY_ERROR("Concat_List");
 }
 
 
@@ -421,7 +418,7 @@ CODE:
             SvREADONLY_off(handle);
             sv_setiv(handle,(IV)address);
             SvREADONLY_on(handle);
-            if (address == NULL) BIT_VECTOR_CREATE_ERROR("Resize");
+            if (address == NULL) BIT_VECTOR_MEMORY_ERROR("Resize");
         }
         else BIT_VECTOR_SCALAR_ERROR("Resize");
     }
@@ -817,7 +814,7 @@ CODE:
                 SvREADONLY_off(Xhdl);
                 sv_setiv(Xhdl,(IV)Xadr);
                 SvREADONLY_on(Xhdl);
-                if (Xadr == NULL) BIT_VECTOR_CREATE_ERROR("Interval_Substitute");
+                if (Xadr == NULL) BIT_VECTOR_MEMORY_ERROR("Interval_Substitute");
             }
             else BIT_VECTOR_OFFSET_ERROR("Interval_Substitute");
         }
@@ -1082,7 +1079,7 @@ CODE:
         {
             if (code = BitVector_from_dec(address,pointer))
             {
-                if (code == ErrCode_Form) RETVAL = false;
+                if (code == ErrCode_Pars) RETVAL = false;
                 else BIT_VECTOR_EXCEPTION(code,"from_dec");
             }
             else RETVAL = true;
@@ -2689,15 +2686,15 @@ CODE:
         if ( BIT_VECTOR_SCALAR(rows,N_int,r) &&
              BIT_VECTOR_SCALAR(cols,N_int,c) )
         {
-            if (r == c)
+            if (bits_(address) == r*c)
             {
-                if (bits_(address) == r*c)
+                if (r == c)
                 {
                     Matrix_Closure(address,r,c);
                 }
-                else BIT_VECTOR_MATRIX_ERROR("Closure");
+                else BIT_VECTOR_SHAPE_ERROR("Closure");
             }
-            else BIT_VECTOR_SHAPE_ERROR("Closure");
+            else BIT_VECTOR_MATRIX_ERROR("Closure");
         }
         else BIT_VECTOR_SCALAR_ERROR("Closure");
     }

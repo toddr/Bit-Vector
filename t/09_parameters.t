@@ -11,447 +11,487 @@ use Bit::Vector;
 
 $prefix = 'Bit::Vector';
 
-$bad_idx = "^[^:]+::[^:]+::[^:]+\\(\\): (?:minimum |maximum |start |)index out of range";
-
-$bad_size = "^[^:]+::[^:]+::[^:]+\\(\\): (?:bit vector|set|matrix) size mismatch";
-
-$bad_type = "^[^:]+::[^:]+::[^:]+\\(\\): item is not a '[^']+' object";
-
-$numeric  = 1 << 3;
-$special  = 1 << 4;
-
-$limit = $numeric;
-
-$method_list{'Size'}              = 1;
-$method_list{'Resize'}            = 2 + $numeric;
-$method_list{'Empty'}             = 1;
-$method_list{'Fill'}              = 1;
-$method_list{'Flip'}              = 1;
-$method_list{'Interval_Empty'}    = 3 + $numeric + $special;
-$method_list{'Interval_Fill'}     = 3 + $numeric + $special;
-$method_list{'Interval_Flip'}     = 3 + $numeric + $special;
-$method_list{'Interval_Scan_inc'} = 2 + $numeric + $special;
-$method_list{'Interval_Scan_dec'} = 2 + $numeric + $special;
-$method_list{'Empty_Interval'}    = 3 + $numeric + $special;
-$method_list{'Fill_Interval'}     = 3 + $numeric + $special;
-$method_list{'Flip_Interval'}     = 3 + $numeric + $special;
-$method_list{'Bit_Off'}           = 2 + $numeric + $special;
-$method_list{'Bit_On'}            = 2 + $numeric + $special;
-$method_list{'bit_flip'}          = 2 + $numeric + $special;
-$method_list{'flip'}              = 2 + $numeric + $special;
-$method_list{'bit_test'}          = 2 + $numeric + $special;
-$method_list{'contains'}          = 2 + $numeric + $special;
-$method_list{'in'}                = 2 + $numeric + $special;
-$method_list{'increment'}         = 1;
-$method_list{'decrement'}         = 1;
-$method_list{'Norm'}              = 1;
-$method_list{'Min'}               = 1;
-$method_list{'Max'}               = 1;
-$method_list{'Union'}             = 3;
-$method_list{'Intersection'}      = 3;
-$method_list{'Difference'}        = 3;
-$method_list{'ExclusiveOr'}       = 3;
-$method_list{'Complement'}        = 2;
-$method_list{'is_empty'}          = 1;
-$method_list{'is_full'}           = 1;
-$method_list{'equal'}             = 2;
-$method_list{'subset'}            = 2;
-$method_list{'inclusion'}         = 2;
-$method_list{'Compare'}           = 2;
-$method_list{'Copy'}              = 2;
-$method_list{'rotate_left'}       = 1;
-$method_list{'rotate_right'}      = 1;
-$method_list{'shift_left'}        = 2 + $numeric;
-$method_list{'shift_right'}       = 2 + $numeric;
-$method_list{'Move_Left'}         = 2 + $numeric;
-$method_list{'Move_Right'}        = 2 + $numeric;
-$method_list{'to_Hex'}            = 1;
-$method_list{'from_hex'}          = 2 + $numeric;
-
-print "1..1144\n";
+#print "1..888\n";
+print "1..886\n";
 
 $n = 1;
 
-$set = Bit::Vector->new($limit);
-if (defined $set)
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-if (ref($set) eq 'Bit::Vector')
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-if (${$set} != 0)
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
+#   parameter types:
 
-$set1 = Bit::Vector->new($limit-1);
-if (defined $set1)
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-if (ref($set1) eq 'Bit::Vector')
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-if (${$set1} != 0)
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
+#   0  =  object reference
+#   1  =  number of bits
+#   2  =  index       ( 0 <=     index     <  bits )
+#   3  =  offset      ( 0 <=     offset    <= bits )
+#   4  =  word index  ( 0 <=     index     <  size )
+#   5  =  length      ( 0 <= offset+length <= bits )
+#   6  =  arbitrary (non-negative) number
+#   7  =  boolean
+#   8  =  string
+#   9  =  chunksize
+#  10  =  anything
+#  11  =  rows
+#  12  =  columns
 
-$set2 = Bit::Vector->new($limit-2);
-if (defined $set2)
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-if (ref($set2) eq 'Bit::Vector')
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-if (${$set2} != 0)
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
+#  16  =  any number of object references
+#  18  =  any number of indices
+#  22  =  any number of arbitrary numbers
 
-$set3 = Bit::Vector->new($limit-3);
-if (defined $set3)
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-if (ref($set3) eq 'Bit::Vector')
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-if (${$set3} != 0)
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
+$method_list{'Version'}             = [ ];
+$method_list{'Word_Bits'}           = [ ];
+$method_list{'Long_Bits'}           = [ ];
+$method_list{'new'}                 = [ 10, 1 ];
+$method_list{'Shadow'}              = [ 0 ];
+$method_list{'Clone'}               = [ 0 ];
+$method_list{'Concat'}              = [ 0, 0 ];
+$method_list{'Concat_List'}         = [ 16, 16, 16, 16, 16 ];
+$method_list{'Size'}                = [ 0 ];
+$method_list{'Resize'}              = [ 0, 1 ];
+$method_list{'Copy'}                = [ 0, 0 ];
+$method_list{'Empty'}               = [ 0 ];
+$method_list{'Fill'}                = [ 0 ];
+$method_list{'Flip'}                = [ 0 ];
+$method_list{'Primes'}              = [ 0 ];
+$method_list{'Reverse'}             = [ 0, 0 ];
+$method_list{'Interval_Empty'}      = [ 0, 2, 2 ];
+$method_list{'Interval_Fill'}       = [ 0, 2, 2 ];
+$method_list{'Interval_Flip'}       = [ 0, 2, 2 ];
+$method_list{'Interval_Reverse'}    = [ 0, 2, 2 ];
+$method_list{'Interval_Scan_inc'}   = [ 0, 2 ];
+$method_list{'Interval_Scan_dec'}   = [ 0, 2 ];
+$method_list{'Interval_Copy'}       = [ 0, 0, 2, 2, 5 ];
+$method_list{'Interval_Substitute'} = [ 0, 0, 3, 5, 3, 5 ];
+$method_list{'is_empty'}            = [ 0 ];
+$method_list{'is_full'}             = [ 0 ];
+$method_list{'equal'}               = [ 0, 0 ];
+$method_list{'Lexicompare'}         = [ 0, 0 ];
+$method_list{'Compare'}             = [ 0, 0 ];
+$method_list{'to_Hex'}              = [ 0 ];
+$method_list{'from_hex'}            = [ 0, 8 ];
+$method_list{'to_Bin'}              = [ 0 ];
+$method_list{'from_bin'}            = [ 0, 8 ];
+$method_list{'to_Dec'}              = [ 0 ];
+$method_list{'from_dec'}            = [ 0, 8 ];
+$method_list{'to_Enum'}             = [ 0 ];
+$method_list{'from_enum'}           = [ 0, 8 ];
+$method_list{'Bit_Off'}             = [ 0, 2 ];
+$method_list{'Bit_On'}              = [ 0, 2 ];
+$method_list{'bit_flip'}            = [ 0, 2 ];
+$method_list{'bit_test'}            = [ 0, 2 ];
+$method_list{'Bit_Copy'}            = [ 0, 2, 7 ];
+$method_list{'lsb'}                 = [ 0 ];
+$method_list{'msb'}                 = [ 0 ];
+$method_list{'rotate_left'}         = [ 0 ];
+$method_list{'rotate_right'}        = [ 0 ];
+$method_list{'shift_left'}          = [ 0, 7 ];
+$method_list{'shift_right'}         = [ 0, 7 ];
+$method_list{'Move_Left'}           = [ 0, 6 ];
+$method_list{'Move_Right'}          = [ 0, 6 ];
+$method_list{'Insert'}              = [ 0, 2, 6 ];
+$method_list{'Delete'}              = [ 0, 2, 6 ];
+$method_list{'increment'}           = [ 0 ];
+$method_list{'decrement'}           = [ 0 ];
+$method_list{'add'}                 = [ 0, 0, 0, 7 ];
+$method_list{'subtract'}            = [ 0, 0, 0, 7 ];
+$method_list{'Negate'}              = [ 0, 0 ];
+$method_list{'Absolute'}            = [ 0, 0 ];
+$method_list{'Sign'}                = [ 0 ];
+$method_list{'Multiply'}            = [ 0, 0, 0 ];
+$method_list{'Divide'}              = [ 0, 0, 0, 0 ];
+$method_list{'GCD'}                 = [ 0, 0, 0 ];
+$method_list{'Block_Store'}         = [ 0, 8 ];
+$method_list{'Block_Read'}          = [ 0 ];
+$method_list{'Word_Size'}           = [ 0 ];
+$method_list{'Word_Store'}          = [ 0, 4, 6 ];
+$method_list{'Word_Read'}           = [ 0, 4 ];
+$method_list{'Word_List_Store'}     = [ 0, 22, 22, 22, 22, 22 ];
+$method_list{'Word_List_Read'}      = [ 0 ];
+$method_list{'Word_Insert'}         = [ 0, 4, 6 ];
+$method_list{'Word_Delete'}         = [ 0, 4, 6 ];
+$method_list{'Chunk_Store'}         = [ 0, 9, 2, 6 ];
+$method_list{'Chunk_Read'}          = [ 0, 9, 2 ];
+$method_list{'Chunk_List_Store'}    = [ 0, 9, 22, 22, 22, 22, 22 ];
+$method_list{'Chunk_List_Read'}     = [ 0, 9 ];
+$method_list{'Index_List_Remove'}   = [ 0, 18, 18, 18, 18, 18 ];
+$method_list{'Index_List_Store'}    = [ 0, 18, 18, 18, 18, 18 ];
+$method_list{'Index_List_Read'}     = [ 0 ];
+$method_list{'Union'}               = [ 0, 0, 0 ];
+$method_list{'Intersection'}        = [ 0, 0, 0 ];
+$method_list{'Difference'}          = [ 0, 0, 0 ];
+$method_list{'ExclusiveOr'}         = [ 0, 0, 0 ];
+$method_list{'Complement'}          = [ 0, 0 ];
+$method_list{'subset'}              = [ 0, 0 ];
+$method_list{'Norm'}                = [ 0 ];
+$method_list{'Min'}                 = [ 0 ];
+$method_list{'Max'}                 = [ 0 ];
+$method_list{'Multiplication'}      = [ 0, 11, 12, 0, 11, 12, 0, 11, 12 ];
+$method_list{'Closure'}             = [ 0, 11, 12 ];
+$method_list{'Transpose'}           = [ 0, 11, 12, 0, 11, 12 ];
 
-if (! $set->in(0))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-$set->Bit_On(0);
-if ($set->in(0))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-$set->Bit_Off(0);
-if (! $set->in(0))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-if ($set->flip(0))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-if ($set->in(0))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-if (! $set->flip(0))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-if (! $set->in(0))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-
-if (! $set->in(1))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-$set->Bit_On(1);
-if ($set->in(1))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-$set->Bit_Off(1);
-if (! $set->in(1))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-if ($set->flip(1))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-if ($set->in(1))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-if (! $set->flip(1))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-if (! $set->in(1))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-
-if (! $set->in($limit-2))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-$set->Bit_On($limit-2);
-if ($set->in($limit-2))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-$set->Bit_Off($limit-2);
-if (! $set->in($limit-2))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-if ($set->flip($limit-2))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-if ($set->in($limit-2))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-if (! $set->flip($limit-2))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-if (! $set->in($limit-2))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-
-if (! $set->in($limit-1))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-$set->Bit_On($limit-1);
-if ($set->in($limit-1))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-$set->Bit_Off($limit-1);
-if (! $set->in($limit-1))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-if ($set->flip($limit-1))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-if ($set->in($limit-1))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-if (! $set->flip($limit-1))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
-if (! $set->in($limit-1))
-{print "ok $n\n";} else {print "not ok $n\n";}
-$n++;
 
 foreach $method (keys %method_list)
 {
-    $parms = $method_list{$method};
-    next unless (($parms & $numeric) && ($parms & $special));
-    $parms -= $numeric;
-    $parms -= $special;
-    next unless ($parms > 1);
-    for ( $i = 0; $i <= $limit; $i++ )
+    $definition = $method_list{$method};
+    $count = @{$definition};
+    if ($count == 0)
     {
-        undef @parameters;
-        for ( $j = 0; $j < $parms - 1; $j++ )
-        {
-            $parameters[$j] = $i;
-        }
-        for ( $j = 1; $j <= 3; $j++ )
-        {
-            $action = "${prefix}::$method(\$set${j},\@parameters)";
-            eval "$action";
-            if ($i < ($limit - $j))
-            {
-                unless ($@)
-                {print "ok $n\n";} else {print "not ok $n\n";}
-                $n++;
-            }
-            else
-            {
-                if ($@ =~ /$bad_idx/o)
-                {print "ok $n\n";} else {print "not ok $n\n";}
-                $n++;
-            }
-        }
-    }
-    undef @parameters;
-    for ( $j = 0; $j < $parms - 1; $j++ )
-    {
-        $parameters[$j] = -1;
-    }
-    $action = "\$set->$method(\@parameters)";
-    eval "$action";
-    if ($@ =~ /$bad_idx/o)
-    {print "ok $n\n";} else {print "not ok $n\n";}
-    $n++;
-}
-
-foreach $method (keys %method_list)
-{
-    $num_flag = 0;
-    $idx_flag = 0;
-    $parms = $method_list{$method};
-    if ($parms & $numeric) { $parms -= $numeric; $num_flag = 1; }
-    if ($parms & $special) { $parms -= $special; $idx_flag = 1; }
-    for ( $i = 0; $i <= $parms + 1; $i++ )
-    {
-        undef @parameters;
-        for ( $j = 0; $j < $i - 1; $j++ )
-        {
-            if ($num_flag) { $parameters[$j] = $limit; }
-            else           { $parameters[$j] = $set; }
-        }
-        if ($i == 0)
-        {
-            $action = "${prefix}::$method()";
-        }
-        elsif ($i == 1)
-        {
-            $action = "${prefix}::$method(\$set)";
-        }
-        else
-        {
-            $action = "${prefix}::$method(\$set,\@parameters)";
-        }
+        $action = "\$dummy = ${prefix}::${method}();";
         eval "$action";
-        if ($i != $parms)
-        {
-            if ($@ =~ /^Usage: (?:[^:]+::[^:]+::)?[^:]+\([\w\$,]*\)/)
-            {print "ok $n\n";} else {print "not ok $n\n";}
-            $n++;
-        }
-        else
-        {
-            if ($idx_flag)
-            {
-                if ($@ =~ /$bad_idx/o)
-                {print "ok $n\n";} else {print "not ok $n\n";}
-                $n++;
-            }
-            else
-            {
-                unless ($@)
-                {print "ok $n\n";} else {print "not ok $n\n";}
-                $n++;
-            }
-            if ($parms > 0)
-            {
-                $fake = undef;
-                &test_fake;
-
-                $fake = 0x00088850;
-                &test_fake;
-
-                $obj = 0x000E9CE0;
-                $fake = \$obj;
-                &test_fake;
-
-                bless($fake, 'nonsense');
-                &test_fake;
-
-                bless($fake, 'Bit::Vector');
-                &test_fake;
-
-                $fake = Bit::Vector->new($limit);
-                Bit::Vector::DESTROY($fake);
-                &test_fake;
-            }
-            if ((! $num_flag) && ($parms > 1))
-            {
-                if ($parms == 2)
-                {
-                    $action = "${prefix}::$method(\$set1,\$set2)";
-                    eval "$action";
-                    if ($@ =~ /$bad_size/o)
-                    {print "ok $n\n";} else {print "not ok $n\n";}
-                    $n++;
-                }
-                elsif ($parms == 3)
-                {
-                    $action = "${prefix}::$method(\$set1,\$set1,\$set2)";
-                    eval "$action";
-                    if ($@ =~ /$bad_size/o)
-                    {print "ok $n\n";} else {print "not ok $n\n";}
-                    $n++;
-                    $action = "${prefix}::$method(\$set1,\$set2,\$set1)";
-                    eval "$action";
-                    if ($@ =~ /$bad_size/o)
-                    {print "ok $n\n";} else {print "not ok $n\n";}
-                    $n++;
-                    $action = "${prefix}::$method(\$set1,\$set2,\$set2)";
-                    eval "$action";
-                    if ($@ =~ /$bad_size/o)
-                    {print "ok $n\n";} else {print "not ok $n\n";}
-                    $n++;
-                    $action = "${prefix}::$method(\$set1,\$set2,\$set3)";
-                    eval "$action";
-                    if ($@ =~ /$bad_size/o)
-                    {print "ok $n\n";} else {print "not ok $n\n";}
-                    $n++;
-                }
-                else { }
-            }
-        }
-    }
-}
-
-exit;
-
-sub test_fake
-{
-    if ($num_flag)
-    {
-        if ($parms == 1)
-        {
-            $action = "${prefix}::$method(\$fake)";
-        }
-        else
-        {
-            $action = "${prefix}::$method(\$fake,\@parameters)";
-        }
+        unless ($@)
+        {print "ok $n\n";} else {print "not ok $n\n";}
+        $n++;
+        $action = "\$dummy = ${prefix}::${method}(\$dummy);";
         eval "$action";
-        if ($@ =~ /$bad_type/o)
+        unless ($@)
+        {print "ok $n\n";} else {print "not ok $n\n";}
+        $n++;
+        $action = "\$dummy = ${prefix}::${method}(\$dummy,\$dummy);";
+        $message = "^Usage: ${prefix}->${method}\\(\\)";
+        eval "$action";
+        if ($@ =~ /$message/)
         {print "ok $n\n";} else {print "not ok $n\n";}
         $n++;
     }
     else
     {
-        if ($parms == 1)
+        $action = "${prefix}::${method}(\@parameter_list);";
+        $leadin = "${prefix}::${method}\\(\\): ";
+        foreach $bits (1024)
         {
-            $action = "${prefix}::$method(\$fake)";
+            &init_objects();
+            &correct_values(0);
+            undef @parameters;
+            @parameters = @parameter_list;
             eval "$action";
-            if ($@ =~ /$bad_type/o)
+            unless ($@)
             {print "ok $n\n";} else {print "not ok $n\n";}
             $n++;
+            if ($objects > 1)
+            {
+                &init_objects();
+                &correct_values(1);
+                eval "$action";
+                if ($method eq "Divide")
+                {
+                    if ($@ =~ /Q and R must be distinct/)
+                    {print "ok $n\n";} else {print "not ok $n\n";}
+                    $n++;
+                }
+                else
+                {
+                    unless ($@)
+                    {print "ok $n\n";} else {print "not ok $n\n";}
+                    $n++;
+                }
+            }
+            if ($limited)
+            {
+                $message = "Usage: (?:${prefix}::)?${method}\\([a-zA-Z_,]+\\)";
+                &refresh();
+                pop(@parameter_list);
+                eval "$action";
+                if ($@ =~ /^$message/)
+                {print "ok $n\n";} else {print "not ok $n\n";}
+                $n++;
+                &refresh();
+                push(@parameter_list,0);
+                eval "$action";
+                if ($@ =~ /^$message/)
+                {print "ok $n\n";} else {print "not ok $n\n";}
+                $n++;
+            }
+            &init_values();
+            for ( $i = 0; $i < $count; $i++ )
+            {
+                $type = $definition->[$i];
+                $type &= 0x0F;
+                $values = @{$wrong_values[$type]};
+                for ( $j = 0; $j < $values; $j++ )
+                {
+                    &refresh();
+                    $parameter_list[$i] = $wrong_values[$type]->[$j];
+                    $message = $leadin . $error_message[$type]->[$j];
+                    eval "$action";
+                    if ($@ =~ /^$message/)
+                    {print "ok $n\n";} else {print "not ok $n\n";}
+                    $n++;
+                }
+            }
         }
-        elsif ($parms == 2)
-        {
-            $action = "${prefix}::$method(\$set,\$fake)";
-            eval "$action";
-            if ($@ =~ /$bad_type/o)
-            {print "ok $n\n";} else {print "not ok $n\n";}
-            $n++;
-            $action = "${prefix}::$method(\$fake,\$set)";
-            eval "$action";
-            if ($@ =~ /$bad_type/o)
-            {print "ok $n\n";} else {print "not ok $n\n";}
-            $n++;
-            $action = "${prefix}::$method(\$fake,\$fake)";
-            eval "$action";
-            if ($@ =~ /$bad_type/o)
-            {print "ok $n\n";} else {print "not ok $n\n";}
-            $n++;
-        }
-        elsif ($parms == 3)
-        {
-            $action = "${prefix}::$method(\$set,\$set,\$fake)";
-            eval "$action";
-            if ($@ =~ /$bad_type/o)
-            {print "ok $n\n";} else {print "not ok $n\n";}
-            $n++;
-            $action = "${prefix}::$method(\$set,\$fake,\$set)";
-            eval "$action";
-            if ($@ =~ /$bad_type/o)
-            {print "ok $n\n";} else {print "not ok $n\n";}
-            $n++;
-            $action = "${prefix}::$method(\$set,\$fake,\$fake)";
-            eval "$action";
-            if ($@ =~ /$bad_type/o)
-            {print "ok $n\n";} else {print "not ok $n\n";}
-            $n++;
-            $action = "${prefix}::$method(\$fake,\$set,\$set)";
-            eval "$action";
-            if ($@ =~ /$bad_type/o)
-            {print "ok $n\n";} else {print "not ok $n\n";}
-            $n++;
-            $action = "${prefix}::$method(\$fake,\$set,\$fake)";
-            eval "$action";
-            if ($@ =~ /$bad_type/o)
-            {print "ok $n\n";} else {print "not ok $n\n";}
-            $n++;
-            $action = "${prefix}::$method(\$fake,\$fake,\$set)";
-            eval "$action";
-            if ($@ =~ /$bad_type/o)
-            {print "ok $n\n";} else {print "not ok $n\n";}
-            $n++;
-            $action = "${prefix}::$method(\$fake,\$fake,\$fake)";
-            eval "$action";
-            if ($@ =~ /$bad_type/o)
-            {print "ok $n\n";} else {print "not ok $n\n";}
-            $n++;
-        }
-        else { }
     }
+}
+
+sub refresh
+{
+    if ($method eq "Resize")
+    {
+        &init_objects();
+        &correct_values(0);
+    }
+    else
+    {
+        undef @parameter_list;
+        @parameter_list = @parameters;
+    }
+}
+
+sub init_objects
+{
+    undef @vector;
+    $vector[0] = Bit::Vector->new($bits);
+    $vector[1] = Bit::Vector->new($bits);
+    $vector[2] = Bit::Vector->new($bits);
+    $vector[3] = Bit::Vector->new($bits);
+    $vector[4] = Bit::Vector->new($bits);
+    $vector[5] = Bit::Vector->new($bits);
+    $vector[6] = Bit::Vector->new($bits);
+    if ($bits > 0)
+    {
+        $vector[0]->Bit_On(0);
+        $vector[1]->Bit_On(0);
+        $vector[2]->Bit_On(0);
+        $vector[3]->Bit_On(0);
+        $vector[4]->Bit_On(0);
+        $vector[5]->Bit_On(0);
+        $vector[6]->Bit_On(0);
+    }
+}
+
+sub correct_values
+{
+    my($flag) = @_;
+    my($i,$type);
+
+#   0  =  object reference
+#   1  =  number of bits
+#   2  =  index       ( 0 <=     index     <  bits )
+#   3  =  offset      ( 0 <=     offset    <= bits )
+#   4  =  word index  ( 0 <=     index     <  size )
+#   5  =  length      ( 0 <= offset+length <= bits )
+#   6  =  arbitrary (non-negative) number
+#   7  =  boolean
+#   8  =  string
+#   9  =  chunksize
+#  10  =  anything
+#  11  =  rows
+#  12  =  columns
+
+    $objects = 0;
+    $limited = 1;
+    undef @parameter_list;
+    for ( $i = 0; $i < $count; $i++ )
+    {
+        $type = $definition->[$i];
+        if ($type >= 16) { $limited = 0; }
+        $type &= 0x0F;
+        if    ($type == 0)
+        {
+            $objects++;
+            if ($flag)
+            {
+                $parameter_list[$i] = $vector[0];
+            }
+            else
+            {
+                $parameter_list[$i] = $vector[$i];
+            }
+        }
+        elsif ($type == 1)
+        {
+            $parameter_list[$i] = ($bits < 1) | 1;
+        }
+        elsif ($type == 2)
+        {
+            $parameter_list[$i] = $bits - 1;
+        }
+        elsif ($type == 3)
+        {
+            $parameter_list[$i] = $bits;
+        }
+        elsif ($type == 4)
+        {
+            $parameter_list[$i] = $vector[0]->Word_Size() - 1;
+        }
+        elsif ($type == 5)
+        {
+            $parameter_list[$i] = $bits + 1;
+        }
+        elsif ($type == 6)
+        {
+            $parameter_list[$i] = (1 << (Bit::Vector->Word_Bits()-1)) - 1;
+        }
+        elsif ($type == 7)
+        {
+            $parameter_list[$i] = 1;
+        }
+        elsif ($type == 8)
+        {
+            $parameter_list[$i] = '10110111';
+        }
+        elsif ($type == 9)
+        {
+            $parameter_list[$i] = Bit::Vector->Long_Bits();
+        }
+        elsif ($type == 10)
+        {
+            $parameter_list[$i] = 'anything';
+        }
+        elsif ($type == 11)
+        {
+            $parameter_list[$i] = int(sqrt($bits) + 0.5);
+        }
+        elsif ($type == 12)
+        {
+            $parameter_list[$i] = int(sqrt($bits) + 0.5);
+        }
+        else
+        {
+            die "internal error";
+        }
+    }
+}
+
+sub init_values
+{
+    undef @fake;
+    undef @wrong_values;
+    undef @error_message;
+
+    $wrong_values[0] = [ ];
+    $error_message[0] = [ ];
+    $wrong_values[1] = [ ];
+    $error_message[1] = [ ];
+    $wrong_values[2] = [ ];
+    $error_message[2] = [ ];
+    $wrong_values[3] = [ ];
+    $error_message[3] = [ ];
+    $wrong_values[4] = [ ];
+    $error_message[4] = [ ];
+    $wrong_values[5] = [ ];
+    $error_message[5] = [ ];
+    $wrong_values[6] = [ ];
+    $error_message[6] = [ ];
+    $wrong_values[7] = [ ];
+    $error_message[7] = [ ];
+    $wrong_values[8] = [ ];
+    $error_message[8] = [ ];
+    $wrong_values[9] = [ ];
+    $error_message[9] = [ ];
+    $wrong_values[10] = [ ];
+    $error_message[10] = [ ];
+    $wrong_values[11] = [ ];
+    $error_message[11] = [ ];
+    $wrong_values[12] = [ ];
+    $error_message[12] = [ ];
+
+#   0  =  object reference
+#   1  =  number of bits
+#   2  =  index       ( 0 <=     index     <  bits )
+#   3  =  offset      ( 0 <=     offset    <= bits )
+#   4  =  word index  ( 0 <=     index     <  size )
+#   5  =  length      ( 0 <= offset+length <= bits )
+#   6  =  arbitrary (non-negative) number
+#   7  =  boolean
+#   8  =  string
+#   9  =  chunksize
+#  10  =  anything
+#  11  =  rows
+#  12  =  columns
+
+    if ($objects > 1)
+    {
+        if ($method !~ /^(?:Concat(?:_List)?|Interval_(?:Copy|Substitute))$/)
+        {
+            push(@{$wrong_values[0]}, Bit::Vector->new($bits-1));
+            push(@{$error_message[0]}, "(?:bit vector|set|matrix) size mismatch");
+        }
+    }
+
+    $global = 0x000E9CE0;
+
+    if ($method ne "Concat_List")
+    {
+        push(@{$wrong_values[0]}, $global);
+        push(@{$error_message[0]}, "item is not a '$prefix' object");
+    }
+
+    $fake[0] = Bit::Vector->new($bits);
+    $fake[0]->DESTROY();
+    push(@{$wrong_values[0]}, $fake[0]);
+    push(@{$error_message[0]}, "item is not a '$prefix' object");
+
+    $fake[1] = \$global;
+    bless($fake[1], $prefix);
+    push(@{$wrong_values[0]}, $fake[1]);
+    push(@{$error_message[0]}, "item is not a '$prefix' object");
+
+#   push(@{$wrong_values[1]}, -1);
+#   push(@{$error_message[1]}, "unable to allocate memory");
+
+    push(@{$wrong_values[2]}, $bits);
+    push(@{$error_message[2]}, "(?:(?:start |m(?:in|ax)imum )?index|offset) out of range");
+
+    push(@{$wrong_values[2]}, -1);
+    push(@{$error_message[2]}, "(?:(?:start |m(?:in|ax)imum )?index|offset) out of range");
+
+    push(@{$wrong_values[3]}, $bits+1);
+    push(@{$error_message[3]}, "offset out of range");
+
+    push(@{$wrong_values[3]}, -1);
+    push(@{$error_message[3]}, "offset out of range");
+
+    push(@{$wrong_values[4]}, $vector[0]->Word_Size());
+    push(@{$error_message[4]}, "offset out of range");
+
+    push(@{$wrong_values[4]}, -1);
+    push(@{$error_message[4]}, "offset out of range");
+
+    push(@{$wrong_values[9]}, 0);
+    push(@{$error_message[9]}, "chunk size out of range");
+
+    push(@{$wrong_values[9]}, Bit::Vector->Long_Bits()+1);
+    push(@{$error_message[9]}, "chunk size out of range");
+
+    push(@{$wrong_values[9]}, -1);
+    push(@{$error_message[9]}, "chunk size out of range");
+
+    push(@{$wrong_values[11]}, 0);
+    push(@{$error_message[11]}, "matrix size mismatch");
+
+    push(@{$wrong_values[12]}, 0);
+    push(@{$error_message[12]}, "matrix size mismatch");
+
+    push(@{$wrong_values[1]}, \$global);
+    push(@{$error_message[1]}, "item is not a (?:string|scalar)");
+
+    push(@{$wrong_values[2]}, \$global);
+    push(@{$error_message[2]}, "item is not a (?:string|scalar)");
+
+    push(@{$wrong_values[3]}, \$global);
+    push(@{$error_message[3]}, "item is not a (?:string|scalar)");
+
+    push(@{$wrong_values[4]}, \$global);
+    push(@{$error_message[4]}, "item is not a (?:string|scalar)");
+
+    push(@{$wrong_values[5]}, \$global);
+    push(@{$error_message[5]}, "item is not a (?:string|scalar)");
+
+    push(@{$wrong_values[6]}, \$global);
+    push(@{$error_message[6]}, "item is not a (?:string|scalar)");
+
+    push(@{$wrong_values[7]}, \$global);
+    push(@{$error_message[7]}, "item is not a (?:string|scalar)");
+
+    push(@{$wrong_values[8]}, \$global);
+    push(@{$error_message[8]}, "item is not a (?:string|scalar)");
+
+    push(@{$wrong_values[9]}, \$global);
+    push(@{$error_message[9]}, "item is not a (?:string|scalar)");
+
+    push(@{$wrong_values[11]}, \$global);
+    push(@{$error_message[11]}, "item is not a (?:string|scalar)");
+
+    push(@{$wrong_values[12]}, \$global);
+    push(@{$error_message[12]}, "item is not a (?:string|scalar)");
 }
 
 __END__

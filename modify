@@ -8,9 +8,9 @@
 ##    This piece of software is "Non-Profit-Ware" ("NP-ware").               ##
 ##                                                                           ##
 ##    You may use, copy, modify and redistribute it under the terms of the   ##
-##    "Non-Profit License" (NPL).                                            ##
+##    "Non-Profit-License" (NPL).                                            ##
 ##                                                                           ##
-##    Please refer to the file "LICENSE" in this distribution for details!   ##
+##    Please refer to the file "NONPROFIT" in this distribution for details! ##
 ##                                                                           ##
 ###############################################################################
 

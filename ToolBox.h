@@ -115,7 +115,7 @@ typedef enum { false = FALSE , true = TRUE } boolean;
 /*    ??.??.??    ???                                                        */
 /*    16.02.97    Version 3.0                                                */
 /*    24.03.97    Version 4.0                                                */
-/*    31.01.98    Version 5.0                                                */
+/*    23.02.98    Version 5.0                                                */
 /*****************************************************************************/
 /*  COPYRIGHT:                                                               */
 /*                                                                           */
@@ -125,9 +125,9 @@ typedef enum { false = FALSE , true = TRUE } boolean;
 /*    This piece of software is "Non-Profit-Ware" ("NP-ware").               */
 /*                                                                           */
 /*    You may use, copy, modify and redistribute it under the terms of the   */
-/*    "Non-Profit License" (NPL).                                            */
+/*    "Non-Profit-License" (NPL).                                            */
 /*                                                                           */
-/*    Please refer to the file "LICENSE" in this distribution for details!   */
+/*    Please refer to the file "NONPROFIT" in this distribution for details! */
 /*                                                                           */
 /*****************************************************************************/
 #endif

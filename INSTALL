@@ -105,9 +105,9 @@ tree!!
     The output should look somewhat like this:
 
     PERL_DL_NONLAZY=1 /sw/bin/perl -I./blib/arch -I./blib/lib
-    -I/sw/pkg/perl/lib/sun4-sunos/5.004 -I/sw/pkg/perl/lib -e
-    'use Test::Harness qw(&runtests $verbose); $verbose=0; runtests @ARGV;'
-    t/*.t
+    -I/sw/pkg/perl/lib/i386-freebsd/5.00403 -I/sw/pkg/perl/lib
+    -e 'use Test::Harness qw(&runtests $verbose); $verbose=0;
+    runtests @ARGV;' t/*.t
     t/00____version.....ok
     t/01________new.....ok
     t/02____destroy.....ok
@@ -128,7 +128,7 @@ tree!!
     t/28__chunklist.....ok
     t/30_overloaded.....ok
     All tests successful.
-    Files=19,  Tests=67157, 98 secs (26.97 cusr  3.68 csys = 30.65 cpu)
+    Files=19,  Tests=67045, 175 secs (116.02 cusr  5.53 csys = 121.55 cpu)
 
     (Note that the exact number of tests will depend on the number of bits
      of a machine word/an unsigned long on your system!)

@@ -24,14 +24,14 @@ typedef enum
         ErrCode_Long,     /* size of word is greater than size of long       */
         ErrCode_Powr,     /* number of bits of word is not a power of two    */
         ErrCode_Loga,     /* error in calculation of logarithm               */
-        ErrCode_Null,     /* unable to allocate memory for bitmask table     */
+
+        ErrCode_Null,     /* unable to allocate memory                       */
 
         ErrCode_Size,     /* bit vector size mismatch error                  */
-        ErrCode_Same,     /* operands must (all) be distinct bit vectors     */
+        ErrCode_Same,     /* operands must be distinct                       */
         ErrCode_Zero,     /* division by zero attempted                      */
-        ErrCode_Crea,     /* unable to create temporary bit vector(s)        */
         ErrCode_Ovfl,     /* numerical overflow error                        */
-        ErrCode_Form      /* format error in decimal number input string     */
+        ErrCode_Pars      /* syntax error in decimal input string            */
     } ErrCode;
 
 /* ===> MISCELLANEOUS: <=== */
@@ -244,7 +244,7 @@ void    Matrix_Transpose     (wordptr X, N_int rowsX, N_int colsX,
 /*    14.04.97    Version 4.0                                                */
 /*    30.06.97    Version 4.1  added word-ins/del, move-left/right, inc/dec  */
 /*    16.07.97    Version 4.2  added is_empty, is_full                       */
-/*    17.02.98    Version 5.0                                                */
+/*    23.02.98    Version 5.0                                                */
 /*****************************************************************************/
 /*  COPYRIGHT:                                                               */
 /*                                                                           */
@@ -254,9 +254,9 @@ void    Matrix_Transpose     (wordptr X, N_int rowsX, N_int colsX,
 /*    This piece of software is "Non-Profit-Ware" ("NP-ware").               */
 /*                                                                           */
 /*    You may use, copy, modify and redistribute it under the terms of the   */
-/*    "Non-Profit License" (NPL).                                            */
+/*    "Non-Profit-License" (NPL).                                            */
 /*                                                                           */
-/*    Please refer to the file "LICENSE" in this distribution for details!   */
+/*    Please refer to the file "NONPROFIT" in this distribution for details! */
 /*                                                                           */
 /*****************************************************************************/
 #endif
