@@ -1,9 +1,18 @@
 #!perl -w
 
-#  Copyright (c) 1995, 1996, 1997 by Steffen Beyer. All rights reserved.
-#
-#  Please refer to the file "LICENSE" in this distribution for the exact
-#  terms under which this package may be used and distributed!
+###############################################################################
+##                                                                           ##
+##    Copyright (c) 1995, 1996, 1997, 1998 by Steffen Beyer.                 ##
+##    All rights reserved.                                                   ##
+##                                                                           ##
+##    This piece of software is "Non-Profit-Ware" ("NP-ware").               ##
+##                                                                           ##
+##    You may use, copy, modify and redistribute it under the terms of the   ##
+##    "Non-Profit License" (NPL).                                            ##
+##                                                                           ##
+##    Please refer to the file "LICENSE" in this distribution for details!   ##
+##                                                                           ##
+###############################################################################
 
 use strict;
 use vars qw($limit $set $start $stop $min $max $norm $i $j);
@@ -37,6 +46,17 @@ print "Calculating the prime numbers in the range [2..$limit]...\n\n";
 $start = time;
 
 $set->Primes();
+
+## Alternative (slower!):
+
+#$set->Fill();
+#$set->Bit_Off(0);
+#$set->Bit_Off(1);
+#for ( $j = 4; $j <= $limit; $j += 2 ) { $set->Bit_Off($j); }
+#for ( $i = 3; ($j = $i * $i) <= $limit; $i += 2 )
+#{
+#    for ( ; $j <= $limit; $j += $i ) { $set->Bit_Off($j); }
+#}
 
 $stop = time;
 

@@ -15,7 +15,7 @@ $bad_idx = "^[^:]+::[^:]+::[^:]+\\(\\): (?:minimum |maximum |start |)index out o
 
 $bad_size = "^[^:]+::[^:]+::[^:]+\\(\\): (?:bit vector|set|matrix) size mismatch";
 
-$bad_type = "^[^:]+::[^:]+::[^:]+\\(\\): not a '[^']+' object reference";
+$bad_type = "^[^:]+::[^:]+::[^:]+\\(\\): item is not a '[^']+' object";
 
 $numeric  = 1 << 3;
 $special  = 1 << 4;

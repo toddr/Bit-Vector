@@ -1,7 +1,7 @@
-#ifndef DEFINITIONS
-#define DEFINITIONS
+#ifndef MODULE_TOOLBOX
+#define MODULE_TOOLBOX
 /*****************************************************************************/
-/*  MODULE NAME:  Definitions.h                         MODULE TYPE:  (dat)  */
+/*  MODULE NAME:  ToolBox.h                             MODULE TYPE:  (dat)  */
 /*****************************************************************************/
 /*  MODULE IMPORTS:                                                          */
 /*****************************************************************************/
@@ -10,8 +10,16 @@
 /*  MODULE INTERFACE:                                                        */
 /*****************************************************************************/
 
-/*  NOTE: Type names used here are deliberately somewhat weird to avoid      */
-/*        name conflicts with system and other applications' header files!   */
+/*****************************************************************************/
+/*  MODULE RESOURCES:                                                        */
+/*****************************************************************************/
+
+/*****************************************************************************/
+/*  NOTE: The type names that have been chosen here are somewhat weird on    */
+/*        purpose, in order to avoid name clashes with system header files   */
+/*        and your own application(s) which might - directly or indirectly - */
+/*        include this definitions file.                                     */
+/*****************************************************************************/
 
 typedef  unsigned   char    N_char;
 typedef  unsigned   char    N_byte;
@@ -66,15 +74,12 @@ typedef  Z_long             *Z_longptr;
 typedef  Z_longword         *Z_longwordptr;
 
 #undef  FALSE
-#define FALSE       (0==1)
+#define FALSE       (0!=0)
 
 #undef  TRUE
 #define TRUE        (0==0)
 
 typedef enum { false = FALSE , true = TRUE } boolean;
-
-#define blockdef(name,size)         unsigned char name[size]
-#define blocktypedef(name,size)     typedef unsigned char name[size]
 
 #define and         &&      /* logical (boolean) operators: lower case */
 #define or          ||
@@ -87,76 +92,12 @@ typedef enum { false = FALSE , true = TRUE } boolean;
 #define SHL         <<
 #define SHR         >>
 
-#ifdef EXTENDED_DEFINITIONS
-
+#ifdef ENABLE_MODULO
 #define mod         %       /* arithmetic operators */
-
-#define BELL        '\a'    /* bell             0x07 */
-#define BEL         '\a'    /* bell             0x07 */
-#define BACKSPACE   '\b'    /* backspace        0x08 */
-#define BS          '\b'    /* backspace        0x08 */
-#define TAB         '\t'    /* tab              0x09 */
-#define HT          '\t'    /* horizontal tab   0x09 */
-#define LINEFEED    '\n'    /* linefeed         0x0A */
-#define NEWLINE     '\n'    /* newline          0x0A */
-#define LF          '\n'    /* linefeed         0x0A */
-#define VTAB        '\v'    /* vertical tab     0x0B */
-#define VT          '\v'    /* vertical tab     0x0B */
-#define FORMFEED    '\f'    /* formfeed         0x0C */
-#define NEWPAGE     '\f'    /* newpage          0x0C */
-#define CR          '\r'    /* carriage return  0x0D */
-
-typedef             struct
-{
-    N_byte      l;
-    N_byte      h;
-}                   twobytes;
-
-typedef             struct
-{
-    N_byte      a;
-    N_byte      b;
-    N_byte      c;
-    N_byte      d;
-}                   fourbytes;
-
-typedef             struct
-{
-    N_word      l;
-    N_word      h;
-}                   twowords;
-
-/*******************************/
-/* implementation dependent!!! */
-/*   (assumes int = 2 bytes)   */
-/*******************************/
-
-typedef             union
-{
-    N_word      x;
-    twobytes    z;
-}                   wordreg;
-
-/**********************************************/
-/*        implementation dependent!!!         */
-/* (assumes long = 4 bytes and int = 2 bytes) */
-/**********************************************/
-
-typedef             union
-{
-    N_long      x;
-    twowords    y;
-    fourbytes   z;
-}                   longwordreg;
-
-#define lobyte(x)           (((int)(x)) & 0xFF)
-#define hibyte(x)           ((((int)(x)) >> 8) & 0xFF)
-
 #endif
 
-/*****************************************************************************/
-/*  MODULE RESOURCES:                                                        */
-/*****************************************************************************/
+#define blockdef(name,size)         unsigned char name[size]
+#define blocktypedef(name,size)     typedef unsigned char name[size]
 
 /*****************************************************************************/
 /*  MODULE IMPLEMENTATION:                                                   */
@@ -174,14 +115,19 @@ typedef             union
 /*    ??.??.??    ???                                                        */
 /*    16.02.97    Version 3.0                                                */
 /*    24.03.97    Version 4.0                                                */
-/*    24.10.97    Version 5.0                                                */
+/*    31.01.98    Version 5.0                                                */
 /*****************************************************************************/
 /*  COPYRIGHT:                                                               */
 /*                                                                           */
-/*   Copyright (c) 1995, 1996, 1997 by Steffen Beyer. All rights reserved.   */
+/*    Copyright (c) 1995, 1996, 1997, 1998 by Steffen Beyer.                 */
+/*    All rights reserved.                                                   */
 /*                                                                           */
-/*   Please refer to the file "LICENSE" in this distribution for the exact   */
-/*   terms under which this package may be used and distributed!             */
+/*    This piece of software is "Non-Profit-Ware" ("NP-ware").               */
+/*                                                                           */
+/*    You may use, copy, modify and redistribute it under the terms of the   */
+/*    "Non-Profit License" (NPL).                                            */
+/*                                                                           */
+/*    Please refer to the file "LICENSE" in this distribution for details!   */
 /*                                                                           */
 /*****************************************************************************/
 #endif

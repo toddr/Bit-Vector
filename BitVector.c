@@ -1,5 +1,5 @@
-#ifndef BIT_VECTOR_MODULE
-#define BIT_VECTOR_MODULE
+#ifndef MODULE_BIT_VECTOR
+#define MODULE_BIT_VECTOR
 /*****************************************************************************/
 /*  MODULE NAME:  BitVector.c                           MODULE TYPE:  (adt)  */
 /*****************************************************************************/
@@ -9,7 +9,7 @@
 #include <limits.h>                                 /*  MODULE TYPE:  (sys)  */
 #include <string.h>                                 /*  MODULE TYPE:  (sys)  */
 #include <ctype.h>                                  /*  MODULE TYPE:  (sys)  */
-#include "Definitions.h"                            /*  MODULE TYPE:  (dat)  */
+#include "ToolBox.h"                                /*  MODULE TYPE:  (dat)  */
 /*****************************************************************************/
 /*  MODULE INTERFACE:                                                        */
 /*****************************************************************************/
@@ -97,11 +97,12 @@ wordptr BitVector_Interval_Substitute(wordptr X, wordptr Y,
 
 /* ===> bit vector test functions: */
 
-boolean BitVector_is_empty(wordptr addr);                   /* X == {} ?     */
-boolean BitVector_is_full (wordptr addr);                   /* X == ~{} ?    */
+boolean BitVector_is_empty         (wordptr addr);          /* X == {} ?     */
+boolean BitVector_is_full          (wordptr addr);          /* X == ~{} ?    */
 
-boolean BitVector_equal   (wordptr X, wordptr Y);           /* X == Y ?      */
-Z_int   BitVector_Compare (wordptr X, wordptr Y);           /* X <,=,> Y ?   */
+boolean BitVector_equal            (wordptr X, wordptr Y);  /* X == Y ?      */
+Z_int   BitVector_Lexicompare      (wordptr X, wordptr Y);  /* X <,=,> Y ?   */
+Z_int   BitVector_Compare          (wordptr X, wordptr Y);  /* X <,=,> Y ?   */
 
 /* ===> bit vector string conversion functions: */
 
@@ -180,10 +181,10 @@ void    BitVector_Word_Delete (wordptr addr, N_int offset, N_int count,
 
 /* ===> arbitrary size chunk functions: */
 
-void    BitVector_Chunk_Store (wordptr addr, N_int offset,
-                               N_int chunksize, N_long value);
-N_long  BitVector_Chunk_Read  (wordptr addr, N_int offset,
-                               N_int chunksize);
+void    BitVector_Chunk_Store (wordptr addr, N_int chunksize,
+                               N_int offset, N_long value);
+N_long  BitVector_Chunk_Read  (wordptr addr, N_int chunksize,
+                               N_int offset);
 
 /* ===> set operations: */
 
@@ -244,6 +245,9 @@ static N_word MSB;      /* = mask for most significant bit                   */
 
 static N_word LONGBITS; /* = # of bits in unsigned long                      */
 
+static N_word LOG10;    /* = logarithm to base 10 of BITS - 1                */
+static N_word EXP10;    /* = largest possible power of 10 in signed int      */
+
     /********************************************************************/
     /* global bit mask table for fast access (set by "BitVector_Boot"): */
     /********************************************************************/
@@ -281,9 +285,22 @@ static wordptr BITMASKTAB;
 #define BIT_VECTOR_FLP_BIT(address,index,mask) \
     (((*(addr+(index>>LOGBITS)) ^= (mask = BITMASKTAB[index AND MODMASK])) AND mask) != 0)
 
+#define BIT_VECTOR_DIGITIZE(type,value,digit) \
+    value = (type) ((digit = value) / 10); \
+    digit -= value * 10; \
+    digit += (type) '0';
+
     /*********************************************************/
     /* private low-level functions (potentially dangerous!): */
     /*********************************************************/
+
+static N_word power10(N_word x)
+{
+    N_word y = 1;
+
+    while (x-- > 0) y *= 10;
+    return(y);
+}
 
 static void BIT_VECTOR_zro_words(wordptr addr, N_word count)
 {
@@ -355,7 +372,6 @@ static N_word BIT_VECTOR_int2str(charptr string, N_word value)
 {
     N_word  length;
     N_word  digit;
-    N_word  rest;
     charptr work;
 
     work = string;
@@ -364,12 +380,9 @@ static N_word BIT_VECTOR_int2str(charptr string, N_word value)
         length = 0;
         while (value > 0)
         {
-            rest = (N_word) (value / 10);
-            digit = value - (rest * 10);
-            digit += (N_word) '0';
+            BIT_VECTOR_DIGITIZE(N_word,value,digit)
             *work++ = (N_char) digit;
             length++;
-            value = rest;
         }
         BIT_VECTOR_reverse(string,length);
     }
@@ -389,11 +402,12 @@ static N_word BIT_VECTOR_str2int(charptr string, N_word *value)
     *value = 0;
     length = 0;
     digit = (N_word) *string++;
+    /* separate because isdigit() is likely a macro! */
     while (isdigit(digit) != 0)
     {
         length++;
         digit -= (N_word) '0';
-        *value *= 10;
+        if (*value) *value *= 10;
         *value += digit;
         digit = (N_word) *string++;
     }
@@ -458,6 +472,9 @@ ErrCode BitVector_Boot(void)
         BITMASKTAB[sample] = (LSB << sample);
     }
 
+    LOG10 = (N_word) (MODMASK * 0.30103); /* = (BITS - 1) * ( ln 2 / ln 10 ) */
+    EXP10 = power10(LOG10);
+
     return(ErrCode_Ok);
 }
 
@@ -481,7 +498,7 @@ N_word BitVector_Mask(N_int bits)           /* bit vector mask (unused bits) */
 
 charptr BitVector_Version(void)
 {
-    return("5.0");
+    return((charptr)"5.0");
 }
 
 N_int BitVector_Word_Bits(void)
@@ -1329,8 +1346,8 @@ boolean BitVector_equal(wordptr X, wordptr Y)               /* X == Y ?      */
     return(r);
 }
 
-Z_int BitVector_Compare(wordptr X, wordptr Y)               /* X <,=,> Y ?   */
-{
+Z_int BitVector_Lexicompare(wordptr X, wordptr Y)           /* X <,=,> Y ?   */
+{                                                           /*  unsigned     */
     N_word  bitsX = bits_(X);
     N_word  bitsY = bits_(Y);
     N_word  size  = size_(X);
@@ -1342,6 +1359,40 @@ Z_int BitVector_Compare(wordptr X, wordptr Y)               /* X <,=,> Y ?   */
         {
             X += size;
             Y += size;
+            while (r and (size-- > 0)) r = (*(--X) == *(--Y));
+        }
+        if (r) return((Z_int) 0);
+        else
+        {
+            if (*X < *Y) return((Z_int) -1); else return((Z_int) 1);
+        }
+    }
+    else
+    {
+        if (bitsX < bitsY) return((Z_int) -1); else return((Z_int) 1);
+    }
+}
+
+Z_int BitVector_Compare(wordptr X, wordptr Y)               /* X <,=,> Y ?   */
+{                                                           /*   signed      */
+    N_word  bitsX = bits_(X);
+    N_word  bitsY = bits_(Y);
+    N_word  size  = size_(X);
+    N_word  mask  = mask_(X);
+    N_word  sign;
+    boolean r = true;
+
+    if (bitsX == bitsY)
+    {
+        if (size > 0)
+        {
+            X += size;
+            Y += size;
+            mask &= NOT (mask >> 1);
+            if ((sign = (*(X-1) AND mask)) != (*(Y-1) AND mask))
+            {
+                if (sign) return((Z_int) -1); else return((Z_int) 1);
+            }
             while (r and (size-- > 0)) r = (*(--X) == *(--Y));
         }
         if (r) return((Z_int) 0);
@@ -1410,7 +1461,8 @@ boolean BitVector_from_hex(wordptr addr, charptr string)
             for ( count = 0; (ok and (length > 0) and (count < BITS)); count += 4 )
             {
                 digit = (int) *(--string); length--;
-                digit = toupper(digit); /* separate because could be a macro */
+                /* separate because toupper() is likely a macro! */
+                digit = toupper(digit);
                 if (ok = (isxdigit(digit) != 0))
                 {
                     if (digit >= (int) 'A') digit -= (int) 'A' - 10;
@@ -1503,6 +1555,10 @@ charptr BitVector_to_Dec(wordptr addr)
     N_word  bits = bits_(addr);
     N_word  length;
     N_word  digits;
+    N_word  count;
+    N_word  q;
+    N_word  r;
+    boolean loop;
     charptr result;
     charptr string;
     wordptr quot;
@@ -1511,7 +1567,7 @@ charptr BitVector_to_Dec(wordptr addr)
     wordptr base;
     Z_int   sign;
 
-    length = (N_word) (bits / 3.3);        /* digits = bits * ld(2) / ld(10) */
+    length = (N_word) (bits / 3.3);        /* digits = bits * ln(2) / ln(10) */
     length += 2; /* compensate for truncating & provide space for minus sign */
     result = (charptr) malloc((size_t) (length+1));    /* remember the '\0'! */
     if (result == NULL) return(NULL);
@@ -1520,13 +1576,12 @@ charptr BitVector_to_Dec(wordptr addr)
     if ((bits < 4) or (sign == 0))
     {
         if (bits > 0) digits = *addr; else digits = (N_word) 0;
-        if (sign < 0) digits = ((NOT digits)+1) AND mask_(addr);
+        if (sign < 0) digits = -digits AND mask_(addr);
         *string++ = (N_char) digits + (N_char) '0';
         digits = 1;
     }
     else
     {
-        digits = 0;
         quot = BitVector_Create(bits,false);
         if (quot == NULL)
         {
@@ -1557,16 +1612,35 @@ charptr BitVector_to_Dec(wordptr addr)
             BitVector_Destroy(temp);
             return(NULL);
         }
-        *base = (N_word) 10;
         if (sign < 0) BitVector_Negate(quot,addr);
         else           BitVector_Copy(quot,addr);
-        while ((not BitVector_is_empty(quot)) and (digits < length))
+        digits = 0;
+        *base = EXP10;
+        loop = (bits >= BITS);
+        do
         {
-            BitVector_Copy(temp,quot);
-            BitVector_Div_Pos(quot,temp,base,rest);
-            *string++ = (N_char) *rest + (N_char) '0';
-            digits++;
+            if (loop)
+            {
+                BitVector_Copy(temp,quot);
+                BitVector_Div_Pos(quot,temp,base,rest);
+                loop = not BitVector_is_empty(quot);
+                q = *rest;
+            }
+            else q = *quot;
+            count = LOG10;
+            while (((loop and (count-- > 0)) or ((not loop) and (q != 0))) and
+                (digits < length))
+            {
+                if (q != 0)
+                {
+                    BIT_VECTOR_DIGITIZE(N_word,q,r)
+                }
+                else r = (N_word) '0';
+                *string++ = (N_char) r;
+                digits++;
+            }
         }
+        while (loop and (digits < length));
         BitVector_Destroy(quot);
         BitVector_Destroy(rest);
         BitVector_Destroy(temp);
@@ -1584,15 +1658,24 @@ charptr BitVector_to_Dec(wordptr addr)
 
 ErrCode BitVector_from_dec(wordptr addr, charptr string)
 {
-    N_word  bits = bits_(addr);
     ErrCode code = ErrCode_Ok;
+    N_word  bits = bits_(addr);
+    N_word  mask = mask_(addr);
+    boolean init = (bits > BITS);
     boolean ok = true;
     boolean minus;
+    boolean shift;
     wordptr term;
-    wordptr prod;
-    wordptr temp;
-    wordptr rank;
     wordptr base;
+    wordptr prod;
+    wordptr rank;
+    wordptr temp;
+    wordptr last;
+    N_word  msb;
+    N_word  prev;
+    N_word  accu;
+    N_word  powr;
+    N_word  count;
     N_word  length;
     int     digit;
 
@@ -1608,64 +1691,121 @@ ErrCode BitVector_from_dec(wordptr addr, charptr string)
             if (--length == 0) return(ErrCode_Form);
         }
         string += length;
-        term = BitVector_Create(4,false);
-        if (term == NULL) return(ErrCode_Crea);
-        prod = BitVector_Create(bits,false);
+        term = BitVector_Create(BITS,false);
+        if (term == NULL)
+        {
+            return(ErrCode_Crea);
+        }
+        base = BitVector_Create(BITS,false);
+        if (base == NULL)
+        {
+            BitVector_Destroy(term);
+            return(ErrCode_Crea);
+        }
+        prod = BitVector_Create(bits,init);
         if (prod == NULL)
         {
             BitVector_Destroy(term);
+            BitVector_Destroy(base);
+            return(ErrCode_Crea);
+        }
+        rank = BitVector_Create(bits,init);
+        if (rank == NULL)
+        {
+            BitVector_Destroy(term);
+            BitVector_Destroy(base);
+            BitVector_Destroy(prod);
             return(ErrCode_Crea);
         }
         temp = BitVector_Create(bits,false);
         if (temp == NULL)
         {
             BitVector_Destroy(term);
+            BitVector_Destroy(base);
             BitVector_Destroy(prod);
-            return(ErrCode_Crea);
-        }
-        rank = BitVector_Create(bits,true);
-        if (rank == NULL)
-        {
-            BitVector_Destroy(term);
-            BitVector_Destroy(prod);
-            BitVector_Destroy(temp);
-            return(ErrCode_Crea);
-        }
-        *rank = (N_word) 1;
-        base = BitVector_Create(4,false);
-        if (base == NULL)
-        {
-            BitVector_Destroy(term);
-            BitVector_Destroy(prod);
-            BitVector_Destroy(temp);
             BitVector_Destroy(rank);
             return(ErrCode_Crea);
         }
-        *base = (N_word) 10;
+        last = addr + size_(addr) - 1;
+        msb = mask AND NOT (mask >> 1);
         BitVector_Empty(addr);
+        *base = EXP10;
+        shift = false;
         while (ok and (length > 0))
         {
-            digit = (int) *(--string); length--;
-            if (ok = (isdigit(digit) != 0))
+            accu = 0;
+            powr = 1;
+            count = LOG10;
+            while (ok and (length > 0) and (count-- > 0))
             {
-                *term = (N_word) digit - (N_word) '0';
-                BitVector_Copy(temp,rank);
-                if (ok = ((code = BitVector_Mul_Pos(prod,temp,term)) == ErrCode_Ok))
+                digit = (int) *(--string); length--;
+                /* separate because isdigit() is likely a macro! */
+                if (ok = (isdigit(digit) != 0))
                 {
-                    if ((ok = not BitVector_add(addr,addr,prod,0)) and (length > 0))
+                    accu += ((N_word) digit - (N_word) '0') * powr;
+                    powr *= 10;
+                }
+            }
+            if (ok)
+            {
+                if (shift)
+                {
+                    *term = accu;
+                    BitVector_Copy(temp,rank);
+                    ok = ((code = BitVector_Mul_Pos(prod,temp,term)) == ErrCode_Ok);
+                }
+                else
+                {
+                    *prod = accu;
+                    if ((not init) and ((accu AND NOT mask) != 0))
                     {
-                        BitVector_Copy(temp,rank);
-                        ok = ((code = BitVector_Mul_Pos(rank,temp,base)) == ErrCode_Ok);
+                        ok = false;
+                        code = ErrCode_Ovfl;
+                    }
+                }
+                if (ok)
+                {
+                    prev = *last AND msb;
+                    if (BitVector_add(addr,addr,prod,0) or ((*last AND msb) != prev))
+                    {
+                        *last ^= msb;
+                        if (BitVector_is_empty(addr)) *last ^= msb;
+                        else
+                        {
+                            ok = false;
+                            code = ErrCode_Ovfl;
+                        }
+                    }
+                    else if (length > 0)
+                    {
+                        if (shift)
+                        {
+                            BitVector_Copy(temp,rank);
+                            ok = ((code = BitVector_Mul_Pos(rank,temp,base)) == ErrCode_Ok);
+                        }
+                        else
+                        {
+                            *rank = *base;
+                            shift = true;
+                        }
                     }
                 }
             }
         }
         BitVector_Destroy(term);
-        BitVector_Destroy(prod);
-        BitVector_Destroy(temp);
-        BitVector_Destroy(rank);
         BitVector_Destroy(base);
-        if (ok and minus) BitVector_Negate(addr,addr);
+        BitVector_Destroy(prod);
+        BitVector_Destroy(rank);
+        BitVector_Destroy(temp);
+        if (ok)
+        {
+            if (minus) BitVector_Negate(addr,addr);
+            if (minus XOR ((*last AND msb) != 0))
+            {
+                ok = false;
+                code = ErrCode_Ovfl;
+            }
+        }
     }
     if (ok) return(ErrCode_Ok);
     else
@@ -1763,6 +1903,7 @@ boolean BitVector_from_enum(wordptr addr, charptr string)
         while (ok and (state != 0))
         {
             token = (N_word) *string;
+            /* separate because isdigit() is likely a macro! */
             if (isdigit(token) != 0)
             {
                 string += BIT_VECTOR_str2int(string,&index);
@@ -2147,6 +2288,7 @@ boolean BitVector_add(wordptr X, wordptr Y, wordptr Z, boolean carry)
         {
             yy = *Y++;
             zz = *Z++;
+            if (size == 0) { yy &= mask; zz &= mask; }
             lo = (yy AND LSB) + (zz AND LSB) + (carry AND LSB);
             hi = (yy >> 1) + (zz >> 1) + (lo >> 1);
             carry = ((hi AND MSB) != 0);
@@ -2175,7 +2317,7 @@ boolean BitVector_subtract(wordptr X, wordptr Y, wordptr Z, boolean carry)
         {
             yy = *Y++;
             zz = NOT *Z++;
-            if (size == 0) zz &= mask;
+            if (size == 0) { yy &= mask; zz &= mask; }
             lo = (yy AND LSB) + (zz AND LSB) + (carry AND LSB);
             hi = (yy >> 1) + (zz >> 1) + (lo >> 1);
             carry = ((hi AND MSB) != 0);
@@ -2650,7 +2792,7 @@ void BitVector_Word_Delete(wordptr addr, N_int offset, N_int count,
     }
 }
 
-void BitVector_Chunk_Store(wordptr addr, N_int offset, N_int chunksize,
+void BitVector_Chunk_Store(wordptr addr, N_int chunksize, N_int offset,
                            N_long value)
 {
     N_word bits = bits_(addr);
@@ -2684,7 +2826,7 @@ void BitVector_Chunk_Store(wordptr addr, N_int offset, N_int chunksize,
     }
 }
 
-N_long BitVector_Chunk_Read(wordptr addr, N_int offset, N_int chunksize)
+N_long BitVector_Chunk_Read(wordptr addr, N_int chunksize, N_int offset)
 {
     N_word bits = bits_(addr);
     N_word chunkbits = 0;
@@ -3051,14 +3193,19 @@ void Matrix_Transpose(wordptr X, N_int rowsX, N_int colsX,
 /*    14.04.97    Version 4.0                                                */
 /*    30.06.97    Version 4.1  added word-ins/del, move-left/right, inc/dec  */
 /*    16.07.97    Version 4.2  added is_empty, is_full                       */
-/*    29.12.97    Version 5.0                                                */
+/*    17.02.98    Version 5.0                                                */
 /*****************************************************************************/
 /*  COPYRIGHT:                                                               */
 /*                                                                           */
-/*   Copyright (c) 1995, 1996, 1997 by Steffen Beyer. All rights reserved.   */
+/*    Copyright (c) 1995, 1996, 1997, 1998 by Steffen Beyer.                 */
+/*    All rights reserved.                                                   */
 /*                                                                           */
-/*   Please refer to the file "LICENSE" in this distribution for the exact   */
-/*   terms under which this package may be used and distributed!             */
+/*    This piece of software is "Non-Profit-Ware" ("NP-ware").               */
+/*                                                                           */
+/*    You may use, copy, modify and redistribute it under the terms of the   */
+/*    "Non-Profit License" (NPL).                                            */
+/*                                                                           */
+/*    Please refer to the file "LICENSE" in this distribution for details!   */
 /*                                                                           */
 /*****************************************************************************/
 #endif

@@ -1,9 +1,10 @@
                     =====================================
                       Package "Bit::Vector" Version 5.0
                     =====================================
-                      for Perl version 5.000 and higher
 
-     Copyright (c) 1995, 1996, 1997 by Steffen Beyer. All rights reserved.
+
+            Copyright (c) 1995, 1996, 1997, 1998 by Steffen Beyer.
+                             All rights reserved.
 
 
 Credits:
@@ -91,5 +92,12 @@ a graph.
 
 Many thanks go to Daniel Koch <dkoch@amcity.com> for suggesting the
 "Index_List_Store()" and "Index_List_Read()" methods!
+
+Many thanks again to Hau-Yung Chen <hchen@oda-tech.com> for suggesting
+a way for speeding up the conversion to decimal in "to_Dec()" (by dividing
+the bit vector through the largest possible power of ten that will fit into
+a machine word and then breaking down the rest using only machine words,
+which is faster than repeatedly dividing the whole bit vector by ten).
+According to my measurements, this resulted in an 8-fold speed increase.
 
 

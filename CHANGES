@@ -1,10 +1,10 @@
                     =====================================
                       Package "Bit::Vector" Version 5.0
                     =====================================
-                      for Perl version 5.000 and higher
 
 
-     Copyright (c) 1995, 1996, 1997 by Steffen Beyer. All rights reserved.
+            Copyright (c) 1995, 1996, 1997, 1998 by Steffen Beyer.
+                             All rights reserved.
 
 
 Contents of this file:
@@ -47,6 +47,7 @@ number of new methods:
   -  Interval_Reverse()
   -  Interval_Copy()
   -  Interval_Substitute()
+  -  Lexicompare()
   -  to_Hex()
   -  from_hex()
   -  to_Bin()
@@ -98,10 +99,11 @@ module prior to 4.0.
 Using the tool "modify" (contained in this distribution), apply the following
 patches to your existing applications which use version 4.x of "Bit::Vector":
 
-(You may need to adjust the shell bang line at the top of this Perl script,
-which is currently set to "#!/usr/local/bin/perl".)
+(You will need to adjust the shell bang line at the top of this Perl script,
+which is currently set to "#!perl -w", to reflect the path where your Perl 5
+binary is actually located. Issue "which perl" if in doubt where that is.)
 
-    % ./modify 's!lexorder\((.*?)\)!Compare($1) <= 0!g' application.pl
+    % ./modify 's!lexorder\((.*?)\)!Lexicompare($1) <= 0!g' application.pl
 
     % ./modify 's!from_ASCII\((.*?)\)\s*;!from_enum($1) || die;!g'\
       application.pl
@@ -121,7 +123,19 @@ distribution to apply these (and some more) changes to your application:
 
     % ./patch application.pl
 
+========================================================================
 WARNING: In any case, keep a copy of your original file in a safe place!
+========================================================================
+
+BEWARE also that the semantics of the method "Compare()" have changed:
+
+While previously it assumed its two bit vector arguments to be UNSIGNED,
+it now assumes them to be SIGNED.
+
+If you want to perform a comparison assuming UNSIGNED bit vectors, use
+the new method "Lexicompare()" instead!
+
+(Which in fact is the old "Compare()" method in new disguise, er, name.)
 
 
 New features in version 4.2:
@@ -727,6 +741,7 @@ In version 5.0, the following new methods have been added:
   -  Interval_Reverse()
   -  Interval_Copy()
   -  Interval_Substitute()
+  -  Lexicompare()
   -  to_Bin()
   -  from_bin()
   -  to_Dec()
@@ -766,6 +781,10 @@ The following methods have been re-implemented in C (instead of Perl):
   -  Clone()
   -  to_Enum()       (previously named "to_ASCII")
   -  from_enum()     (previously named "from_ASCII")
+
+The following method has changed its behaviour:
+
+  -  Compare()       (now assumes that bit vectors are SIGNED)
 
 The following methods have been renamed:
 

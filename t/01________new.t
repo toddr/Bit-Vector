@@ -388,8 +388,8 @@ if ($@ =~ /Usage: .*?new\(class,bits\)/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-eval { $set = Bit::Vector::new($set,'main',18); };
-if ($@ =~ /Usage: .*?new\(class,bits\)/)
+eval { $set = Bit::Vector::Create($set,'main',18); };
+if ($@ =~ /Usage: .*?Create\(class,bits\)/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 

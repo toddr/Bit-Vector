@@ -2,12 +2,12 @@ BitVector.c
 BitVector.h
 CHANGES
 CREDITS
-Definitions.h
 INSTALL
 LICENSE
 MANIFEST
 Makefile.PL
 README
+ToolBox.h
 Vector.pm
 Vector.xs
 examples/primes.pl

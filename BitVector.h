@@ -1,5 +1,5 @@
-#ifndef BIT_VECTOR_MODULE
-#define BIT_VECTOR_MODULE
+#ifndef MODULE_BIT_VECTOR
+#define MODULE_BIT_VECTOR
 /*****************************************************************************/
 /*  MODULE NAME:  BitVector.h                           MODULE TYPE:  (adt)  */
 /*****************************************************************************/
@@ -9,7 +9,7 @@
 #include <limits.h>                                 /*  MODULE TYPE:  (sys)  */
 #include <string.h>                                 /*  MODULE TYPE:  (sys)  */
 #include <ctype.h>                                  /*  MODULE TYPE:  (sys)  */
-#include "Definitions.h"                            /*  MODULE TYPE:  (dat)  */
+#include "ToolBox.h"                                /*  MODULE TYPE:  (dat)  */
 /*****************************************************************************/
 /*  MODULE INTERFACE:                                                        */
 /*****************************************************************************/
@@ -97,11 +97,12 @@ wordptr BitVector_Interval_Substitute(wordptr X, wordptr Y,
 
 /* ===> bit vector test functions: */
 
-boolean BitVector_is_empty(wordptr addr);                   /* X == {} ?     */
-boolean BitVector_is_full (wordptr addr);                   /* X == ~{} ?    */
+boolean BitVector_is_empty         (wordptr addr);          /* X == {} ?     */
+boolean BitVector_is_full          (wordptr addr);          /* X == ~{} ?    */
 
-boolean BitVector_equal   (wordptr X, wordptr Y);           /* X == Y ?      */
-Z_int   BitVector_Compare (wordptr X, wordptr Y);           /* X <,=,> Y ?   */
+boolean BitVector_equal            (wordptr X, wordptr Y);  /* X == Y ?      */
+Z_int   BitVector_Lexicompare      (wordptr X, wordptr Y);  /* X <,=,> Y ?   */
+Z_int   BitVector_Compare          (wordptr X, wordptr Y);  /* X <,=,> Y ?   */
 
 /* ===> bit vector string conversion functions: */
 
@@ -180,10 +181,10 @@ void    BitVector_Word_Delete (wordptr addr, N_int offset, N_int count,
 
 /* ===> arbitrary size chunk functions: */
 
-void    BitVector_Chunk_Store (wordptr addr, N_int offset,
-                               N_int chunksize, N_long value);
-N_long  BitVector_Chunk_Read  (wordptr addr, N_int offset,
-                               N_int chunksize);
+void    BitVector_Chunk_Store (wordptr addr, N_int chunksize,
+                               N_int offset, N_long value);
+N_long  BitVector_Chunk_Read  (wordptr addr, N_int chunksize,
+                               N_int offset);
 
 /* ===> set operations: */
 
@@ -243,14 +244,19 @@ void    Matrix_Transpose     (wordptr X, N_int rowsX, N_int colsX,
 /*    14.04.97    Version 4.0                                                */
 /*    30.06.97    Version 4.1  added word-ins/del, move-left/right, inc/dec  */
 /*    16.07.97    Version 4.2  added is_empty, is_full                       */
-/*    29.12.97    Version 5.0                                                */
+/*    17.02.98    Version 5.0                                                */
 /*****************************************************************************/
 /*  COPYRIGHT:                                                               */
 /*                                                                           */
-/*   Copyright (c) 1995, 1996, 1997 by Steffen Beyer. All rights reserved.   */
+/*    Copyright (c) 1995, 1996, 1997, 1998 by Steffen Beyer.                 */
+/*    All rights reserved.                                                   */
 /*                                                                           */
-/*   Please refer to the file "LICENSE" in this distribution for the exact   */
-/*   terms under which this package may be used and distributed!             */
+/*    This piece of software is "Non-Profit-Ware" ("NP-ware").               */
+/*                                                                           */
+/*    You may use, copy, modify and redistribute it under the terms of the   */
+/*    "Non-Profit License" (NPL).                                            */
+/*                                                                           */
+/*    Please refer to the file "LICENSE" in this distribution for details!   */
 /*                                                                           */
 /*****************************************************************************/
 #endif

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-./modify 's!lexorder\((.*?)\)!Compare($1) <= 0!g' $1
+./modify 's!lexorder\((.*?)\)!Lexicompare($1) <= 0!g' $1
 
 ./modify 's!to_ASCII\(!to_Enum\(!g' $1
 
