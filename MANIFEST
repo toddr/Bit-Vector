@@ -38,6 +38,7 @@ t/13__increment.t
 t/14______empty.t
 t/15________add.t
 t/16___subtract.t
+t/17________gcd.t
 t/28__chunklist.t
 t/30_overloaded.t
 typemap

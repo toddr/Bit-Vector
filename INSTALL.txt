@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 6.2
+                      Package "Bit::Vector" Version 6.3
                     =====================================
 
 
@@ -43,7 +43,7 @@ Edit the file "Makefile.PL" and change the line
 
     'VERSION_FROM'      => 'Vector.pm',
 to
-    'VERSION'           => '6.2',
+    'VERSION'           => '6.3',
 
 Then edit the file "Vector.pm" and change the line
 
@@ -53,7 +53,7 @@ to
 
 Also edit the file "t/00____version.t" and change the line
 
-    use Bit::Vector 6.2;
+    use Bit::Vector 6.3;
 
 to
 
@@ -97,7 +97,7 @@ Detailed installation guide:
 ----------------------------
 
  1) Change directory to the directory that has been created by unpacking this
-    package ("cd Bit-Vector-6.2").
+    package ("cd Bit-Vector-6.3").
 
  2) Type "perl Makefile.PL" (or whatever the name and path of your Perl 5
     binary is).
@@ -158,9 +158,9 @@ Detailed installation guide:
 
     The output should look somewhat like this:
 
-    PERL_DL_NONLAZY=1 /usr/sw/bin/perl -Iblib/arch
-    -Iblib/lib -I/usr/sw/pkg/perl/lib/5.6.0/i386-freebsd
-    -I/usr/sw/pkg/perl/lib/5.6.0 -e 'use Test::Harness
+    PERL_DL_NONLAZY=1 /sw/bin/perl -Iblib/arch
+    -Iblib/lib -I/sw/pkg/perl/lib/5.00503/i386-freebsd
+    -I/sw/pkg/perl/lib/5.00503 -e 'use Test::Harness
     qw(&runtests $verbose); $verbose=0; runtests @ARGV;' t/*.t
     t/00____version.....ok
     t/01________new.....ok
@@ -179,11 +179,12 @@ Detailed installation guide:
     t/14______empty.....ok
     t/15________add.....ok
     t/16___subtract.....ok
+    t/17________gcd.....ok
     t/28__chunklist.....ok
     t/30_overloaded.....ok
     All tests successful.
-    Files=19, Tests=67255, 19 wallclock secs
-    ( 6.43 cusr +  0.47 csys =  6.90 CPU)
+    Files=20,  Tests=67417, 22 wallclock secs
+    (13.72 cusr +  0.57 csys = 14.29 CPU)
 
     (Note that the exact number of tests will depend on the number of bits
      of a machine word/an unsigned long on your system!)

@@ -192,7 +192,7 @@ foreach $method (sort keys(%method_list))
             }
             if ($limited)
             {
-                $message = "Usage: (?:${prefix}::)?${method}\\([a-zA-Z_, ]+\\)";
+                $message = "Usage: (?:${prefix}::)?${method}\\([a-zA-Z\\[\\]_, ]+\\)";
                 &refresh();
                 pop(@parameter_list);
                 eval "$action";
@@ -201,6 +201,7 @@ foreach $method (sort keys(%method_list))
                 $n++;
                 &refresh();
                 push(@parameter_list,0);
+                push(@parameter_list,0) if ($method eq "Create");
                 eval "$action";
                 if ($@ =~ /$message/)
                 {print "ok $n\n";} else {print "not ok $n\n";}

@@ -1333,7 +1333,7 @@ perlguts(1), overload(3).
 
 =head1 VERSION
 
-This man page documents "Bit::Vector::Overload" version 6.2.
+This man page documents "Bit::Vector::Overload" version 6.3.
 
 =head1 AUTHOR
 

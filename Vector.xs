@@ -43,6 +43,23 @@ typedef N_word *BitVector_Address;
 typedef     SV *BitVector_Scalar;
 
 
+const char *BitVector_OBJECT_ERROR = "item is not a \"Bit::Vector\" object";
+const char *BitVector_SCALAR_ERROR = "item is not a scalar";
+const char *BitVector_STRING_ERROR = "item is not a string";
+const char *BitVector_MIN_ERROR    = "minimum index out of range";
+const char *BitVector_MAX_ERROR    = "maximum index out of range";
+const char *BitVector_START_ERROR  = "start index out of range";
+const char *BitVector_OFFSET_ERROR = "offset out of range";
+const char *BitVector_CHUNK_ERROR  = "chunk size out of range";
+const char *BitVector_SET_ERROR    = "set size mismatch";
+const char *BitVector_MATRIX_ERROR = "matrix size mismatch";
+const char *BitVector_SHAPE_ERROR  = "not a square matrix";
+const char *BitVector_MEMORY_ERROR = ERRCODE_NULL;
+const char *BitVector_INDEX_ERROR  = ERRCODE_INDX;
+const char *BitVector_ORDER_ERROR  = ERRCODE_ORDR;
+const char *BitVector_SIZE_ERROR   = ERRCODE_SIZE;
+
+
 #define BIT_VECTOR_OBJECT(ref,hdl,adr) \
     ( ref && \
     SvROK(ref) && \
@@ -65,82 +82,58 @@ typedef     SV *BitVector_Scalar;
     ((len = (N_int)SvCUR(ref)) | 1) )
 
 
-#define BIT_VECTOR_ERROR(name,error) \
-    croak("Bit::Vector::" name "(): " error)
+#define BIT_VECTOR_ERROR(message) \
+    croak("Bit::Vector::%s(): %s", GvNAME(CvGV(cv)), message)
 
 
-#define BIT_VECTOR_OBJECT_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"item is not a \"Bit::Vector\" object")
+#define BIT_VECTOR_OBJECT_ERROR \
+    BIT_VECTOR_ERROR( BitVector_OBJECT_ERROR )
 
-#define BIT_VECTOR_SCALAR_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"item is not a scalar")
+#define BIT_VECTOR_SCALAR_ERROR \
+    BIT_VECTOR_ERROR( BitVector_SCALAR_ERROR )
 
-#define BIT_VECTOR_STRING_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"item is not a string")
+#define BIT_VECTOR_STRING_ERROR \
+    BIT_VECTOR_ERROR( BitVector_STRING_ERROR )
 
-#define BIT_VECTOR_MIN_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"minimum index out of range")
+#define BIT_VECTOR_MIN_ERROR \
+    BIT_VECTOR_ERROR( BitVector_MIN_ERROR )
 
-#define BIT_VECTOR_MAX_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"maximum index out of range")
+#define BIT_VECTOR_MAX_ERROR \
+    BIT_VECTOR_ERROR( BitVector_MAX_ERROR )
 
-#define BIT_VECTOR_START_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"start index out of range")
+#define BIT_VECTOR_START_ERROR \
+    BIT_VECTOR_ERROR( BitVector_START_ERROR )
 
-#define BIT_VECTOR_OFFSET_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"offset out of range")
+#define BIT_VECTOR_OFFSET_ERROR \
+    BIT_VECTOR_ERROR( BitVector_OFFSET_ERROR )
 
-#define BIT_VECTOR_CHUNK_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"chunk size out of range")
+#define BIT_VECTOR_CHUNK_ERROR \
+    BIT_VECTOR_ERROR( BitVector_CHUNK_ERROR )
 
-#define BIT_VECTOR_SET_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"set size mismatch")
+#define BIT_VECTOR_SET_ERROR \
+    BIT_VECTOR_ERROR( BitVector_SET_ERROR )
 
-#define BIT_VECTOR_MATRIX_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"matrix size mismatch")
+#define BIT_VECTOR_MATRIX_ERROR \
+    BIT_VECTOR_ERROR( BitVector_MATRIX_ERROR )
 
-#define BIT_VECTOR_SHAPE_ERROR(name) \
-    BIT_VECTOR_ERROR(name,"not a square matrix")
+#define BIT_VECTOR_SHAPE_ERROR \
+    BIT_VECTOR_ERROR( BitVector_SHAPE_ERROR )
 
+#define BIT_VECTOR_MEMORY_ERROR \
+    BIT_VECTOR_ERROR( BitVector_MEMORY_ERROR )
 
-#define BIT_VECTOR_MEMORY_ERROR(name) \
-    BIT_VECTOR_ERROR(name,ERRCODE_NULL)
+#define BIT_VECTOR_INDEX_ERROR \
+    BIT_VECTOR_ERROR( BitVector_INDEX_ERROR )
 
-#define BIT_VECTOR_INDEX_ERROR(name) \
-    BIT_VECTOR_ERROR(name,ERRCODE_INDX)
+#define BIT_VECTOR_ORDER_ERROR \
+    BIT_VECTOR_ERROR( BitVector_ORDER_ERROR )
 
-#define BIT_VECTOR_ORDER_ERROR(name) \
-    BIT_VECTOR_ERROR(name,ERRCODE_ORDR)
-
-#define BIT_VECTOR_SIZE_ERROR(name) \
-    BIT_VECTOR_ERROR(name,ERRCODE_SIZE)
-
-#define BIT_VECTOR_DISTINCT_ERROR(name) \
-    BIT_VECTOR_ERROR(name,ERRCODE_SAME)
-
-#define BIT_VECTOR_ZERO_ERROR(name) \
-    BIT_VECTOR_ERROR(name,ERRCODE_ZERO)
+#define BIT_VECTOR_SIZE_ERROR \
+    BIT_VECTOR_ERROR( BitVector_SIZE_ERROR )
 
 
-#define BIT_VECTOR_EXCEPTION(code,name) \
-    { switch (code) { \
-    case ErrCode_Ok:   break; \
-    case ErrCode_Type: BIT_VECTOR_ERROR(name,ERRCODE_TYPE); break; \
-    case ErrCode_Bits: BIT_VECTOR_ERROR(name,ERRCODE_BITS); break; \
-    case ErrCode_Word: BIT_VECTOR_ERROR(name,ERRCODE_WORD); break; \
-    case ErrCode_Long: BIT_VECTOR_ERROR(name,ERRCODE_LONG); break; \
-    case ErrCode_Powr: BIT_VECTOR_ERROR(name,ERRCODE_POWR); break; \
-    case ErrCode_Loga: BIT_VECTOR_ERROR(name,ERRCODE_LOGA); break; \
-    case ErrCode_Null: BIT_VECTOR_ERROR(name,ERRCODE_NULL); break; \
-    case ErrCode_Indx: BIT_VECTOR_ERROR(name,ERRCODE_INDX); break; \
-    case ErrCode_Ordr: BIT_VECTOR_ERROR(name,ERRCODE_ORDR); break; \
-    case ErrCode_Size: BIT_VECTOR_ERROR(name,ERRCODE_SIZE); break; \
-    case ErrCode_Pars: BIT_VECTOR_ERROR(name,ERRCODE_PARS); break; \
-    case ErrCode_Ovfl: BIT_VECTOR_ERROR(name,ERRCODE_OVFL); break; \
-    case ErrCode_Same: BIT_VECTOR_ERROR(name,ERRCODE_SAME); break; \
-    case ErrCode_Expo: BIT_VECTOR_ERROR(name,ERRCODE_EXPO); break; \
-    case ErrCode_Zero: BIT_VECTOR_ERROR(name,ERRCODE_ZERO); break; \
-    default:           BIT_VECTOR_ERROR(name,ERRCODE_OOPS); break; } }
+#define BIT_VECTOR_EXCEPTION(code) \
+    BIT_VECTOR_ERROR( BitVector_Error(code) )
 
 
 MODULE = Bit::Vector		PACKAGE = Bit::Vector		PREFIX = BitVector_
@@ -155,7 +148,7 @@ BOOT:
 
     if ((rc = BitVector_Boot()))
     {
-        BIT_VECTOR_EXCEPTION(rc,"Boot");
+        BIT_VECTOR_EXCEPTION(rc);
         exit((int)rc);
     }
     BitVector_Stash = gv_stashpv(BitVector_Class,1);
@@ -176,7 +169,7 @@ PPCODE:
             EXTEND(sp,1);
             PUSHs(sv_2mortal(newSVpv((char *)string,0)));
         }
-        else BIT_VECTOR_MEMORY_ERROR("Version");
+        else BIT_VECTOR_MEMORY_ERROR;
     }
     else croak("Usage: Bit::Vector->Version()");
 }
@@ -211,32 +204,71 @@ RETVAL
 
 
 void
-BitVector_Create(class,bits)
-BitVector_Object	class
-BitVector_Scalar	bits
+BitVector_Create(...)
 ALIAS:
   new = 1
 PPCODE:
 {
+    BitVector_Scalar  arg1;
+    BitVector_Scalar  arg2;
     BitVector_Address address;
     BitVector_Handle  handle;
     BitVector_Object  reference;
-    N_int size;
+    listptr list;
+    listptr slot;
+    N_int bits;
+    N_int count;
 
-    if ( BIT_VECTOR_SCALAR(bits,N_int,size) )
+    if ((items >= 2) and (items <= 3))
     {
-        if ((address = BitVector_Create(size,true)) != NULL)
+        arg1 = ST(1);
+        if ( BIT_VECTOR_SCALAR(arg1,N_int,bits) )
         {
-            handle = newSViv((IV)address);
-            reference = sv_bless(sv_2mortal(newRV(handle)),
-                BitVector_Stash);
-            SvREFCNT_dec(handle);
-            SvREADONLY_on(handle);
-            PUSHs(reference);
+            if (items > 2)
+            {
+                arg2 = ST(2);
+                if ( BIT_VECTOR_SCALAR(arg2,N_int,count) )
+                {
+                    if (count > 0)
+                    {
+                        if ((list = BitVector_Create_List(bits,true,count)) != NULL)
+                        {
+                            EXTEND(sp,(int)count);
+                            slot = list;
+                            while (count-- > 0)
+                            {
+                                address = *slot++;
+                                handle = newSViv((IV)address);
+                                reference = sv_bless(sv_2mortal(newRV(handle)),
+                                    BitVector_Stash);
+                                SvREFCNT_dec(handle);
+                                SvREADONLY_on(handle);
+                                PUSHs(reference);
+                            }
+                            BitVector_Destroy_List(list,0);
+                        }
+                        else BIT_VECTOR_MEMORY_ERROR;
+                    }
+                }
+                else BIT_VECTOR_SCALAR_ERROR;
+            }
+            else
+            {
+                if ((address = BitVector_Create(bits,true)) != NULL)
+                {
+                    handle = newSViv((IV)address);
+                    reference = sv_bless(sv_2mortal(newRV(handle)),
+                        BitVector_Stash);
+                    SvREFCNT_dec(handle);
+                    SvREADONLY_on(handle);
+                    PUSHs(reference);
+                }
+                else BIT_VECTOR_MEMORY_ERROR;
+            }
         }
-        else BIT_VECTOR_MEMORY_ERROR("Create");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_SCALAR_ERROR("Create");
+    else croak("Usage: %s(class,bits[,count])", GvNAME(CvGV(cv)));
 }
 
 
@@ -263,7 +295,7 @@ PPCODE:
                 if ((code = BitVector_from_Hex(address,pointer)))
                 {
                     BitVector_Destroy(address);
-                    BIT_VECTOR_EXCEPTION(code,"new_Hex");
+                    BIT_VECTOR_EXCEPTION(code);
                 }
                 else
                 {
@@ -275,11 +307,11 @@ PPCODE:
                     PUSHs(reference);
                 }
             }
-            else BIT_VECTOR_MEMORY_ERROR("new_Hex");
+            else BIT_VECTOR_MEMORY_ERROR;
         }
-        else BIT_VECTOR_STRING_ERROR("new_Hex");
+        else BIT_VECTOR_STRING_ERROR;
     }
-    else BIT_VECTOR_SCALAR_ERROR("new_Hex");
+    else BIT_VECTOR_SCALAR_ERROR;
 }
 
 
@@ -306,7 +338,7 @@ PPCODE:
                 if ((code = BitVector_from_Bin(address,pointer)))
                 {
                     BitVector_Destroy(address);
-                    BIT_VECTOR_EXCEPTION(code,"new_Bin");
+                    BIT_VECTOR_EXCEPTION(code);
                 }
                 else
                 {
@@ -318,11 +350,11 @@ PPCODE:
                     PUSHs(reference);
                 }
             }
-            else BIT_VECTOR_MEMORY_ERROR("new_Bin");
+            else BIT_VECTOR_MEMORY_ERROR;
         }
-        else BIT_VECTOR_STRING_ERROR("new_Bin");
+        else BIT_VECTOR_STRING_ERROR;
     }
-    else BIT_VECTOR_SCALAR_ERROR("new_Bin");
+    else BIT_VECTOR_SCALAR_ERROR;
 }
 
 
@@ -349,7 +381,7 @@ PPCODE:
                 if ((code = BitVector_from_Dec(address,pointer)))
                 {
                     BitVector_Destroy(address);
-                    BIT_VECTOR_EXCEPTION(code,"new_Dec");
+                    BIT_VECTOR_EXCEPTION(code);
                 }
                 else
                 {
@@ -361,11 +393,11 @@ PPCODE:
                     PUSHs(reference);
                 }
             }
-            else BIT_VECTOR_MEMORY_ERROR("new_Dec");
+            else BIT_VECTOR_MEMORY_ERROR;
         }
-        else BIT_VECTOR_STRING_ERROR("new_Dec");
+        else BIT_VECTOR_STRING_ERROR;
     }
-    else BIT_VECTOR_SCALAR_ERROR("new_Dec");
+    else BIT_VECTOR_SCALAR_ERROR;
 }
 
 
@@ -392,7 +424,7 @@ PPCODE:
                 if ((code = BitVector_from_Enum(address,pointer)))
                 {
                     BitVector_Destroy(address);
-                    BIT_VECTOR_EXCEPTION(code,"new_Enum");
+                    BIT_VECTOR_EXCEPTION(code);
                 }
                 else
                 {
@@ -404,11 +436,11 @@ PPCODE:
                     PUSHs(reference);
                 }
             }
-            else BIT_VECTOR_MEMORY_ERROR("new_Enum");
+            else BIT_VECTOR_MEMORY_ERROR;
         }
-        else BIT_VECTOR_STRING_ERROR("new_Enum");
+        else BIT_VECTOR_STRING_ERROR;
     }
-    else BIT_VECTOR_SCALAR_ERROR("new_Enum");
+    else BIT_VECTOR_SCALAR_ERROR;
 }
 
 
@@ -431,9 +463,9 @@ PPCODE:
             SvREADONLY_on(handle);
             PUSHs(reference);
         }
-        else BIT_VECTOR_MEMORY_ERROR("Shadow");
+        else BIT_VECTOR_MEMORY_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Shadow");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -456,9 +488,9 @@ PPCODE:
             SvREADONLY_on(handle);
             PUSHs(reference);
         }
-        else BIT_VECTOR_MEMORY_ERROR("Clone");
+        else BIT_VECTOR_MEMORY_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Clone");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -488,9 +520,9 @@ PPCODE:
             SvREADONLY_on(handle);
             PUSHs(reference);
         }
-        else BIT_VECTOR_MEMORY_ERROR("Concat");
+        else BIT_VECTOR_MEMORY_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Concat");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -518,7 +550,7 @@ PPCODE:
             bits += bits_(Xadr);
         }
         else if ((index != 0) or SvROK(Xref))
-          BIT_VECTOR_OBJECT_ERROR("Concat_List");
+          BIT_VECTOR_OBJECT_ERROR;
     }
     if ((address = BitVector_Create(bits,false)) != NULL)
     {
@@ -535,8 +567,7 @@ PPCODE:
                     offset += bits;
                 }
             }
-            else if ((index != 0) or SvROK(Xref))
-              BIT_VECTOR_OBJECT_ERROR("Concat_List");
+            else if ((index != 0) or SvROK(Xref)) BIT_VECTOR_OBJECT_ERROR;
         }
         handle = newSViv((IV)address);
         reference = sv_bless(sv_2mortal(newRV(handle)),
@@ -545,7 +576,7 @@ PPCODE:
         SvREADONLY_on(handle);
         PUSHs(reference);
     }
-    else BIT_VECTOR_MEMORY_ERROR("Concat_List");
+    else BIT_VECTOR_MEMORY_ERROR;
 }
 
 
@@ -561,7 +592,7 @@ CODE:
     {
         RETVAL = bits_(address);
     }
-    else BIT_VECTOR_OBJECT_ERROR("Size");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 OUTPUT:
 RETVAL
@@ -585,11 +616,11 @@ CODE:
             SvREADONLY_off(handle);
             sv_setiv(handle,(IV)address);
             SvREADONLY_on(handle);
-            if (address == NULL) BIT_VECTOR_MEMORY_ERROR("Resize");
+            if (address == NULL) BIT_VECTOR_MEMORY_ERROR;
         }
-        else BIT_VECTOR_SCALAR_ERROR("Resize");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Resize");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -608,7 +639,7 @@ CODE:
         sv_setiv(handle,(IV)NULL);
         SvREADONLY_on(handle);
     }
-    /* else BIT_VECTOR_OBJECT_ERROR("DESTROY"); */
+    /* else BIT_VECTOR_OBJECT_ERROR; */
 }
 
 
@@ -628,7 +659,7 @@ CODE:
     {
         BitVector_Copy(Xadr,Yadr);
     }
-    else BIT_VECTOR_OBJECT_ERROR("Copy");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -644,7 +675,7 @@ CODE:
     {
         BitVector_Empty(address);
     }
-    else BIT_VECTOR_OBJECT_ERROR("Empty");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -660,7 +691,7 @@ CODE:
     {
         BitVector_Fill(address);
     }
-    else BIT_VECTOR_OBJECT_ERROR("Fill");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -676,7 +707,7 @@ CODE:
     {
         BitVector_Flip(address);
     }
-    else BIT_VECTOR_OBJECT_ERROR("Flip");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -692,7 +723,7 @@ CODE:
     {
         BitVector_Primes(address);
     }
-    else BIT_VECTOR_OBJECT_ERROR("Primes");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -714,9 +745,9 @@ CODE:
         {
             BitVector_Reverse(Xadr,Yadr);
         }
-        else BIT_VECTOR_SIZE_ERROR("Reverse");
+        else BIT_VECTOR_SIZE_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Reverse");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -739,14 +770,14 @@ CODE:
         if ( BIT_VECTOR_SCALAR(min,N_int,lower) &&
              BIT_VECTOR_SCALAR(max,N_int,upper) )
         {
-            if      (lower >= bits_(address)) BIT_VECTOR_MIN_ERROR("Interval_Empty");
-            else if (upper >= bits_(address)) BIT_VECTOR_MAX_ERROR("Interval_Empty");
-            else if (lower > upper)         BIT_VECTOR_ORDER_ERROR("Interval_Empty");
+            if      (lower >= bits_(address)) BIT_VECTOR_MIN_ERROR;
+            else if (upper >= bits_(address)) BIT_VECTOR_MAX_ERROR;
+            else if (lower > upper)           BIT_VECTOR_ORDER_ERROR;
             else                       BitVector_Interval_Empty(address,lower,upper);
         }
-        else BIT_VECTOR_SCALAR_ERROR("Interval_Empty");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Interval_Empty");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -769,14 +800,14 @@ CODE:
         if ( BIT_VECTOR_SCALAR(min,N_int,lower) &&
              BIT_VECTOR_SCALAR(max,N_int,upper) )
         {
-            if      (lower >= bits_(address)) BIT_VECTOR_MIN_ERROR("Interval_Fill");
-            else if (upper >= bits_(address)) BIT_VECTOR_MAX_ERROR("Interval_Fill");
-            else if (lower > upper)         BIT_VECTOR_ORDER_ERROR("Interval_Fill");
+            if      (lower >= bits_(address)) BIT_VECTOR_MIN_ERROR;
+            else if (upper >= bits_(address)) BIT_VECTOR_MAX_ERROR;
+            else if (lower > upper)           BIT_VECTOR_ORDER_ERROR;
             else                       BitVector_Interval_Fill(address,lower,upper);
         }
-        else BIT_VECTOR_SCALAR_ERROR("Interval_Fill");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Interval_Fill");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -799,14 +830,14 @@ CODE:
         if ( BIT_VECTOR_SCALAR(min,N_int,lower) &&
              BIT_VECTOR_SCALAR(max,N_int,upper) )
         {
-            if      (lower >= bits_(address)) BIT_VECTOR_MIN_ERROR("Interval_Flip");
-            else if (upper >= bits_(address)) BIT_VECTOR_MAX_ERROR("Interval_Flip");
-            else if (lower > upper)         BIT_VECTOR_ORDER_ERROR("Interval_Flip");
+            if      (lower >= bits_(address)) BIT_VECTOR_MIN_ERROR;
+            else if (upper >= bits_(address)) BIT_VECTOR_MAX_ERROR;
+            else if (lower > upper)           BIT_VECTOR_ORDER_ERROR;
             else                       BitVector_Interval_Flip(address,lower,upper);
         }
-        else BIT_VECTOR_SCALAR_ERROR("Interval_Flip");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Interval_Flip");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -827,14 +858,14 @@ CODE:
         if ( BIT_VECTOR_SCALAR(min,N_int,lower) &&
              BIT_VECTOR_SCALAR(max,N_int,upper) )
         {
-            if      (lower >= bits_(address)) BIT_VECTOR_MIN_ERROR("Interval_Reverse");
-            else if (upper >= bits_(address)) BIT_VECTOR_MAX_ERROR("Interval_Reverse");
-            else if (lower > upper)         BIT_VECTOR_ORDER_ERROR("Interval_Reverse");
+            if      (lower >= bits_(address)) BIT_VECTOR_MIN_ERROR;
+            else if (upper >= bits_(address)) BIT_VECTOR_MAX_ERROR;
+            else if (lower > upper)           BIT_VECTOR_ORDER_ERROR;
             else                       BitVector_Interval_Reverse(address,lower,upper);
         }
-        else BIT_VECTOR_SCALAR_ERROR("Interval_Reverse");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Interval_Reverse");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -864,11 +895,11 @@ PPCODE:
                 }
                 /* else return empty list */
             }
-            else BIT_VECTOR_START_ERROR("Interval_Scan_inc");
+            else BIT_VECTOR_START_ERROR;
         }
-        else BIT_VECTOR_SCALAR_ERROR("Interval_Scan_inc");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Interval_Scan_inc");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -898,11 +929,11 @@ PPCODE:
                 }
                 /* else return empty list */
             }
-            else BIT_VECTOR_START_ERROR("Interval_Scan_dec");
+            else BIT_VECTOR_START_ERROR;
         }
-        else BIT_VECTOR_SCALAR_ERROR("Interval_Scan_dec");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Interval_Scan_dec");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -934,11 +965,11 @@ CODE:
             {
                 if (len > 0) BitVector_Interval_Copy(Xadr,Yadr,Xoff,Yoff,len);
             }
-            else BIT_VECTOR_OFFSET_ERROR("Interval_Copy");
+            else BIT_VECTOR_OFFSET_ERROR;
         }
-        else BIT_VECTOR_SCALAR_ERROR("Interval_Copy");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Interval_Copy");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -975,13 +1006,13 @@ CODE:
                 SvREADONLY_off(Xhdl);
                 sv_setiv(Xhdl,(IV)Xadr);
                 SvREADONLY_on(Xhdl);
-                if (Xadr == NULL) BIT_VECTOR_MEMORY_ERROR("Interval_Substitute");
+                if (Xadr == NULL) BIT_VECTOR_MEMORY_ERROR;
             }
-            else BIT_VECTOR_OFFSET_ERROR("Interval_Substitute");
+            else BIT_VECTOR_OFFSET_ERROR;
         }
-        else BIT_VECTOR_SCALAR_ERROR("Interval_Substitute");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Interval_Substitute");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -997,7 +1028,7 @@ CODE:
     {
         RETVAL = BitVector_is_empty(address);
     }
-    else BIT_VECTOR_OBJECT_ERROR("is_empty");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 OUTPUT:
 RETVAL
@@ -1015,7 +1046,7 @@ CODE:
     {
         RETVAL = BitVector_is_full(address);
     }
-    else BIT_VECTOR_OBJECT_ERROR("is_full");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 OUTPUT:
 RETVAL
@@ -1039,9 +1070,9 @@ CODE:
         {
             RETVAL = BitVector_equal(Xadr,Yadr);
         }
-        else BIT_VECTOR_SIZE_ERROR("equal");
+        else BIT_VECTOR_SIZE_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("equal");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 OUTPUT:
 RETVAL
@@ -1065,9 +1096,9 @@ CODE:
         {
             RETVAL = BitVector_Lexicompare(Xadr,Yadr);
         }
-        else BIT_VECTOR_SIZE_ERROR("Lexicompare");
+        else BIT_VECTOR_SIZE_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Lexicompare");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 OUTPUT:
 RETVAL
@@ -1091,9 +1122,9 @@ CODE:
         {
             RETVAL = BitVector_Compare(Xadr,Yadr);
         }
-        else BIT_VECTOR_SIZE_ERROR("Compare");
+        else BIT_VECTOR_SIZE_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Compare");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 OUTPUT:
 RETVAL
@@ -1119,9 +1150,9 @@ PPCODE:
             PUSHs(sv_2mortal(newSVpv((char *)string,0)));
             BitVector_Dispose(string);
         }
-        else BIT_VECTOR_MEMORY_ERROR("to_Hex");
+        else BIT_VECTOR_MEMORY_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("to_Hex");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -1143,13 +1174,11 @@ CODE:
         if ( BIT_VECTOR_STRING(string,pointer) )
         {
             if ((code = BitVector_from_Hex(address,pointer)))
-            {
-                BIT_VECTOR_EXCEPTION(code,"from_Hex");
-            }
+                BIT_VECTOR_EXCEPTION(code);
         }
-        else BIT_VECTOR_STRING_ERROR("from_Hex");
+        else BIT_VECTOR_STRING_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("from_Hex");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -1171,9 +1200,9 @@ PPCODE:
             PUSHs(sv_2mortal(newSVpv((char *)string,0)));
             BitVector_Dispose(string);
         }
-        else BIT_VECTOR_MEMORY_ERROR("to_Bin");
+        else BIT_VECTOR_MEMORY_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("to_Bin");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -1193,13 +1222,11 @@ CODE:
         if ( BIT_VECTOR_STRING(string,pointer) )
         {
             if ((code = BitVector_from_Bin(address,pointer)))
-            {
-                BIT_VECTOR_EXCEPTION(code,"from_Bin");
-            }
+                BIT_VECTOR_EXCEPTION(code);
         }
-        else BIT_VECTOR_STRING_ERROR("from_Bin");
+        else BIT_VECTOR_STRING_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("from_Bin");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -1221,9 +1248,9 @@ PPCODE:
             PUSHs(sv_2mortal(newSVpv((char *)string,0)));
             BitVector_Dispose(string);
         }
-        else BIT_VECTOR_MEMORY_ERROR("to_Dec");
+        else BIT_VECTOR_MEMORY_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("to_Dec");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -1243,13 +1270,11 @@ CODE:
         if ( BIT_VECTOR_STRING(string,pointer) )
         {
             if ((code = BitVector_from_Dec(address,pointer)))
-            {
-                BIT_VECTOR_EXCEPTION(code,"from_Dec");
-            }
+                BIT_VECTOR_EXCEPTION(code);
         }
-        else BIT_VECTOR_STRING_ERROR("from_Dec");
+        else BIT_VECTOR_STRING_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("from_Dec");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -1273,9 +1298,9 @@ PPCODE:
             PUSHs(sv_2mortal(newSVpv((char *)string,0)));
             BitVector_Dispose(string);
         }
-        else BIT_VECTOR_MEMORY_ERROR("to_Enum");
+        else BIT_VECTOR_MEMORY_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("to_Enum");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -1297,13 +1322,11 @@ CODE:
         if ( BIT_VECTOR_STRING(string,pointer) )
         {
             if ((code = BitVector_from_Enum(address,pointer)))
-            {
-                BIT_VECTOR_EXCEPTION(code,"from_Enum");
-            }
+                BIT_VECTOR_EXCEPTION(code);
         }
-        else BIT_VECTOR_STRING_ERROR("from_Enum");
+        else BIT_VECTOR_STRING_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("from_Enum");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -1325,11 +1348,11 @@ CODE:
             {
                 BitVector_Bit_Off(address,idx);
             }
-            else BIT_VECTOR_INDEX_ERROR("Bit_Off");
+            else BIT_VECTOR_INDEX_ERROR;
         }
-        else BIT_VECTOR_SCALAR_ERROR("Bit_Off");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Bit_Off");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -1351,11 +1374,11 @@ CODE:
             {
                 BitVector_Bit_On(address,idx);
             }
-            else BIT_VECTOR_INDEX_ERROR("Bit_On");
+            else BIT_VECTOR_INDEX_ERROR;
         }
-        else BIT_VECTOR_SCALAR_ERROR("Bit_On");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Bit_On");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -1379,11 +1402,11 @@ CODE:
             {
                 RETVAL = BitVector_bit_flip(address,idx);
             }
-            else BIT_VECTOR_INDEX_ERROR("bit_flip");
+            else BIT_VECTOR_INDEX_ERROR;
         }
-        else BIT_VECTOR_SCALAR_ERROR("bit_flip");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("bit_flip");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 OUTPUT:
 RETVAL
@@ -1410,11 +1433,11 @@ CODE:
             {
                 RETVAL = BitVector_bit_test(address,idx);
             }
-            else BIT_VECTOR_INDEX_ERROR("bit_test");
+            else BIT_VECTOR_INDEX_ERROR;
         }
-        else BIT_VECTOR_SCALAR_ERROR("bit_test");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("bit_test");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 OUTPUT:
 RETVAL
@@ -1441,11 +1464,11 @@ CODE:
             {
                 BitVector_Bit_Copy(address,idx,b);
             }
-            else BIT_VECTOR_INDEX_ERROR("Bit_Copy");
+            else BIT_VECTOR_INDEX_ERROR;
         }
-        else BIT_VECTOR_SCALAR_ERROR("Bit_Copy");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Bit_Copy");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -1465,9 +1488,9 @@ CODE:
         {
             BitVector_LSB(address,b);
         }
-        else BIT_VECTOR_SCALAR_ERROR("LSB");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("LSB");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -1487,9 +1510,9 @@ CODE:
         {
             BitVector_MSB(address,b);
         }
-        else BIT_VECTOR_SCALAR_ERROR("MSB");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("MSB");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -1505,7 +1528,7 @@ CODE:
     {
         RETVAL = BitVector_lsb_(address);
     }
-    else BIT_VECTOR_OBJECT_ERROR("lsb");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 OUTPUT:
 RETVAL
@@ -1523,7 +1546,7 @@ CODE:
     {
         RETVAL = BitVector_msb_(address);
     }
-    else BIT_VECTOR_OBJECT_ERROR("msb");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 OUTPUT:
 RETVAL
@@ -1541,7 +1564,7 @@ CODE:
     {
         RETVAL = BitVector_rotate_left(address);
     }
-    else BIT_VECTOR_OBJECT_ERROR("rotate_left");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 OUTPUT:
 RETVAL
@@ -1559,7 +1582,7 @@ CODE:
     {
         RETVAL = BitVector_rotate_right(address);
     }
-    else BIT_VECTOR_OBJECT_ERROR("rotate_right");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 OUTPUT:
 RETVAL
@@ -1581,9 +1604,9 @@ CODE:
         {
             RETVAL = BitVector_shift_left(address,c);
         }
-        else BIT_VECTOR_SCALAR_ERROR("shift_left");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("shift_left");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 OUTPUT:
 RETVAL
@@ -1605,9 +1628,9 @@ CODE:
         {
             RETVAL = BitVector_shift_right(address,c);
         }
-        else BIT_VECTOR_SCALAR_ERROR("shift_right");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("shift_right");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 OUTPUT:
 RETVAL
@@ -1629,9 +1652,9 @@ CODE:
         {
             BitVector_Move_Left(address,cnt);
         }
-        else BIT_VECTOR_SCALAR_ERROR("Move_Left");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Move_Left");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -1651,9 +1674,9 @@ CODE:
         {
             BitVector_Move_Right(address,cnt);
         }
-        else BIT_VECTOR_SCALAR_ERROR("Move_Right");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Move_Right");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -1678,11 +1701,11 @@ CODE:
             {
                 BitVector_Insert(address,off,cnt,true);
             }
-            else BIT_VECTOR_OFFSET_ERROR("Insert");
+            else BIT_VECTOR_OFFSET_ERROR;
         }
-        else BIT_VECTOR_SCALAR_ERROR("Insert");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Insert");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -1707,11 +1730,11 @@ CODE:
             {
                 BitVector_Delete(address,off,cnt,true);
             }
-            else BIT_VECTOR_OFFSET_ERROR("Delete");
+            else BIT_VECTOR_OFFSET_ERROR;
         }
-        else BIT_VECTOR_SCALAR_ERROR("Delete");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Delete");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -1727,7 +1750,7 @@ CODE:
     {
         RETVAL = BitVector_increment(address);
     }
-    else BIT_VECTOR_OBJECT_ERROR("increment");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 OUTPUT:
 RETVAL
@@ -1745,7 +1768,7 @@ CODE:
     {
         RETVAL = BitVector_decrement(address);
     }
-    else BIT_VECTOR_OBJECT_ERROR("decrement");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 OUTPUT:
 RETVAL
@@ -1789,11 +1812,11 @@ PPCODE:
                     PUSHs(sv_2mortal(newSViv((IV)c)));
                 }
             }
-            else BIT_VECTOR_SIZE_ERROR("add");
+            else BIT_VECTOR_SIZE_ERROR;
         }
-        else BIT_VECTOR_SCALAR_ERROR("add");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("add");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -1837,11 +1860,11 @@ PPCODE:
                     PUSHs(sv_2mortal(newSViv((IV)c)));
                 }
             }
-            else BIT_VECTOR_SIZE_ERROR("subtract");
+            else BIT_VECTOR_SIZE_ERROR;
         }
-        else BIT_VECTOR_SCALAR_ERROR("subtract");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("subtract");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -1864,9 +1887,9 @@ CODE:
         {
             RETVAL = BitVector_compute(Xadr,Yadr,NULL,false,&c);
         }
-        else BIT_VECTOR_SIZE_ERROR("inc");
+        else BIT_VECTOR_SIZE_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("inc");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 OUTPUT:
 RETVAL
@@ -1891,9 +1914,9 @@ CODE:
         {
             RETVAL = BitVector_compute(Xadr,Yadr,NULL,true,&c);
         }
-        else BIT_VECTOR_SIZE_ERROR("dec");
+        else BIT_VECTOR_SIZE_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("dec");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 OUTPUT:
 RETVAL
@@ -1919,9 +1942,9 @@ CODE:
         {
             BitVector_Negate(Xadr,Yadr);
         }
-        else BIT_VECTOR_SIZE_ERROR("Negate");
+        else BIT_VECTOR_SIZE_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Negate");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -1945,9 +1968,9 @@ CODE:
         {
             BitVector_Absolute(Xadr,Yadr);
         }
-        else BIT_VECTOR_SIZE_ERROR("Absolute");
+        else BIT_VECTOR_SIZE_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Absolute");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -1963,7 +1986,7 @@ CODE:
     {
         RETVAL = BitVector_Sign(address);
     }
-    else BIT_VECTOR_OBJECT_ERROR("Sign");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 OUTPUT:
 RETVAL
@@ -1991,11 +2014,11 @@ CODE:
         if ((bits_(Xadr) >= bits_(Yadr)) and (bits_(Yadr) == bits_(Zadr)))
         {
             if ((code = BitVector_Multiply(Xadr,Yadr,Zadr)))
-                BIT_VECTOR_EXCEPTION(code,"Multiply");
+                BIT_VECTOR_EXCEPTION(code);
         }
-        else BIT_VECTOR_SIZE_ERROR("Multiply");
+        else BIT_VECTOR_SIZE_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Multiply");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -2023,35 +2046,66 @@ CODE:
          BIT_VECTOR_OBJECT(Rref,Rhdl,Radr) )
     {
         if ((code = BitVector_Divide(Qadr,Xadr,Yadr,Radr)))
-            BIT_VECTOR_EXCEPTION(code,"Divide");
+            BIT_VECTOR_EXCEPTION(code);
     }
-    else BIT_VECTOR_OBJECT_ERROR("Divide");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
 void
-BitVector_GCD(Xref,Yref,Zref)
-BitVector_Object	Xref
-BitVector_Object	Yref
-BitVector_Object	Zref
+BitVector_GCD(...)
 CODE:
 {
+    BitVector_Object  Uref;
+    BitVector_Handle  Uhdl;
+    BitVector_Address Uadr;
+    BitVector_Object  Vref;
+    BitVector_Handle  Vhdl;
+    BitVector_Address Vadr;
+    BitVector_Object  Wref;
+    BitVector_Handle  Whdl;
+    BitVector_Address Wadr;
+    BitVector_Object  Xref;
     BitVector_Handle  Xhdl;
     BitVector_Address Xadr;
+    BitVector_Object  Yref;
     BitVector_Handle  Yhdl;
     BitVector_Address Yadr;
-    BitVector_Handle  Zhdl;
-    BitVector_Address Zadr;
     ErrCode           code;
 
-    if ( BIT_VECTOR_OBJECT(Xref,Xhdl,Xadr) &&
-         BIT_VECTOR_OBJECT(Yref,Yhdl,Yadr) &&
-         BIT_VECTOR_OBJECT(Zref,Zhdl,Zadr) )
+    if      (items == 3)
     {
-        if ((code = BitVector_GCD(Xadr,Yadr,Zadr)))
-            BIT_VECTOR_EXCEPTION(code,"GCD");
+        Uref = ST(0);
+        Xref = ST(1);
+        Yref = ST(2);
+        if ( BIT_VECTOR_OBJECT(Uref,Uhdl,Uadr) &&
+             BIT_VECTOR_OBJECT(Xref,Xhdl,Xadr) &&
+             BIT_VECTOR_OBJECT(Yref,Yhdl,Yadr) )
+        {
+            if ((code = BitVector_GCD(Uadr,Xadr,Yadr)))
+                BIT_VECTOR_EXCEPTION(code);
+        }
+        else BIT_VECTOR_OBJECT_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("GCD");
+    else if (items == 5)
+    {
+        Uref = ST(0);
+        Vref = ST(1);
+        Wref = ST(2);
+        Xref = ST(3);
+        Yref = ST(4);
+        if ( BIT_VECTOR_OBJECT(Uref,Uhdl,Uadr) &&
+             BIT_VECTOR_OBJECT(Vref,Vhdl,Vadr) &&
+             BIT_VECTOR_OBJECT(Wref,Whdl,Wadr) &&
+             BIT_VECTOR_OBJECT(Xref,Xhdl,Xadr) &&
+             BIT_VECTOR_OBJECT(Yref,Yhdl,Yadr) )
+        {
+            if ((code = BitVector_GCD2(Uadr,Vadr,Wadr,Xadr,Yadr)))
+                BIT_VECTOR_EXCEPTION(code);
+        }
+        else BIT_VECTOR_OBJECT_ERROR;
+    }
+    else croak("Usage: %s(Uref[,Vref,Wref],Xref,Yref)", GvNAME(CvGV(cv)));
 }
 
 
@@ -2075,9 +2129,9 @@ CODE:
          BIT_VECTOR_OBJECT(Zref,Zhdl,Zadr) )
     {
         if ((code = BitVector_Power(Xadr,Yadr,Zadr)))
-            BIT_VECTOR_EXCEPTION(code,"Power");
+            BIT_VECTOR_EXCEPTION(code);
     }
-    else BIT_VECTOR_OBJECT_ERROR("Power");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -2098,9 +2152,9 @@ CODE:
         {
             BitVector_Block_Store(address,string,length);
         }
-        else BIT_VECTOR_STRING_ERROR("Block_Store");
+        else BIT_VECTOR_STRING_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Block_Store");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -2123,9 +2177,9 @@ PPCODE:
             PUSHs(sv_2mortal(newSVpv((char *)string,length)));
             BitVector_Dispose(string);
         }
-        else BIT_VECTOR_MEMORY_ERROR("Block_Read");
+        else BIT_VECTOR_MEMORY_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Block_Read");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -2141,7 +2195,7 @@ CODE:
     {
         RETVAL = size_(address);
     }
-    else BIT_VECTOR_OBJECT_ERROR("Word_Size");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 OUTPUT:
 RETVAL
@@ -2168,11 +2222,11 @@ CODE:
             {
                 BitVector_Word_Store(address,off,val);
             }
-            else BIT_VECTOR_OFFSET_ERROR("Word_Store");
+            else BIT_VECTOR_OFFSET_ERROR;
         }
-        else BIT_VECTOR_SCALAR_ERROR("Word_Store");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Word_Store");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -2194,11 +2248,11 @@ CODE:
             {
                 RETVAL = BitVector_Word_Read(address,off);
             }
-            else BIT_VECTOR_OFFSET_ERROR("Word_Read");
+            else BIT_VECTOR_OFFSET_ERROR;
         }
-        else BIT_VECTOR_SCALAR_ERROR("Word_Read");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Word_Read");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 OUTPUT:
 RETVAL
@@ -2228,14 +2282,14 @@ CODE:
             {
                 BitVector_Word_Store(address,offset,value);
             }
-            else BIT_VECTOR_SCALAR_ERROR("Word_List_Store");
+            else BIT_VECTOR_SCALAR_ERROR;
         }
         for ( ; (offset < size); offset++ )
         {
             BitVector_Word_Store(address,offset,0);
         }
     }
-    else BIT_VECTOR_OBJECT_ERROR("Word_List_Store");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -2260,7 +2314,7 @@ PPCODE:
             PUSHs(sv_2mortal(newSViv((IV)value)));
         }
     }
-    else BIT_VECTOR_OBJECT_ERROR("Word_List_Read");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -2285,11 +2339,11 @@ CODE:
             {
                 BitVector_Word_Insert(address,off,cnt,true);
             }
-            else BIT_VECTOR_OFFSET_ERROR("Word_Insert");
+            else BIT_VECTOR_OFFSET_ERROR;
         }
-        else BIT_VECTOR_SCALAR_ERROR("Word_Insert");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Word_Insert");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -2314,11 +2368,11 @@ CODE:
             {
                 BitVector_Word_Delete(address,off,cnt,true);
             }
-            else BIT_VECTOR_OFFSET_ERROR("Word_Delete");
+            else BIT_VECTOR_OFFSET_ERROR;
         }
-        else BIT_VECTOR_SCALAR_ERROR("Word_Delete");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Word_Delete");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -2348,13 +2402,13 @@ CODE:
                 {
                     BitVector_Chunk_Store(address,bits,off,val);
                 }
-                else BIT_VECTOR_OFFSET_ERROR("Chunk_Store");
+                else BIT_VECTOR_OFFSET_ERROR;
             }
-            else BIT_VECTOR_CHUNK_ERROR("Chunk_Store");
+            else BIT_VECTOR_CHUNK_ERROR;
         }
-        else BIT_VECTOR_SCALAR_ERROR("Chunk_Store");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Chunk_Store");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -2381,13 +2435,13 @@ CODE:
                 {
                     RETVAL = BitVector_Chunk_Read(address,bits,off);
                 }
-                else BIT_VECTOR_OFFSET_ERROR("Chunk_Read");
+                else BIT_VECTOR_OFFSET_ERROR;
             }
-            else BIT_VECTOR_CHUNK_ERROR("Chunk_Read");
+            else BIT_VECTOR_CHUNK_ERROR;
         }
-        else BIT_VECTOR_SCALAR_ERROR("Chunk_Read");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Chunk_Read");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 OUTPUT:
 RETVAL
@@ -2441,7 +2495,7 @@ CODE:
                             chunkbits = chunkspan;
                             index++;
                         }
-                        else BIT_VECTOR_SCALAR_ERROR("Chunk_List_Store");
+                        else BIT_VECTOR_SCALAR_ERROR;
                     }
                     bits = wordsize - wordbits;
                     if (chunkbits <= bits)
@@ -2471,11 +2525,11 @@ CODE:
                     }
                 }
             }
-            else BIT_VECTOR_CHUNK_ERROR("Chunk_List_Store");
+            else BIT_VECTOR_CHUNK_ERROR;
         }
-        else BIT_VECTOR_SCALAR_ERROR("Chunk_List_Store");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Chunk_List_Store");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -2555,11 +2609,11 @@ PPCODE:
                     }
                 }
             }
-            else BIT_VECTOR_CHUNK_ERROR("Chunk_List_Read");
+            else BIT_VECTOR_CHUNK_ERROR;
         }
-        else BIT_VECTOR_SCALAR_ERROR("Chunk_List_Read");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Chunk_List_Read");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -2587,12 +2641,12 @@ CODE:
                 {
                     BitVector_Bit_Off(address,value);
                 }
-                else BIT_VECTOR_INDEX_ERROR("Index_List_Remove");
+                else BIT_VECTOR_INDEX_ERROR;
             }
-            else BIT_VECTOR_SCALAR_ERROR("Index_List_Remove");
+            else BIT_VECTOR_SCALAR_ERROR;
         }
     }
-    else BIT_VECTOR_OBJECT_ERROR("Index_List_Remove");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -2620,12 +2674,12 @@ CODE:
                 {
                     BitVector_Bit_On(address,value);
                 }
-                else BIT_VECTOR_INDEX_ERROR("Index_List_Store");
+                else BIT_VECTOR_INDEX_ERROR;
             }
-            else BIT_VECTOR_SCALAR_ERROR("Index_List_Store");
+            else BIT_VECTOR_SCALAR_ERROR;
         }
     }
-    else BIT_VECTOR_OBJECT_ERROR("Index_List_Store");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -2666,7 +2720,7 @@ PPCODE:
             }
         }
     }
-    else BIT_VECTOR_OBJECT_ERROR("Index_List_Read");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -2697,9 +2751,9 @@ CODE:
         {
             Set_Union(Xadr,Yadr,Zadr);
         }
-        else BIT_VECTOR_SET_ERROR("Union");
+        else BIT_VECTOR_SET_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Union");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -2727,9 +2781,9 @@ CODE:
         {
             Set_Intersection(Xadr,Yadr,Zadr);
         }
-        else BIT_VECTOR_SET_ERROR("Intersection");
+        else BIT_VECTOR_SET_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Intersection");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -2757,9 +2811,9 @@ CODE:
         {
             Set_Difference(Xadr,Yadr,Zadr);
         }
-        else BIT_VECTOR_SET_ERROR("Difference");
+        else BIT_VECTOR_SET_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Difference");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -2787,9 +2841,9 @@ CODE:
         {
             Set_ExclusiveOr(Xadr,Yadr,Zadr);
         }
-        else BIT_VECTOR_SET_ERROR("ExclusiveOr");
+        else BIT_VECTOR_SET_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("ExclusiveOr");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -2813,9 +2867,9 @@ CODE:
         {
             Set_Complement(Xadr,Yadr);
         }
-        else BIT_VECTOR_SET_ERROR("Complement");
+        else BIT_VECTOR_SET_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Complement");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -2839,9 +2893,9 @@ CODE:
         {
             RETVAL = Set_subset(Xadr,Yadr);
         }
-        else BIT_VECTOR_SET_ERROR("subset");
+        else BIT_VECTOR_SET_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("subset");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 OUTPUT:
 RETVAL
@@ -2859,7 +2913,7 @@ CODE:
     {
         RETVAL = Set_Norm(address);
     }
-    else BIT_VECTOR_OBJECT_ERROR("Norm");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 OUTPUT:
 RETVAL
@@ -2877,7 +2931,7 @@ CODE:
     {
         RETVAL = Set_Min(address);
     }
-    else BIT_VECTOR_OBJECT_ERROR("Min");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 OUTPUT:
 RETVAL
@@ -2895,7 +2949,7 @@ CODE:
     {
         RETVAL = Set_Max(address);
     }
-    else BIT_VECTOR_OBJECT_ERROR("Max");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 OUTPUT:
 RETVAL
@@ -2950,11 +3004,11 @@ CODE:
                                       Yadr,rowsY,colsY,
                                       Zadr,rowsZ,colsZ);
             }
-            else BIT_VECTOR_MATRIX_ERROR("Multiplication");
+            else BIT_VECTOR_MATRIX_ERROR;
         }
-        else BIT_VECTOR_SCALAR_ERROR("Multiplication");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Multiplication");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -3004,11 +3058,11 @@ CODE:
                                Yadr,rowsY,colsY,
                                Zadr,rowsZ,colsZ);
             }
-            else BIT_VECTOR_MATRIX_ERROR("Product");
+            else BIT_VECTOR_MATRIX_ERROR;
         }
-        else BIT_VECTOR_SCALAR_ERROR("Product");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Product");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -3035,13 +3089,13 @@ CODE:
                 {
                     Matrix_Closure(address,r,c);
                 }
-                else BIT_VECTOR_SHAPE_ERROR("Closure");
+                else BIT_VECTOR_SHAPE_ERROR;
             }
-            else BIT_VECTOR_MATRIX_ERROR("Closure");
+            else BIT_VECTOR_MATRIX_ERROR;
         }
-        else BIT_VECTOR_SCALAR_ERROR("Closure");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Closure");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 
@@ -3081,13 +3135,13 @@ CODE:
                     Matrix_Transpose(Xadr,rowsX,colsX,
                                      Yadr,rowsY,colsY);
                 }
-                else BIT_VECTOR_SHAPE_ERROR("Transpose");
+                else BIT_VECTOR_SHAPE_ERROR;
             }
-            else BIT_VECTOR_MATRIX_ERROR("Transpose");
+            else BIT_VECTOR_MATRIX_ERROR;
         }
-        else BIT_VECTOR_SCALAR_ERROR("Transpose");
+        else BIT_VECTOR_SCALAR_ERROR;
     }
-    else BIT_VECTOR_OBJECT_ERROR("Transpose");
+    else BIT_VECTOR_OBJECT_ERROR;
 }
 
 

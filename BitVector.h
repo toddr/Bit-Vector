@@ -37,7 +37,9 @@ typedef enum
         ErrCode_Zero       /* division by zero error                         */
     } ErrCode;
 
-/* ===> MISCELLANEOUS: <=== */
+typedef wordptr *listptr;
+
+/* ===> MISCELLANEOUS BASIC FUNCTIONS: <=== */
 
 charptr BitVector_Error      (ErrCode error);  /* return string for err code */
 
@@ -53,17 +55,25 @@ charptr BitVector_Version    (void);                /* return version string */
 N_int   BitVector_Word_Bits  (void);     /* return # of bits in machine word */
 N_int   BitVector_Long_Bits  (void);    /* return # of bits in unsigned long */
 
-wordptr BitVector_Create     (N_int bits, boolean clear);         /* malloc  */
+/* ===> CONSTRUCTOR METHODS: <=== */
 
-/* ===> OBJECT METHODS: <=== */
+wordptr BitVector_Create     (N_int bits, boolean clear);          /* malloc */
+listptr BitVector_Create_List(N_int bits, boolean clear, N_int count);
+
+wordptr BitVector_Resize     (wordptr oldaddr, N_int bits);       /* realloc */
 
 wordptr BitVector_Shadow     (wordptr addr); /* make new same size but empty */
 wordptr BitVector_Clone      (wordptr addr);         /* make exact duplicate */
 
 wordptr BitVector_Concat     (wordptr X, wordptr Y); /* return concatenation */
 
-wordptr BitVector_Resize     (wordptr oldaddr, N_int bits);       /* realloc */
-void    BitVector_Destroy    (wordptr addr);                      /* free    */
+/* ===> DESTRUCTOR METHODS: <=== */
+
+void    BitVector_Dispose            (charptr string);             /* string */
+void    BitVector_Destroy            (wordptr addr);               /* bitvec */
+void    BitVector_Destroy_List       (listptr list, N_int count);  /* list   */
+
+/* ===> OBJECT METHODS: <=== */
 
 /* ===> bit vector copy function: */
 
@@ -123,8 +133,6 @@ ErrCode BitVector_from_Dec   (wordptr addr, charptr string);
 charptr BitVector_to_Enum    (wordptr addr);
 ErrCode BitVector_from_Enum  (wordptr addr, charptr string);
 
-void    BitVector_Dispose    (charptr string);
-
 /* ===> bit vector bit operations, functions & tests: */
 
 void    BitVector_Bit_Off    (wordptr addr, N_int index); /*  X = X \ {x}    */
@@ -175,6 +183,8 @@ ErrCode BitVector_Multiply   (wordptr X, wordptr Y, wordptr Z);
 ErrCode BitVector_Div_Pos    (wordptr Q, wordptr X, wordptr Y, wordptr R);
 ErrCode BitVector_Divide     (wordptr Q, wordptr X, wordptr Y, wordptr R);
 ErrCode BitVector_GCD        (wordptr X, wordptr Y, wordptr Z);
+ErrCode BitVector_GCD2       (wordptr U, wordptr V, wordptr W,      /*   O   */
+                                         wordptr X, wordptr Y);     /*   I   */
 ErrCode BitVector_Power      (wordptr X, wordptr Y, wordptr Z);
 
 /* ===> direct memory access functions: */
@@ -260,11 +270,12 @@ void    Matrix_Transpose     (wordptr X, N_int rowsX, N_int colsX,
 /*****************************************************************************/
 
 /*****************************************************************************/
-/*  VERSION:  6.2                                                            */
+/*  VERSION:  6.3                                                            */
 /*****************************************************************************/
 /*  VERSION HISTORY:                                                         */
 /*****************************************************************************/
 /*                                                                           */
+/*    Version 6.3  28.09.02  Added "Create_List()" and "GCD2()".             */
 /*    Version 6.2  15.09.02  Overhauled error handling. Fixed "GCD()".       */
 /*    Version 6.1  08.10.01  Make VMS linker happy: _lsb,_msb => _lsb_,_msb_ */
 /*    Version 6.0  08.10.00  Corrected overflow handling.                    */

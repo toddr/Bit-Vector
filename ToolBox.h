@@ -1,5 +1,8 @@
 #ifndef MODULE_TOOLBOX
 #define MODULE_TOOLBOX
+#ifdef __cplusplus
+extern "C" {
+#endif
 /*****************************************************************************/
 /*  MODULE NAME:  ToolBox.h                             MODULE TYPE:  (dat)  */
 /*****************************************************************************/
@@ -79,10 +82,14 @@ typedef  Z_longword         *Z_longwordptr;
 #undef  TRUE
 #define TRUE        (0==0)
 
-#ifdef MACOS_TRADITIONAL
-    #define boolean Boolean
+#ifdef __cplusplus
+    typedef bool boolean;
 #else
-    typedef enum { false = FALSE, true = TRUE } boolean;
+    #ifdef MACOS_TRADITIONAL
+        #define boolean Boolean
+    #else
+        typedef enum { false = FALSE, true = TRUE } boolean;
+    #endif
 #endif
 
 #define and         &&      /* logical (boolean) operators: lower case */
@@ -161,4 +168,7 @@ typedef  Z_longword         *Z_longwordptr;
 /*    or download a copy from ftp://ftp.gnu.org/pub/gnu/COPYING.LIB-2.0      */
 /*                                                                           */
 /*****************************************************************************/
+#ifdef __cplusplus
+}
+#endif
 #endif

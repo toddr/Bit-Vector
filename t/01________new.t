@@ -370,32 +370,32 @@ $n++;
 # test syntactically incorrect constructor calls:
 
 eval { $set = Bit::Vector::new(16); };
-if ($@ =~ /Usage: new\(class, ?bits\)/)
+if ($@ =~ /Usage: new\(class,bits\[,count\]\)/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
 eval { $set = Bit::Vector::new('main'); };
-if ($@ =~ /Usage: .*?new\(class, ?bits\)/)
+if ($@ =~ /Usage: new\(class,bits\[,count\]\)/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
 eval { $set = Bit::Vector::new($set); };
-if ($@ =~ /Usage: .*?new\(class, ?bits\)/)
+if ($@ =~ /Usage: new\(class,bits\[,count\]\)/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-eval { $set = Bit::Vector::new('main',17,1); };
-if ($@ =~ /Usage: .*?new\(class, ?bits\)/)
+eval { $set = Bit::Vector::new('main',17,1,0); };
+if ($@ =~ /Usage: new\(class,bits\[,count\]\)/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-eval { $set = Bit::Vector::Create($set,'main',18); };
-if ($@ =~ /Usage: .*?Create\(class, ?bits\)/)
+eval { $set = Bit::Vector::Create($set,'main',18,0); };
+if ($@ =~ /Usage: Create\(class,bits\[,count\]\)/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-eval { $set = Bit::Vector::new($set,19,'main'); };
-if ($@ =~ /Usage: .*?new\(class, ?bits\)/)
+eval { $set = Bit::Vector::new($set,19,'main',0); };
+if ($@ =~ /Usage: new\(class,bits\[,count\]\)/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 

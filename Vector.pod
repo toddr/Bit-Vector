@@ -23,6 +23,8 @@ See L<Bit::Vector::Overload(3)>.
   new
       $vector = Bit::Vector->new($bits);  #  bit vector constructor
 
+      @veclist = Bit::Vector->new($bits,$count);
+
   new_Hex
       $vector = Bit::Vector->new_Hex($bits,$string);
 
@@ -42,6 +44,8 @@ See L<Bit::Vector::Overload(3)>.
 
   new
       $vec2 = $vec1->new($bits);  #  alternative call of constructor
+
+      @veclist = $vec->new($bits,$count);
 
   Shadow
       $vec2 = $vec1->Shadow();  #  new vector, same size but empty
@@ -254,7 +258,8 @@ See L<Bit::Vector::Overload(3)>.
       $quot->Divide($vec1,$vec2,$rest);
 
   GCD (Greatest Common Divisor)
-      $vec3->GCD($vec1,$vec2);
+      $vecgcd->GCD($veca,$vecb);
+      $vecgcd->GCD($vecx,$vecy,$veca,$vecb);
 
   Power
       $vec3->Power($vec1,$vec2);
@@ -555,6 +560,29 @@ as explained above.
 
 =item *
 
+C<@veclist = Bit::Vector-E<gt>new($bits,$count);>
+
+You can also create more than one bit vector at a time if you specify the
+optional second parameter "C<$count>".
+
+The method returns a list of "C<$count>" bit vectors which all have the
+same number of bits "C<$bits>" (and which are all initialized, i.e.,
+all bits are cleared).
+
+If "C<$count>" is zero, an empty list is returned.
+
+If "C<$bits>" is zero, a list of null-sized bit vectors is returned.
+
+Note again that if you specify a negative number for "C<$count>" it will
+be interpreted as a large positive number due to its internal two's
+complement binary representation.
+
+In such a case, the bit vector constructor method will obediently attempt
+to create that many bit vectors, probably resulting in an exception ("out
+of memory").
+
+=item *
+
 C<$vector = Bit::Vector-E<gt>new_Hex($bits,$string);>
 
 This method is an alternative constructor which allows you to create
@@ -691,10 +719,12 @@ become the B<MOST> significant part of the resulting bit vector.
 
 C<$vec2 = $vec1-E<gt>new($bits);>
 
+C<@veclist = $vec-E<gt>new($bits);>
+
 This is an alternative way of calling the bit vector constructor method.
 
-Vector "C<$vec1>" is not affected by this, it just serves as an anchor
-for the method invocation mechanism.
+Vector "C<$vec1>" (or "C<$vec>") is not affected by this, it just serves
+as an anchor for the method invocation mechanism.
 
 In fact B<ALL> class methods in this module can be called this way,
 even though this is probably considered to be "politically incorrect"
@@ -832,7 +862,7 @@ have been warned!)
 If the target bit vector is larger than the source, this method fills up
 the remaining most significant bits in the target bit vector with either
 0's or 1's, depending on the sign (= the most significant bit) of the
-source bit vector.
+source bit vector. This is also known as "sign extension".
 
 This makes it possible to copy numbers from a smaller bit vector into
 a larger one while preserving the number's absolute value as well as
@@ -2182,11 +2212,11 @@ as "C<$quot>" and "C<$rest>" are distinct. (!)
 
 =item *
 
-C<$vec3-E<gt>GCD($vec1,$vec2);>
+C<$vecgcd-E<gt>GCD($veca,$vecb);>
 
 This method calculates the "Greatest Common Divisor" of the two numbers
-contained in bit vector "C<$vec1>" and "C<$vec2>" and stores the result
-in bit vector "C<$vec3>".
+contained in bit vector "C<$veca>" and "C<$vecb>" and stores the result
+in bit vector "C<$vecgcd>".
 
 The method uses Euklid's algorithm internally:
 
@@ -2203,7 +2233,36 @@ The method uses Euklid's algorithm internally:
         return(a);
     }
 
-Note that C<GCD(x,0) == GCD(0,x) == x>.
+Note that C<GCD(z,0) == GCD(0,z) == z>.
+
+=item *
+
+C<$vecgcd-E<gt>GCD($vecx,$vecy,$veca,$vecb);>
+
+This variant of the "GCD" method calculates the "Greatest Common Divisor"
+of the two numbers contained in bit vector "C<$veca>" and "C<$vecb>" and
+stores the result in bit vector "C<$vecgcd>".
+
+Moreover, it determines the two factors which are necessary in order to
+represent the greatest common divisor as a linear combination of its two
+arguments, i.e., the two factors C<"x"> and C<"y"> so that
+C<GCD(a,b) == x * a + y * b>, and stores them in bit vector "C<$vecx>"
+and "C<$vecy>", respectively.
+
+For example:
+
+  a = 2322
+  b =  654
+
+  GCD( 2322, 654 ) == 6
+
+  x =  20
+  y = -71
+
+  20 * 2322 - 71 * 654 == 6
+
+Please see http://www.cut-the-knot.org/blue/extension.shtml
+for an explanation of how this extension of Euklid's algorithm works.
 
 =item *
 
@@ -3005,7 +3064,7 @@ perlxstut(1), perlguts(1), overload(3).
 
 =head1 VERSION
 
-This man page documents "Bit::Vector" version 6.2.
+This man page documents "Bit::Vector" version 6.3.
 
 =head1 AUTHOR
 

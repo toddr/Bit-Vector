@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 6.2
+                      Package "Bit::Vector" Version 6.3
                     =====================================
 
 
@@ -30,19 +30,20 @@ overloaded operators for maximum ease of use.
 The C library can nevertheless be used stand-alone, without Perl.
 
 
-What's new in version 6.2:
+What's new in version 6.3:
 --------------------------
 
- +  Fixed missing "\" in regular expression in "t/00____version.t".
- +  Overhauled the error handlers in "BitVector.c" and "Vector.xs".
- +  Added a demo "examples/test.c" to play around with the C library.
- +  Attempted to fix all compiler warnings.
- +  Fixed a problem in test "t/01________new.t" with Perl using
-    64 bit integers; now contains "use integer;" to avoid failure.
- +  Synchronized "Carp::Clan" and "ToolBox.h" with "Date::Calc" 5.2.
- +  Revealed common method aliases (Or, And, etc.) in the documentation.
- +  Fixed GCD(), now GCD(x,0) == GCD(0,x) == x and negative values
-    are handled correctly.
+ +  Added "Create_List()" and "GCD2()" in "BitVector.c".
+ +  "new()" now can optionally return a list of bit vectors.
+ +  "GCD()" now can optionally return the two integer factors
+    "x" and "y" for the linear combination of its input values
+    "a" and "b" so that gcd(a,b) = x * a + y * b.
+ +  Changed the test files "t/01________new.t" and "t/09_parameters.t"
+    as well as the documentation accordingly.
+ +  Added a new test file "t/17________gcd.t".
+ +  Further simplified the error handlers in "Vector.xs", making the
+    resulting object library file substantially smaller (about 20%!)
+    and thus faster to load.
 
 
 Legal issues:
@@ -97,7 +98,7 @@ the "zip" archive.
 Note to CPAN Testers:
 ---------------------
 
-After completion, version 6.2 of this module has already
+After completion, version 6.3 of this module has already
 been tested successfully with the following configurations:
 
   Perl 5.005_03  -  FreeBSD 4.1.1-RELEASE (with "dlopen() relative paths" patch)
