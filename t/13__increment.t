@@ -111,7 +111,7 @@ while (--$k >= $lower)
     $n++;
 }
 
-1;
+exit;
 
 sub bitvector
 {

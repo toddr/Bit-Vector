@@ -201,7 +201,7 @@ if ($@ =~ /[^:]+::[^:]+::Interval_Scan_dec\(\): start index out of range/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-1;
+exit;
 
 sub test_set_clr
 {

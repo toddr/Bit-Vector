@@ -1,7 +1,7 @@
 
 ###############################################################################
 ##                                                                           ##
-##    Copyright (c) 1995, 1996, 1997, 1998 by Steffen Beyer.                 ##
+##    Copyright (c) 1995, 1996, 1997, 1998, 1999 by Steffen Beyer.           ##
 ##    All rights reserved.                                                   ##
 ##                                                                           ##
 ##    This package is free software; you can redistribute it                 ##
@@ -23,7 +23,7 @@ require DynaLoader;
 
 @EXPORT_OK = qw();
 
-$VERSION = '5.6';
+$VERSION = '5.7';
 
 $CONFIG[0] = 0;
 $CONFIG[1] = 0;
@@ -1593,6 +1593,11 @@ choice.
       $matrix3->Multiplication($rows3,$cols3,
                       $matrix1,$rows1,$cols1,
                       $matrix2,$rows2,$cols2);
+
+  Product
+      $matrix3->Product($rows3,$cols3,
+               $matrix1,$rows1,$cols1,
+               $matrix2,$rows2,$cols2);
 
   Closure
       $matrix->Closure($rows,$cols);
@@ -4372,6 +4377,34 @@ C<$m3-E<gt>Multiplication($r3,$c3,$m1,$r1,$c1,$m2,$r2,$c2);>
 This method multiplies two boolean matrices (stored as bit vectors)
 "C<$m1>" and "C<$m2>" and stores the result in matrix "C<$m3>".
 
+The method uses the binary "xor" operation ("C<^>") as the boolean
+addition operator ("C<+>").
+
+An exception is raised if the product of the number of rows and
+columns of any of the three matrices differs from the actual size
+of their underlying bit vector.
+
+An exception is also raised if the numbers of rows and columns
+of the three matrices do not harmonize in the required manner:
+
+  rows3 == rows1
+  cols3 == cols2
+  cols1 == rows2
+
+This method is used by the module "Math::MatrixBool".
+
+See L<Math::MatrixBool(3)> for details.
+
+=item *
+
+C<$m3-E<gt>Product($r3,$c3,$m1,$r1,$c1,$m2,$r2,$c2);>
+
+This method multiplies two boolean matrices (stored as bit vectors)
+"C<$m1>" and "C<$m2>" and stores the result in matrix "C<$m3>".
+
+This special method uses the binary "or" operation ("C<|>") as the
+boolean addition operator ("C<+>").
+
 An exception is raised if the product of the number of rows and
 columns of any of the three matrices differs from the actual size
 of their underlying bit vector.
@@ -5283,7 +5316,7 @@ perltoot(1), perlxs(1), perlxstut(1), perlguts(1), overload(3).
 
 =head1 VERSION
 
-This man page documents "Bit::Vector" version 5.6.
+This man page documents "Bit::Vector" version 5.7.
 
 =head1 AUTHOR
 
@@ -5299,7 +5332,7 @@ B<Please contact me by e-mail whenever possible!>
 
 =head1 COPYRIGHT
 
-Copyright (c) 1995, 1996, 1997, 1998 by Steffen Beyer.
+Copyright (c) 1995, 1996, 1997, 1998, 1999 by Steffen Beyer.
 All rights reserved.
 
 =head1 LICENSE

@@ -3,7 +3,7 @@
 use strict;
 no strict "vars";
 
-use Bit::Vector 5.6;
+use Bit::Vector 5.7;
 
 # ======================================================================
 #   $ver = $Bit::Vector::VERSION;
@@ -18,11 +18,11 @@ use Bit::Vector 5.6;
 print "1..10\n";
 
 $n = 1;
-if ($Bit::Vector::VERSION eq "5.6")
+if ($Bit::Vector::VERSION eq "5.7")
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-if (Bit::Vector::Version() eq "5.6")
+if (Bit::Vector::Version() eq "5.7")
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 if (Bit::Vector::Word_Bits() >= 32)
@@ -32,7 +32,7 @@ if (Bit::Vector::Long_Bits() >= 32)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-if (Bit::Vector->Version() eq "5.6")
+if (Bit::Vector->Version() eq "5.7")
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 if (Bit::Vector->Word_Bits() >= 32)
@@ -43,18 +43,17 @@ if (Bit::Vector->Long_Bits() >= 32)
 $n++;
 
 eval { Bit::Vector->Version(0); };
-if ($@ =~ /^# Usage: Bit::Vector->Version()/)
+if ($@ =~ /Usage: Bit::Vector->Version()/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 eval { Bit::Vector->Word_Bits(0); };
-if ($@ =~ /^# Usage: Bit::Vector->Word_Bits()/)
+if ($@ =~ /Usage: Bit::Vector->Word_Bits()/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 eval { Bit::Vector->Long_Bits(0); };
-if ($@ =~ /^# Usage: Bit::Vector->Long_Bits()/)
+if ($@ =~ /Usage: Bit::Vector->Long_Bits()/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-1;
-
 __END__
+

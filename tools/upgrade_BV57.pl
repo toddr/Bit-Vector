@@ -2,7 +2,7 @@
 
 ###############################################################################
 ##                                                                           ##
-##    Copyright (c) 1998 by Steffen Beyer.                                   ##
+##    Copyright (c) 1998, 1999 by Steffen Beyer.                             ##
 ##    All rights reserved.                                                   ##
 ##                                                                           ##
 ##    This program is free software; you can redistribute it                 ##
@@ -20,7 +20,7 @@ unless (@ARGV)
 {
     print "\nUsage: perl $self <filename> [<filename>]*\n\n";
     print "This utility tries to upgrade your Perl application(s) \"<filename>\"\n";
-    print "from \"Bit::Vector\" version 4.x to \"Bit::Vector\" version 5.6.\n\n";
+    print "from \"Bit::Vector\" version 4.x to \"Bit::Vector\" version 5.7.\n\n";
     exit(0);
 }
 
@@ -51,7 +51,7 @@ foreach $file (@ARGV)
     print "$self: upgrading \"$file\"...\n";
     while (<INPUT>)
     {
-        s/\buse\s+Bit::Vector\s+4\.\d\b/use Bit::Vector 5.6/g;
+        s/\buse\s+Bit::Vector\s+4\.\d\b/use Bit::Vector 5.7/g;
         s/\bto_ASCII\b/to_Enum/g;
         s/\bfrom_ASCII\b/from_Enum/g;
         s/\bto_String\b/to_Hex/g;

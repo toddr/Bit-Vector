@@ -1,9 +1,9 @@
                     =====================================
-                      Package "Bit::Vector" Version 5.6
+                      Package "Bit::Vector" Version 5.7
                     =====================================
 
 
-            Copyright (c) 1995, 1996, 1997, 1998 by Steffen Beyer.
+         Copyright (c) 1995, 1996, 1997, 1998, 1999 by Steffen Beyer.
                              All rights reserved.
 
 

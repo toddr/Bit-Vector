@@ -1,98 +1,5 @@
-Sunday, March 7, 1999
-
-This is the Bit::Vector module with shared libraries compiled for MacPerl.  
-Shared libraries run only on PPC and CFM68K versions, not non-CFM 68K 
-versions.
-
-Installation.
-
-If you're reading this you may have downloaded with a browser, and Stuffit 
-Expander helpfully unpacked everything for you.  This is actually not so 
-good, as many of your files probably still have the wrong line-ends.
-
-If you've got the RAM and easy access to the Internet, consider using 
-CPAN.pm (the Mac version) for future MacPerl installations.  But for this 
-one here, the best thing to do is drop the original '.tgz' file onto one of 
-Chris Nandor's utility scripts: 'installme.plx' if you're doing OK on RAM, 
-and 'untarzipme.plx' if not.
-
-After using only 'untarzipme.plx', install the files in ':blib:lib' into 
-your 'site_perl' folder; that, after all, is what it is meant for -
-
-    {MACPERL}site_perl:Bit:Vector.pm
-    {MACPERL}site_perl:MacCFM68K:auto:Bit:Vector:Vector
-    {MACPERL}site_perl:MacPPC:auto:Bit:Vector:Vector
-
-Also read the original README.txt file for this distribution, included below.
-(With special attention to the "What does it do" and "Example Applications" 
-sections; try to ignore everything else).
-
-This is my first distribution where I'm rationalizing where files go. The 
-'bindist.convention' page on CPAN has guides for naming an overall binary 
-distribution, and suggestions for the Readme file, but all bets are off, 
-seemingly, as to the organization of a binary.
-
-It seems to make the most sense to me that, since this is a binary for Mac 
-users, the distribution is ready to go right out of the box. What I mean by 
-that is, someone with Codewarrior MPW can use the MPPE build procedure 
-right from the gitgo.
-
-The original files, if changes were made, are in folder 'Original_Files'. 
-For extra reference, I've diffed everything, and you can find the patches 
-(if you want to consider them that) in folder 'Diffs'.
-
-Technical Notes. There are no separate notes for this distribution. That's 
-why I included the diffs, if you're bloody-minded and want to see what was 
-changed. :-)
-
-Testing.  The 't' files have been tested using both the MacPerl application 
-and the MPW perl tool.  When testing before installation, use the -I switch 
-(perl tool in MPW) or Edit>Preferences (MacPerl app) to add ':blib:lib' to 
-your path, and make sure it precedes all others.
-
-I also tested Math::MatrixBool against this, since it 'uses' Bit::Vector.
-
-I strongly recommend not running the tests as scripts. Between the various 
-'t' tests there are 67,211 subtests, each resulting in a line of output. I 
-wrote a little script, 'test_harness.plx', which in conjunction with 
-the MPW Shell gives you some capability to test en masse. It's pretty easily
-adapted for use with the MP application, too. I'm thrashing around with
-scoping issues with Version 2. :-)
-
-Here's a test run on MPW that I did (FYI):
-
-For testf In `Files :t:Å.t`
-	perl -I ':blib:lib' test_harness.plx {testf}
-End
-
-:t:00____version.t.....ok (10/0) (OK/NOK)
-:t:01________new.t.....ok (131/0) (OK/NOK)
-:t:02____destroy.t.....ok (15/0) (OK/NOK)
-:t:03_operations.t.....ok (232/0) (OK/NOK)
-:t:04__functions.t.....ok (21/0) (OK/NOK)
-:t:05_____primes.t.....ok (2008/0) (OK/NOK)
-:t:06_____subset.t.....ok (6/0) (OK/NOK)
-:t:07____compare.t.....ok (50/0) (OK/NOK)
-:t:08_____resize.t.....ok (57/0) (OK/NOK)
-:t:09_parameters.t.....ok (920/0) (OK/NOK)
-:t:10__intervals.t.....ok (4024/0) (OK/NOK)
-:t:11______shift.t.....ok (36416/0) (OK/NOK)
-:t:12_____string.t.....ok (192/0) (OK/NOK)
-:t:13__increment.t.....ok (5296/0) (OK/NOK)
-:t:14______empty.t.....ok (40/0) (OK/NOK)
-:t:15________add.t.....ok (1001/0) (OK/NOK)
-:t:16___subtract.t.....ok (1001/0) (OK/NOK)
-:t:28__chunklist.t.....ok (96/0) (OK/NOK)
-:t:30_overloaded.t.....ok (15695/0) (OK/NOK)
-
-*****
-
-Arved Sandstrom          mailto:Arved_37@chebucto.ns.ca
-
-*****
-
                     =====================================
-                      Package "Bit::Vector" Version 5.6
+                      Package "Bit::Vector" Version 5.7
                     =====================================
 
 
@@ -117,7 +24,7 @@ Legal issues:
 
 This package with all its parts is
 
-Copyright (c) 1995, 1996, 1997, 1998 by Steffen Beyer.
+Copyright (c) 1995, 1996, 1997, 1998, 1999 by Steffen Beyer.
 All rights reserved.
 
 This package is free software; you can redistribute it and/or
@@ -150,7 +57,9 @@ Changes over previous versions:
 -------------------------------
 
 Please refer to the file "CHANGES.txt" in this distribution for a detailed
-version history and instructions on how to upgrade existing applications.
+version history. See the two scripts in the subdirectory "tools" in this
+distribution in order to automatically upgrade your existing applications
+from "Set::IntegerFast" versions 3.* and "Bit::Vector" versions 4.*.
 
 
 Documentation:
@@ -270,7 +179,8 @@ Index_List_Remove()      Index_List_Store()       Index_List_Read()
 Union()                  Intersection()           Difference()
 ExclusiveOr()            Complement()             subset()
 Norm()                   Min()                    Max()
-Multiplication()         Closure()                Transpose()
+Multiplication()         Product()                Closure()
+Transpose()
 
 
 Important note to C developers:

@@ -412,7 +412,7 @@ for ( $i = 1; $i <= 16; $i++ )
     }
 }
 
-1;
+exit;
 
 sub binomial
 {

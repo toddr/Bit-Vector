@@ -969,36 +969,36 @@ foreach $bits (0,1,2,3,4,16,32,61,97,256,257,499,512)
 }
 
 eval { $shift = (0 << $primes); };
-if ($@ =~ /^# Bit::Vector \"<<\": reversed operands error/)
+if ($@ =~ /Bit::Vector \"<<\": reversed operands error/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
 eval { $shift = (1 << $primes); };
-if ($@ =~ /^# Bit::Vector \"<<\": reversed operands error/)
+if ($@ =~ /Bit::Vector \"<<\": reversed operands error/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
 eval { $shift = (0 >> $primes); };
-if ($@ =~ /^# Bit::Vector \">>\": reversed operands error/)
+if ($@ =~ /Bit::Vector \">>\": reversed operands error/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
 eval { $shift = (1 >> $primes); };
-if ($@ =~ /^# Bit::Vector \">>\": reversed operands error/)
+if ($@ =~ /Bit::Vector \">>\": reversed operands error/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
 eval { $shift = (0 x $primes); };
-if ($@ =~ /^# Bit::Vector \"x\": reversed operands error/)
+if ($@ =~ /Bit::Vector \"x\": reversed operands error/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
 eval { $shift = (1 x $primes); };
-if ($@ =~ /^# Bit::Vector \"x\": reversed operands error/)
+if ($@ =~ /Bit::Vector \"x\": reversed operands error/)
 {print "ok $n\n";} else {print "not ok $n\n";}
 $n++;
 
-1;
+exit;
 
 sub test_fake
 {

@@ -1,9 +1,9 @@
                     =====================================
-                      Package "Bit::Vector" Version 5.6
+                      Package "Bit::Vector" Version 5.7
                     =====================================
 
 
-            Copyright (c) 1995, 1996, 1997, 1998 by Steffen Beyer.
+         Copyright (c) 1995, 1996, 1997, 1998, 1999 by Steffen Beyer.
                              All rights reserved.
 
 
@@ -21,7 +21,7 @@ Edit the file "Makefile.PL" and change the line
 
     'VERSION_FROM'      => 'Vector.pm',
 to
-    'VERSION'           => '5.6',
+    'VERSION'           => '5.7',
 
 Then edit the file "Vector.pm" and change the line
 
@@ -31,7 +31,7 @@ to
 
 Also edit the file "t/00____version.t" and change the line
 
-    use Bit::Vector 5.6;
+    use Bit::Vector 5.7;
 to
     use Bit::Vector;
 
@@ -78,7 +78,7 @@ Detailed installation guide:
 ----------------------------
 
  1) Change directory to the directory that has been created by unpacking this
-    package ("cd Bit-Vector-5.6").
+    package ("cd Bit-Vector-5.7").
 
  2) Type "perl Makefile.PL" (or whatever the name and path of your Perl 5
     binary is).
@@ -138,10 +138,10 @@ Detailed installation guide:
 
     The output should look somewhat like this:
 
-    PERL_DL_NONLAZY=1 /sw/bin/perl -I./blib/arch -I./blib/lib
-    -I/sw/pkg/perl/lib/i386-freebsd/5.00403 -I/sw/pkg/perl/lib
-    -e 'use Test::Harness qw(&runtests $verbose); $verbose=0;
-    runtests @ARGV;' t/*.t
+    PERL_DL_NONLAZY=1 /usr/sw/bin/perl -I./blib/arch -I./blib/lib
+    -I/usr/sw/pkg/perl/lib/5.00503/i386-freebsd -I/usr/sw/pkg/perl/lib/5.00503
+    -e 'use Test::Harness qw(&runtests $verbose); $verbose=0; runtests @ARGV;'
+    t/*.t
     t/00____version.....ok
     t/01________new.....ok
     t/02____destroy.....ok
@@ -162,7 +162,7 @@ Detailed installation guide:
     t/28__chunklist.....ok
     t/30_overloaded.....ok
     All tests successful.
-    Files=19, Tests=67211, 43 secs (29.09 cusr + 1.38 csys = 30.47 CPU)
+    Files=19, Tests=67239, 42 secs (29.51 cusr + 1.33 csys = 30.84 CPU)
 
     (Note that the exact number of tests will depend on the number of bits
      of a machine word/an unsigned long on your system!)

@@ -141,7 +141,7 @@ foreach $limit (15,16,31,32,63,64,127,128,1023,1024)
     }
 }
 
-1;
+exit;
 
 sub test_rotat_reg_same
 {

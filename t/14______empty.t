@@ -60,7 +60,7 @@ $n++;
 &Full(4999);
 &Full(4998);
 
-1;
+exit;
 
 sub Empty
 {

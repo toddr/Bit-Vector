@@ -79,8 +79,7 @@ typedef  Z_longword         *Z_longwordptr;
 #undef  TRUE
 #define TRUE        (0==0)
 
-/* typedef enum { false = FALSE , true = TRUE } boolean; */
-typedef enum { falseval=0 , trueval } booltype;
+typedef enum { false = FALSE , true = TRUE } boolean;
 
 #define and         &&      /* logical (boolean) operators: lower case */
 #define or          ||
@@ -137,7 +136,7 @@ typedef enum { falseval=0 , trueval } booltype;
 /*  COPYRIGHT:                                                               */
 /*****************************************************************************/
 /*                                                                           */
-/*    Copyright (c) 1995, 1996, 1997, 1998 by Steffen Beyer.                 */
+/*    Copyright (c) 1995, 1996, 1997, 1998, 1999 by Steffen Beyer.           */
 /*    All rights reserved.                                                   */
 /*                                                                           */
 /*****************************************************************************/
