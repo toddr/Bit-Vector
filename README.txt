@@ -54,59 +54,36 @@ I also tested Math::MatrixBool against this, since it 'uses' Bit::Vector.
 
 I strongly recommend not running the tests as scripts. Between the various 
 't' tests there are 67,211 subtests, each resulting in a line of output. I 
-included a little script, 'test_harness.plx', which in conjunction with 
-the MPW Shell gives you some capability to test en masse. On Unix this is a 
-lot easier. You can use the script with the MP app, but at this stage, 
-because of subroutine redefines, you should run tests one-by-one as 
-one-liners. But still use my script, or something better, unless you want 
-to see thousands of lines of output.
+wrote a little script, 'test_harness.plx', which in conjunction with 
+the MPW Shell gives you some capability to test en masse. It's pretty easily
+adapted for use with the MP application, too. I'm thrashing around with
+scoping issues with Version 2. :-)
 
-Here's a test run on MPW:
+Here's a test run on MPW that I did (FYI):
 
-For tfile In `Files :t:Å.t`
-	perl -I ':blib:lib' test_harness.plx {tfile}
+For testf In `Files :t:Å.t`
+	perl -I ':blib:lib' test_harness.plx {testf}
 End
 
-__END__
-
-:t:00____version.t.....ok
-Files = 1, Tests = 10, (10/0) (OK/NOK)
-:t:01________new.t.....ok
-Files = 1, Tests = 131, (131/0) (OK/NOK)
-:t:02____destroy.t.....ok
-Files = 1, Tests = 15, (15/0) (OK/NOK)
-:t:03_operations.t.....ok
-Files = 1, Tests = 232, (232/0) (OK/NOK)
-:t:04__functions.t.....ok
-Files = 1, Tests = 21, (21/0) (OK/NOK)
-:t:05_____primes.t.....ok
-Files = 1, Tests = 2008, (2008/0) (OK/NOK)
-:t:06_____subset.t.....ok
-Files = 1, Tests = 6, (6/0) (OK/NOK)
-:t:07____compare.t.....ok
-Files = 1, Tests = 50, (50/0) (OK/NOK)
-:t:08_____resize.t.....ok
-Files = 1, Tests = 57, (57/0) (OK/NOK)
-:t:09_parameters.t.....ok
-Files = 1, Tests = 920, (920/0) (OK/NOK)
-:t:10__intervals.t.....ok
-Files = 1, Tests = 4024, (4024/0) (OK/NOK)
-:t:11______shift.t.....ok
-Files = 1, Tests = 36416, (36416/0) (OK/NOK)
-:t:12_____string.t.....ok
-Files = 1, Tests = 192, (192/0) (OK/NOK)
-:t:13__increment.t.....ok
-Files = 1, Tests = 5296, (5296/0) (OK/NOK)
-:t:14______empty.t.....ok
-Files = 1, Tests = 40, (40/0) (OK/NOK)
-:t:15________add.t.....ok
-Files = 1, Tests = 1001, (1001/0) (OK/NOK)
-:t:16___subtract.t.....ok
-Files = 1, Tests = 1001, (1001/0) (OK/NOK)
-:t:28__chunklist.t.....ok
-Files = 1, Tests = 96, (96/0) (OK/NOK)
-:t:30_overloaded.t.....ok
-Files = 1, Tests = 15695, (15695/0) (OK/NOK)
+:t:00____version.t.....ok (10/0) (OK/NOK)
+:t:01________new.t.....ok (131/0) (OK/NOK)
+:t:02____destroy.t.....ok (15/0) (OK/NOK)
+:t:03_operations.t.....ok (232/0) (OK/NOK)
+:t:04__functions.t.....ok (21/0) (OK/NOK)
+:t:05_____primes.t.....ok (2008/0) (OK/NOK)
+:t:06_____subset.t.....ok (6/0) (OK/NOK)
+:t:07____compare.t.....ok (50/0) (OK/NOK)
+:t:08_____resize.t.....ok (57/0) (OK/NOK)
+:t:09_parameters.t.....ok (920/0) (OK/NOK)
+:t:10__intervals.t.....ok (4024/0) (OK/NOK)
+:t:11______shift.t.....ok (36416/0) (OK/NOK)
+:t:12_____string.t.....ok (192/0) (OK/NOK)
+:t:13__increment.t.....ok (5296/0) (OK/NOK)
+:t:14______empty.t.....ok (40/0) (OK/NOK)
+:t:15________add.t.....ok (1001/0) (OK/NOK)
+:t:16___subtract.t.....ok (1001/0) (OK/NOK)
+:t:28__chunklist.t.....ok (96/0) (OK/NOK)
+:t:30_overloaded.t.....ok (15695/0) (OK/NOK)
 
 *****
 

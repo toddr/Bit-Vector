@@ -5,53 +5,38 @@
 # Date: 7 March 1999
 
 # There are a humongous number of subtests involved with this module.
-# Several of the t files generate ok/nok output in the order of
+# Several of the 't' files generate ok/nok output in the order of
 # thousands of lines. This script manages the testing.
 #
 # Notes:
 # (1) Test::Harness doesn't work on a Mac. It uses piped open().
-# (2) I never could get around the problem of several of the tests defining
-# subroutines with the same name, and pulling them all in with 'require'.
-# So for now run this script on one 't' test at a time, or use something
-# like my MPW loop described in the 'Readme' file.
 
-use File::Basename;
+use IO::File;
 
-my $tmpdir = $ENV{TMPDIR};
+$tfile = $ARGV[0];
+print $tfile, ".....";
+$tmpfile = IO::File->new_tmpfile or
+  die "Can't open temp file for read/write: $!\n";
+$tmpfile->autoflush(1);
+$oldfh = select($tmpfile);
 
-my ($n, $ok, $nok, $exp_total) = (0, 0, 0, 0);
+eval "require \":t:$tfile\"";
+die "$@" if $@;
 
-foreach $tfile (@ARGV) {
-   print $tfile, ".....";
-   my $basename = basename($tfile, ".t");
-   my $tmpfile = "$tmpdir:$basename.tmp";
-   open(TMP, "> $tmpfile") or die "Can't open temp file for write $!\n";
-   local $oldfh = select(TMP);
-   
-   require "$tfile";
-   
-   select($oldfh);
-   close(TMP);
-   open(TMP, "$tmpfile") or die "Can't open temp file for read $!\n";
-   my $exp_n = <TMP>;
-   $exp_n =~ s/1\.\.(\d+)/$1/;
-   $exp_total += $exp_n;
-   my ($local_n, $local_ok, $local_nok) = (0, 0, 0);
-   while (defined(my $line = <TMP>)) {
-      $local_ok++ if $line !~ /not/;
-	  $local_nok++ if $line =~ /not/;
-	  $local_n++;
-   }
-   close(TMP);
-   
-   print "not " if $local_nok;
-   print "ok\n";
-   print "$exp_total Tests expected\n" if ($local_n != $exp_n);
-   
-   # update global counts
-   $ok += $local_ok;
-   $nok += $local_nok;
-   $n += $local_n;
+select($oldfh);
+seek($tmpfile,0,0);
+$exp_n = <$tmpfile>;
+$exp_n =~ s/1\.\.(\d+)/$1/;
+
+($n, $ok, $nok) = (0, 0, 0);
+while (defined($line = <$tmpfile>)) {
+	$nok++ if $line =~ /not ok/;
+	$n++;
 }
+$ok = $n - $nok;
 
-print "Files = ", scalar(@ARGV), ", Tests = $n, ($ok/$nok) (OK/NOK)\n";
+$tmpfile->close;
+
+print "not " if $nok;
+print "ok ($ok/$nok) (OK/NOK)\n";
+print "$exp_n Tests expected\n" if ($n != $exp_n);
