@@ -23,7 +23,7 @@ require DynaLoader;
 
 @EXPORT_OK = qw();
 
-$VERSION = '5.3';
+$VERSION = '5.4';
 
 $CONFIG[0] = 0;
 $CONFIG[1] = 0;
@@ -1136,6 +1136,8 @@ __END__
 =head1 NAME
 
 Bit::Vector - efficient base class implementing bit vectors.
+
+=head1 PREFACE
 
 This module implements bit vectors of arbitrary size
 and provides efficient methods for handling them.
@@ -5285,7 +5287,7 @@ perltoot(1), perlxs(1), perlxstut(1), perlguts(1), overload(3).
 
 =head1 VERSION
 
-This man page documents "Bit::Vector" version 5.3.
+This man page documents "Bit::Vector" version 5.4.
 
 =head1 AUTHOR
 

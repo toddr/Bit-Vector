@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 5.3
+                      Package "Bit::Vector" Version 5.4
                     =====================================
 
 
@@ -107,5 +107,9 @@ bit counting in the method "Norm()", which was adopted in version 5.2.
 Many thanks again to Krzysztof Koczyjan <krzysztofk@rocketmail.com> for
 an additional improvement of the method "Norm()", which was adopted in
 version 5.3.
+
+Many thanks to Bryan Bayerdorffer <bryan.bayerdorffer@analog.com> for
+notifying me of the bug in the "Divide()" method, which was immediately
+fixed in version 5.4.
 
 

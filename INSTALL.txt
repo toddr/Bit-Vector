@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 5.3
+                      Package "Bit::Vector" Version 5.4
                     =====================================
 
 
@@ -21,7 +21,7 @@ Edit the file "Makefile.PL" and change the line
 
     'VERSION_FROM'      => 'Vector.pm',
 to
-    'VERSION'           => '5.3',
+    'VERSION'           => '5.4',
 
 Then edit the file "Vector.pm" and change the line
 
@@ -31,13 +31,23 @@ to
 
 Also edit the file "t/00____version.t" and change the line
 
-    use Bit::Vector 5.3;
+    use Bit::Vector 5.4;
 to
     use Bit::Vector;
 
 Finally, edit the file "Vector.xs" and delete the line
 
     PROTOTYPES: DISABLE
+
+
+Preliminary steps for use with ActiveState's port of Perl 5.005:
+----------------------------------------------------------------
+
+(For the Win32 platform)
+
+Edit the file "Makefile.PL" and remove all of the "#" characters
+which currently comment out the attributes "ABSTRACT", "AUTHOR"
+and "CAPI".
 
 
 Installation:
@@ -68,7 +78,7 @@ Detailed installation guide:
 ----------------------------
 
  1) Change directory to the directory that has been created by unpacking this
-    package ("cd Bit-Vector-5.3").
+    package ("cd Bit-Vector-5.4").
 
  2) Type "perl Makefile.PL" (or whatever the name and path of your Perl 5
     binary is).

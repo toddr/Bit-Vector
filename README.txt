@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 5.3
+                      Package "Bit::Vector" Version 5.4
                     =====================================
 
 
@@ -32,8 +32,8 @@ modify it under the same terms as Perl itself, i.e., under the
 terms of the "Artistic License" or the "GNU General Public License".
 
 The C library at the core of this Perl module can additionally
-be redistributed and/or modified under the terms of the "GNU
-Library General Public License".
+be redistributed and/or modified under the terms of the
+"GNU Library General Public License".
 
 Please refer to the files "Artistic.txt", "GNU_GPL.txt" and
 "GNU_LGPL.txt" in this distribution for details!
@@ -180,15 +180,19 @@ Norm()                   Min()                    Max()
 Multiplication()         Closure()                Transpose()
 
 
-Important note:
----------------
+Important note to C developers:
+-------------------------------
 
-Note again that the C library at the core of this module ("BitVector.c")
-can also be used stand-alone (i.e., without Perl).
+Note again that the C library at the core of this module can also be
+used stand-alone (i.e., it contains no inter-dependencies whatsoever
+with Perl).
 
-To do so, simply link the output file "BitVector.o" (which is produced
-when you build this module or when you just compile "BitVector.c") with
-your application.
+The library itself consists of three files: "BitVector.c", "BitVector.h"
+and "ToolBox.h".
+
+Just compile "BitVector.c" (which automatically includes "ToolBox.h")
+and link the resulting output file "BitVector.o" with your application,
+which in turn should include "ToolBox.h" and "BitVector.h" (in this order).
 
 
 Example applications:

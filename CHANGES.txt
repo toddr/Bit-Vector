@@ -1,10 +1,23 @@
                     =====================================
-                      Package "Bit::Vector" Version 5.3
+                      Package "Bit::Vector" Version 5.4
                     =====================================
 
 
             Copyright (c) 1995, 1996, 1997, 1998 by Steffen Beyer.
                              All rights reserved.
+
+
+What's new in version 5.4:
+--------------------------
+
+Version 5.4 is a bugfix and update release.
+
+A bug was fixed in the method "Divide()" where the return code remained
+uninitialized when zero was divided by something non-zero, causing the
+program to take a shortcut exit and returning random return codes.
+
+Moreover, the "Makefile.PL" was updated for Perl 5.005 and its Win32
+ports.
 
 
 What's new in version 5.3:
@@ -14,7 +27,7 @@ The method "Norm()" has been further improved to become still a bit more
 efficient.
 
 The upgrade utility "upgrade_BV52" (a shell script) was ported to Perl
-(now named "upgrade_BV53.pl"), making it faster, more flexible and easier
+(now named "upgrade_BV54.pl"), making it faster, more flexible and easier
 to read and maintain and -- last but not least -- executable under
 Windows NT/95 as well.
 
@@ -57,7 +70,7 @@ was called, but rather to the location in your application program where the
 overloaded operator was used.
 
 
-Migration strategy to version 5.3:
+Migration strategy to version 5.4:
 ----------------------------------
 
 Step 1:
@@ -124,11 +137,11 @@ Step 2:
 -------
 
 To upgrade your application(s) from "Bit::Vector" version 4.x
-to "Bit::Vector" version 5.3, simply issue the following command:
+to "Bit::Vector" version 5.4, simply issue the following command:
 
-    > perl ./tools/upgrade_BV53.pl  app1.pl  app2.pl  app3.pl  ...
+    > perl ./tools/upgrade_BV54.pl  app1.pl  app2.pl  app3.pl  ...
 or
-    > perl .\tools\upgrade_BV53.pl  app1.pl  app2.pl  app3.pl  ...
+    > perl .\tools\upgrade_BV54.pl  app1.pl  app2.pl  app3.pl  ...
 
 Note that this utility renames the original file "app<i>.pl" to
 "app<i>.pl.bak" before creating a fresh copy of this file (again
@@ -195,7 +208,7 @@ the method name and the opening parenthesis are optional, though.
 
 The substitutions performed by this upgrade utility are the following:
 
-          use Bit::Vector 4.x  ==>                 use Bit::Vector 5.3
+          use Bit::Vector 4.x  ==>                 use Bit::Vector 5.4
           to_ASCII             ==>                 to_Enum
           from_ASCII           ==>                 from_Enum
           to_String            ==>                 to_Hex
@@ -222,6 +235,14 @@ the new method "Lexicompare()" instead!
 
 Version history:
 ----------------
+
+Version 5.4   07.09.98
+
+ +  Fixed the bug of the uninitialized return code in method "Divide()".
+ +  Introduced an additional header "Preface" in the POD documentation to
+    avoid clobbering of the information displayed by CPAN.pm et al.
+ +  Added the new attributes to "Makefile.PL" for ActiveState's port
+    of Perl 5.005 to the Win32 platform.
 
 Version 5.3   12.05.98
 

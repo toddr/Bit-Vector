@@ -11,6 +11,8 @@
 
 use ExtUtils::MakeMaker;
 
+use Config;
+
 WriteMakefile(
     'NAME'              => 'Bit::Vector',
     'VERSION_FROM'      => 'Vector.pm',
@@ -18,6 +20,11 @@ WriteMakefile(
     'LIBS'              => [''],   # e.g., '-lm'
     'DEFINE'            => '',     # e.g., '-DHAVE_SOMETHING'
     'INC'               => '',     # e.g., '-I/usr/include/other'
+#   ($] >= 5.005 ?
+#       ('ABSTRACT'     => 'Efficient base class implementing bit vectors',
+#        'AUTHOR'       => 'Steffen Beyer (sb@engelschall.com)') : ()),
+#   ($] >= 5.005 && $ eq 'MSWin32' && $Config{archname} =~ /-object\b/i ?
+#       ('CAPI'         => 'TRUE') : ()),
     'dist'              => { COMPRESS => "gzip -9", SUFFIX => "gz" }
 );
 

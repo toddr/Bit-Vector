@@ -502,7 +502,7 @@ N_word BitVector_Mask(N_int bits)           /* bit vector mask (unused bits) */
 
 charptr BitVector_Version(void)
 {
-    return((charptr)"5.3");
+    return((charptr)"5.4");
 }
 
 N_int BitVector_Word_Bits(void)
@@ -2627,7 +2627,7 @@ ErrCode BitVector_Div_Pos(wordptr Q, wordptr X, wordptr Y, wordptr R)
 
 ErrCode BitVector_Divide(wordptr Q, wordptr X, wordptr Y, wordptr R)
 {
-    ErrCode error;
+    ErrCode error = ErrCode_Ok;
     N_word  bits = bits_(Q);
     N_word  size = size_(Q);
     N_word  mask = mask_(Q);
@@ -3254,11 +3254,12 @@ void Matrix_Transpose(wordptr X, N_int rowsX, N_int colsX,
 }
 
 /*****************************************************************************/
-/*  VERSION:  5.3                                                            */
+/*  VERSION:  5.4                                                            */
 /*****************************************************************************/
 /*  VERSION HISTORY:                                                         */
 /*****************************************************************************/
 /*                                                                           */
+/*    Version 5.4  07.09.98  Fixed bug of uninitialized "error" in Divide.   */
 /*    Version 5.3  12.05.98  Improved Norm. Completed history.               */
 /*    Version 5.2  31.03.98  Improved Norm.                                  */
 /*    Version 5.1  09.03.98  No changes.                                     */
