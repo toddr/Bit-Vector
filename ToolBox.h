@@ -9,7 +9,9 @@ extern "C"
 /*****************************************************************************/
 /*  MODULE IMPORTS:                                                          */
 /*****************************************************************************/
-
+#ifdef PERL_DARWIN
+#include <stdbool.h>
+#endif
 /*****************************************************************************/
 /*  MODULE INTERFACE:                                                        */
 /*****************************************************************************/
@@ -88,6 +90,8 @@ typedef  Z_longword         *Z_longwordptr;
 #else
     #ifdef MACOS_TRADITIONAL
         #define boolean Boolean
+    #elif PERL_DARWIN
+        #define boolean bool
     #else
         typedef enum { false = FALSE, true = TRUE } boolean;
     #endif
@@ -116,11 +120,12 @@ typedef  Z_longword         *Z_longwordptr;
 /*****************************************************************************/
 
 /*****************************************************************************/
-/*  VERSION:  5.5                                                            */
+/*  VERSION:  5.6                                                            */
 /*****************************************************************************/
 /*  VERSION HISTORY:                                                         */
 /*****************************************************************************/
 /*                                                                           */
+/*    Version 5.6   27.07.09  Made it MacOS X compatible.                    */
 /*    Version 5.5   03.10.04  Added compiler directives for C++.             */
 /*    Version 5.4   08.09.02  Added conditional changes for MacOS/MacPerl.   */
 /*    Version 5.3   12.05.98  Completed history.                             */
@@ -146,7 +151,7 @@ typedef  Z_longword         *Z_longwordptr;
 /*  COPYRIGHT:                                                               */
 /*****************************************************************************/
 /*                                                                           */
-/*    Copyright (c) 1995 - 2004 by Steffen Beyer.                            */
+/*    Copyright (c) 1995 - 2009 by Steffen Beyer.                            */
 /*    All rights reserved.                                                   */
 /*                                                                           */
 /*****************************************************************************/

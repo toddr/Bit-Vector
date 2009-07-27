@@ -314,11 +314,13 @@ extern const N_int BitVector_BYTENORM[256];
 /*****************************************************************************/
 
 /*****************************************************************************/
-/*  VERSION:  6.4                                                            */
+/*  VERSION:  6.6                                                            */
 /*****************************************************************************/
 /*  VERSION HISTORY:                                                         */
 /*****************************************************************************/
 /*                                                                           */
+/*    Version 6.6  27.07.09  Made it thread-safe and MacOS X compatible.     */
+/*    Version 6.5  27.07.09  Added automatic support for module "Storable".  */
 /*    Version 6.4  03.10.04  Added C++ comp. directives. Improved "Norm()".  */
 /*    Version 6.3  28.09.02  Added "Create_List()" and "GCD2()".             */
 /*    Version 6.2  15.09.02  Overhauled error handling. Fixed "GCD()".       */
@@ -357,7 +359,7 @@ extern const N_int BitVector_BYTENORM[256];
 /*  COPYRIGHT:                                                               */
 /*****************************************************************************/
 /*                                                                           */
-/*    Copyright (c) 1995 - 2004 by Steffen Beyer.                            */
+/*    Copyright (c) 1995 - 2009 by Steffen Beyer.                            */
 /*    All rights reserved.                                                   */
 /*                                                                           */
 /*****************************************************************************/

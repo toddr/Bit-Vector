@@ -1,9 +1,9 @@
                     =====================================
-                      Package "Bit::Vector" Version 6.4
+                      Package "Bit::Vector" Version 6.6
                     =====================================
 
 
-                 Copyright (c) 1995 - 2004 by Steffen Beyer.
+                 Copyright (c) 1995 - 2009 by Steffen Beyer.
                              All rights reserved.
 
 
@@ -192,5 +192,13 @@ at:
     http://www.csd.uwo.ca/%7ejamie/.Refs/code.html
     http://www.csd.uwo.ca/%7ejamie/publications.html#BitVectors
     http://www.csd.uwo.ca/~jamie/BitVectors/
+
+Thanks a lot to Jesse Vincent <jesse@bestpractical.com> and to
+Alistair Francis <alistair.francis@lokku.com> for reporting the
+ongoing problem with the boolean type in MacOS X and to Tatsuhiko
+Miyagawa (?) and Alistair Francis for providing patches.
+
+Also many thanks to Joost Diepenmaat <jdiepen@cpan.org> for alerting
+me about Bit::Vector not being thread-safe, and for providing a patch.
 
 

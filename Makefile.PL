@@ -2,7 +2,7 @@
 
 ###############################################################################
 ##                                                                           ##
-##    Copyright (c) 1995 - 2004 by Steffen Beyer.                            ##
+##    Copyright (c) 1995 - 2009 by Steffen Beyer.                            ##
 ##    All rights reserved.                                                   ##
 ##                                                                           ##
 ##    This package is free software; you can redistribute it                 ##
@@ -19,7 +19,11 @@ use Config;
 WriteMakefile(
     'NAME'              => 'Bit::Vector',
     'VERSION_FROM'      => 'Vector.pm',
-    'PREREQ_PM'         => { 'Carp::Clan' => 5.3 },
+    'PREREQ_PM'         =>
+                              {
+                                  'Carp::Clan' => 5.3,
+                                  'Storable'   => 2.20
+                              },
     'OBJECT'            => '$(O_FILES)',
 #   ($] >= 5.005 ?
 #       ('ABSTRACT'     => 'Efficient base class implementing bit vectors',

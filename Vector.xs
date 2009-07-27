@@ -2,7 +2,7 @@
 
 /*****************************************************************************/
 /*                                                                           */
-/*    Copyright (c) 1995 - 2004 by Steffen Beyer.                            */
+/*    Copyright (c) 1995 - 2009 by Steffen Beyer.                            */
 /*    All rights reserved.                                                   */
 /*                                                                           */
 /*    This package is free software; you can redistribute it                 */
@@ -35,7 +35,7 @@
 
 
 static    char *BitVector_Class = "Bit::Vector";
-static      HV *BitVector_Stash;
+
 
 typedef     SV *BitVector_Object;
 typedef     SV *BitVector_Handle;
@@ -60,6 +60,9 @@ const char *BitVector_ORDER_ERROR  = ERRCODE_ORDR;
 const char *BitVector_SIZE_ERROR   = ERRCODE_SIZE;
 
 
+#define BIT_VECTOR_STASH gv_stashpv(BitVector_Class,1)
+
+
 #define BIT_VECTOR_OBJECT(ref,hdl,adr) \
     ( ref && \
     SvROK(ref) && \
@@ -67,8 +70,17 @@ const char *BitVector_SIZE_ERROR   = ERRCODE_SIZE;
     SvOBJECT(hdl) && \
     SvREADONLY(hdl) && \
     (SvTYPE(hdl) == SVt_PVMG) && \
-    (SvSTASH(hdl) == BitVector_Stash) && \
+    (SvSTASH(hdl) == BIT_VECTOR_STASH) && \
     (adr = (BitVector_Address)SvIV(hdl)) )
+
+#define BIT_VECTOR_FAKE_OBJECT(ref,hdl) \
+    ( ref && \
+    SvROK(ref) && \
+    (hdl = (BitVector_Handle)SvRV(ref)) && \
+    SvOBJECT(hdl) && \
+    !SvREADONLY(hdl) && \
+    (SvTYPE(hdl) == SVt_PVMG) && \
+    (SvSTASH(hdl) == BIT_VECTOR_STASH) )
 
 #define BIT_VECTOR_SCALAR(ref,typ,var) \
     ( ref && !(SvROK(ref)) && ((var = (typ)SvIV(ref)) | 1) )
@@ -151,7 +163,6 @@ BOOT:
         BIT_VECTOR_EXCEPTION(rc);
         exit((int)rc);
     }
-    BitVector_Stash = gv_stashpv(BitVector_Class,1);
 }
 
 
@@ -239,8 +250,7 @@ PPCODE:
                             {
                                 address = *slot++;
                                 handle = newSViv((IV)address);
-                                reference = sv_bless(sv_2mortal(newRV(handle)),
-                                    BitVector_Stash);
+                                reference = sv_bless(sv_2mortal(newRV(handle)), BIT_VECTOR_STASH);
                                 SvREFCNT_dec(handle);
                                 SvREADONLY_on(handle);
                                 PUSHs(reference);
@@ -257,8 +267,7 @@ PPCODE:
                 if ((address = BitVector_Create(bits,true)) != NULL)
                 {
                     handle = newSViv((IV)address);
-                    reference = sv_bless(sv_2mortal(newRV(handle)),
-                        BitVector_Stash);
+                    reference = sv_bless(sv_2mortal(newRV(handle)), BIT_VECTOR_STASH);
                     SvREFCNT_dec(handle);
                     SvREADONLY_on(handle);
                     PUSHs(reference);
@@ -300,8 +309,7 @@ PPCODE:
                 else
                 {
                     handle = newSViv((IV)address);
-                    reference = sv_bless(sv_2mortal(newRV(handle)),
-                        BitVector_Stash);
+                    reference = sv_bless(sv_2mortal(newRV(handle)), BIT_VECTOR_STASH);
                     SvREFCNT_dec(handle);
                     SvREADONLY_on(handle);
                     PUSHs(reference);
@@ -343,8 +351,7 @@ PPCODE:
                 else
                 {
                     handle = newSViv((IV)address);
-                    reference = sv_bless(sv_2mortal(newRV(handle)),
-                        BitVector_Stash);
+                    reference = sv_bless(sv_2mortal(newRV(handle)), BIT_VECTOR_STASH);
                     SvREFCNT_dec(handle);
                     SvREADONLY_on(handle);
                     PUSHs(reference);
@@ -386,8 +393,7 @@ PPCODE:
                 else
                 {
                     handle = newSViv((IV)address);
-                    reference = sv_bless(sv_2mortal(newRV(handle)),
-                        BitVector_Stash);
+                    reference = sv_bless(sv_2mortal(newRV(handle)), BIT_VECTOR_STASH);
                     SvREFCNT_dec(handle);
                     SvREADONLY_on(handle);
                     PUSHs(reference);
@@ -429,8 +435,7 @@ PPCODE:
                 else
                 {
                     handle = newSViv((IV)address);
-                    reference = sv_bless(sv_2mortal(newRV(handle)),
-                        BitVector_Stash);
+                    reference = sv_bless(sv_2mortal(newRV(handle)), BIT_VECTOR_STASH);
                     SvREFCNT_dec(handle);
                     SvREADONLY_on(handle);
                     PUSHs(reference);
@@ -457,8 +462,7 @@ PPCODE:
         if ((address = BitVector_Shadow(address)) != NULL)
         {
             handle = newSViv((IV)address);
-            reference = sv_bless(sv_2mortal(newRV(handle)),
-                BitVector_Stash);
+            reference = sv_bless(sv_2mortal(newRV(handle)), BIT_VECTOR_STASH);
             SvREFCNT_dec(handle);
             SvREADONLY_on(handle);
             PUSHs(reference);
@@ -482,8 +486,7 @@ PPCODE:
         if ((address = BitVector_Clone(address)) != NULL)
         {
             handle = newSViv((IV)address);
-            reference = sv_bless(sv_2mortal(newRV(handle)),
-                BitVector_Stash);
+            reference = sv_bless(sv_2mortal(newRV(handle)), BIT_VECTOR_STASH);
             SvREFCNT_dec(handle);
             SvREADONLY_on(handle);
             PUSHs(reference);
@@ -514,8 +517,7 @@ PPCODE:
         if ((address = BitVector_Concat(Xadr,Yadr)) != NULL)
         {
             handle = newSViv((IV)address);
-            reference = sv_bless(sv_2mortal(newRV(handle)),
-                BitVector_Stash);
+            reference = sv_bless(sv_2mortal(newRV(handle)), BIT_VECTOR_STASH);
             SvREFCNT_dec(handle);
             SvREADONLY_on(handle);
             PUSHs(reference);
@@ -570,8 +572,7 @@ PPCODE:
             else if ((index != 0) or SvROK(Xref)) BIT_VECTOR_OBJECT_ERROR;
         }
         handle = newSViv((IV)address);
-        reference = sv_bless(sv_2mortal(newRV(handle)),
-            BitVector_Stash);
+        reference = sv_bless(sv_2mortal(newRV(handle)), BIT_VECTOR_STASH);
         SvREFCNT_dec(handle);
         SvREADONLY_on(handle);
         PUSHs(reference);
@@ -614,6 +615,31 @@ CODE:
         {
             address = BitVector_Resize(address,size);
             SvREADONLY_off(handle);
+            sv_setiv(handle,(IV)address);
+            SvREADONLY_on(handle);
+            if (address == NULL) BIT_VECTOR_MEMORY_ERROR;
+        }
+        else BIT_VECTOR_SCALAR_ERROR;
+    }
+    else BIT_VECTOR_OBJECT_ERROR;
+}
+
+
+void
+BitVector_Unfake(reference,bits)
+BitVector_Object	reference
+BitVector_Scalar	bits
+CODE:
+{
+    BitVector_Handle  handle;
+    BitVector_Address address;
+    N_int size;
+
+    if ( BIT_VECTOR_FAKE_OBJECT(reference,handle) )
+    {
+        if ( BIT_VECTOR_SCALAR(bits,N_int,size) )
+        {
+            address = BitVector_Create(size,true);
             sv_setiv(handle,(IV)address);
             SvREADONLY_on(handle);
             if (address == NULL) BIT_VECTOR_MEMORY_ERROR;

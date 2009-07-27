@@ -1,0 +1,12 @@
+# http://module-build.sourceforge.net/META-spec.html
+#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
+name:         Bit-Vector
+version:      6.6
+version_from: Vector.pm
+installdirs:  site
+requires:
+    Carp::Clan:                    5.3
+    Storable:                      2.2
+
+distribution_type: module
+generated_by: ExtUtils::MakeMaker version 6.30

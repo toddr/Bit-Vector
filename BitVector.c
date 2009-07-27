@@ -34,7 +34,8 @@ typedef enum
         ErrCode_Ovfl,      /* numeric overflow error                         */
         ErrCode_Same,      /* operands must be distinct                      */
         ErrCode_Expo,      /* exponent must be positive                      */
-        ErrCode_Zero       /* division by zero error                         */
+        ErrCode_Zero,      /* division by zero error                         */
+        ErrCode_Oops       /* unexpected error (contact author)              */
     } ErrCode;
 
 typedef wordptr *listptr;
@@ -334,7 +335,9 @@ static N_word EXP10;    /* = largest possible power of 10 in signed int      */
     /* global bit mask table for fast access (set by "BitVector_Boot"): */
     /********************************************************************/
 
-static wordptr BITMASKTAB;
+#define MASKTABSIZE 256
+
+static N_word BITMASKTAB[MASKTABSIZE];
 
     /*****************************/
     /* global macro definitions: */
@@ -575,13 +578,15 @@ ErrCode BitVector_Boot(void)
     FACTOR = LOGBITS - 3;  /* ld(BITS / 8) = ld(BITS) - ld(8) = ld(BITS) - 3 */
     MSB = (LSB << MODMASK);
 
-    BITMASKTAB = (wordptr) malloc((size_t) (BITS << FACTOR));
-
-    if (BITMASKTAB == NULL) return(ErrCode_Null);
+    if (BITS > MASKTABSIZE) return(ErrCode_Oops);
 
     for ( sample = 0; sample < BITS; sample++ )
     {
         BITMASKTAB[sample] = (LSB << sample);
+    }
+    for ( sample = BITS; sample < MASKTABSIZE; sample++ )
+    {
+        BITMASKTAB[sample] = 0;
     }
 
     LOG10 = (N_word) (MODMASK * 0.30103); /* = (BITS - 1) * ( ln 2 / ln 10 ) */
@@ -610,7 +615,7 @@ N_word BitVector_Mask(N_int bits)           /* bit vector mask (unused bits) */
 
 charptr BitVector_Version(void)
 {
-    return((charptr)"6.4");
+    return((charptr)"6.6");
 }
 
 N_int BitVector_Word_Bits(void)
@@ -3815,11 +3820,13 @@ void Matrix_Transpose(wordptr X, N_int rowsX, N_int colsX,
 }
 
 /*****************************************************************************/
-/*  VERSION:  6.4                                                            */
+/*  VERSION:  6.6                                                            */
 /*****************************************************************************/
 /*  VERSION HISTORY:                                                         */
 /*****************************************************************************/
 /*                                                                           */
+/*    Version 6.6  27.07.09  Made it thread-safe and MacOS X compatible.     */
+/*    Version 6.5  27.07.09  Added automatic support for module "Storable".  */
 /*    Version 6.4  03.10.04  Added C++ comp. directives. Improved "Norm()".  */
 /*    Version 6.3  28.09.02  Added "Create_List()" and "GCD2()".             */
 /*    Version 6.2  15.09.02  Overhauled error handling. Fixed "GCD()".       */
@@ -3858,7 +3865,7 @@ void Matrix_Transpose(wordptr X, N_int rowsX, N_int colsX,
 /*  COPYRIGHT:                                                               */
 /*****************************************************************************/
 /*                                                                           */
-/*    Copyright (c) 1995 - 2004 by Steffen Beyer.                            */
+/*    Copyright (c) 1995 - 2009 by Steffen Beyer.                            */
 /*    All rights reserved.                                                   */
 /*                                                                           */
 /*****************************************************************************/

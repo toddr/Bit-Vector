@@ -1,14 +1,22 @@
                     =====================================
-                      Package "Bit::Vector" Version 6.4
+                      Package "Bit::Vector" Version 6.6
                     =====================================
 
 
-                 Copyright (c) 1995 - 2004 by Steffen Beyer.
+                 Copyright (c) 1995 - 2009 by Steffen Beyer.
                              All rights reserved.
 
 
 Version history:
 ----------------
+
+Version 6.6   27.07.2009
+
+ +  Made the module thread-safe and MacOS X compatible
+
+Version 6.5   27.07.2009
+
+ +  Added automatic support for module "Storable"
 
 Version 6.4   03.10.2004
 

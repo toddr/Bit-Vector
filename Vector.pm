@@ -1,7 +1,7 @@
 
 ###############################################################################
 ##                                                                           ##
-##    Copyright (c) 1995 - 2004 by Steffen Beyer.                            ##
+##    Copyright (c) 1995 - 2009 by Steffen Beyer.                            ##
 ##    All rights reserved.                                                   ##
 ##                                                                           ##
 ##    This package is free software; you can redistribute it                 ##
@@ -23,9 +23,26 @@ require DynaLoader;
 
 @EXPORT_OK = qw();
 
-$VERSION = '6.4';
+$VERSION = '6.6';
 
 bootstrap Bit::Vector $VERSION;
+
+sub STORABLE_freeze
+{
+    my($self, $cloning) = @_;
+    return( Storable::freeze( [ $self->Size(), $self->Block_Read() ] ) );
+}
+
+sub STORABLE_thaw
+{
+    my($self, $cloning, $string) = @_;
+    my($size,$buffer) = @{ Storable::thaw($string) };
+    $self->Unfake($size); # Undocumented new feature (slightly dangerous!) only for @%$&*# Storable! (Grrr)
+    $self->Block_Store($buffer);
+}
+
+# Why can't Storable just use a module's constructor and provides one of its own instead?!?!
+# This breaks the encapsulation of other modules which have their own constructor for a good reason!
 
 1;
 

@@ -1327,7 +1327,7 @@ Bit::Vector(3), Bit::Vector::String(3).
 
 =head1 VERSION
 
-This man page documents "Bit::Vector::Overload" version 6.4.
+This man page documents "Bit::Vector::Overload" version 6.6.
 
 =head1 AUTHOR
 
@@ -1337,7 +1337,7 @@ This man page documents "Bit::Vector::Overload" version 6.4.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2000 - 2004 by Steffen Beyer. All rights reserved.
+Copyright (c) 2000 - 2009 by Steffen Beyer. All rights reserved.
 
 =head1 LICENSE
 
