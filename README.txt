@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 6.6
+                      Package "Bit::Vector" Version 6.9
                     =====================================
 
 
@@ -30,10 +30,27 @@ overloaded operators for maximum ease of use.
 The C library can nevertheless be used stand-alone, without Perl.
 
 
-What's new in version 6.6:
+What's new in version 6.9:
 --------------------------
 
- +  Made the module thread-safe and MacOS X compatible
+ +  Replaced Storable::freeze by Storable::nfreeze
+ +  Added more test cases for Storable
+ +  Added two example files showing how to freeze/thaw
+    using Data::Dumper
+
+
+What's new since version 6.5:
+-----------------------------
+
+Object persistence:
+
+Since version 6.5, "Bit::Vector" objects can be serialized
+and de-serialized automatically with "Storable", out-of-the-box,
+without requiring any further user action for this to work.
+
+This is also true for nested data structures (since version 6.8).
+
+See the "Storable" documentation for more details.
 
 
 Legal issues:
@@ -93,8 +110,9 @@ Windows 95/98 since the Win 95/98 command shell doesn't
 support the "&&" operator. You will need the Windows NT
 command shell ("cmd.exe") or the "4DOS" shell to be
 installed on your Windows 95/98 system first. Note that
-Windows NT and Windows 2000 are not affected and just
-work fine. I don't know about Windows XP, however.
+Windows NT, Windows 2000 and Windows XP are not affected
+and just work fine. I don't know about Windows Vista and
+Windows 7, however.
 
 Note that ActiveState provides precompiled binaries of
 this module for their Win32 port of Perl ("ActivePerl")
@@ -114,11 +132,12 @@ the "zip" archive.
 Note to CPAN Testers:
 ---------------------
 
-After completion, version 6.6 of this module has already
+After completion, version 6.9 of this module has already
 been tested successfully with the following configurations:
 
+  Perl 5.005_03  -  Windows XP SP3 & MS VC++ 6.0 (native Perl build)
   Perl 5.8.0     -  Windows XP SP3 & MS VC++ 6.0 (native Perl build)
-  Perl 5.8.8     -  FreeBSD 5.5-PRERELEASE
+  Perl 5.10.0    -  FreeBSD 7.2-STABLE
 
 
 Installation:
@@ -314,6 +333,11 @@ Just compile "BitVector.c" (which automatically includes "ToolBox.h")
 and link the resulting output file "BitVector.o" with your application,
 which in turn should include "ToolBox.h" and "BitVector.h" (in this order).
 
+See also the file "test.c" in the "examples" subdirectory of this
+distribution for an example application (play around with it, e.g.
+by changing the input vectors and the number of bits, and see what
+happens).
+
 
 Example applications:
 ---------------------
@@ -326,6 +350,22 @@ of boolean matrices and boolean matrix operations.
 
 (Both modules are also available from my web site at
 http://www.engelschall.com/u/sb/download/ or any CPAN server.)
+
+See the two files "DataDumperFreeze.pl" and "DataDumperFreezeOO.pl"
+in the "examples" subdirectory of this distribution for an example
+of how to freeze and thaw "Bit::Vector" objects using "Data::Dumper".
+
+On my machines, however, these examples do only work with older
+versions of "Data::Dumper", e.g. version 2.121. The current version
+1.125 does not work (this latter version doesn't even compile on my
+Windows XP machine with a native build of Perl 5.8.0 and Microsoft
+Visual C++ compiler 6.0).
+
+You will probably find "Storable" to be much easier to use and to be
+more efficient, anyway. The advantage of "Data::Dumper" is that its
+output is human-readable, which may be an advantage while debugging.
+However, whereas "Storable" is supported out-of-the-box, "Data::Dumper"
+requires some extra handling in your code.
 
 See the file "SetObject.pl" in the "examples" subdirectory of this
 distribution for a way to emulate the "Set::Object" module from CPAN

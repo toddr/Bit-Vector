@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 6.6
+                      Package "Bit::Vector" Version 6.9
                     =====================================
 
 
@@ -13,7 +13,6 @@ Contents:
     +   Prerequisites
     +   Preliminary steps for use with Perl prior to version 5.002
     +   Preliminary steps for use with ActiveState's port of Perl 5
-    +   How to install additional languages
     +   Installation
 
 
@@ -54,8 +53,9 @@ Windows 95/98 since the Win 95/98 command shell doesn't
 support the "&&" operator. You will need the Windows NT
 command shell ("cmd.exe") or the "4DOS" shell to be
 installed on your Windows 95/98 system first. Note that
-Windows NT and Windows 2000 are not affected and just
-work fine. I don't know about Windows XP, however.
+Windows NT, Windows 2000 and Windows XP are not affected
+and just work fine. I don't know about Windows Vista and
+Windows 7, however.
 
 Note that ActiveState provides precompiled binaries of
 this module for their Win32 port of Perl ("ActivePerl")
@@ -79,7 +79,7 @@ Edit the file "Makefile.PL" and change the line
 
     'VERSION_FROM'      => 'Vector.pm',
 to
-    'VERSION'           => '6.6',
+    'VERSION'           => '6.9',
 
 Then edit the file "Vector.pm" and change the line
 
@@ -89,7 +89,7 @@ to
 
 Also edit the file "t/00____version.t" and change the line
 
-    use Bit::Vector 6.6;
+    use Bit::Vector 6.9;
 
 to
 
@@ -133,7 +133,7 @@ Detailed installation guide:
 ----------------------------
 
  1) Change directory to the directory that has been created by unpacking this
-    package ("cd Bit-Vector-6.6").
+    package ("cd Bit-Vector-6.9").
 
  2) Type "perl Makefile.PL" (or whatever the name and path of your Perl 5
     binary is).
@@ -194,40 +194,34 @@ Detailed installation guide:
 
     The output should look somewhat like this:
 
-    C:\Programme\perl580\bin\perl.exe "-MExtUtils::Command::MM"
-    "-e" "test_harness(0, 'blib\lib', 'blib\arch')"
-    t\00_____version.t t\01_________new.t t\02_____destroy.t
-    t\03__operations.t t\04___functions.t t\05______primes.t
-    t\06______subset.t t\07_____compare.t t\08______resize.t
-    t\09__parameters.t t\10___intervals.t t\11_______shift.t
-    t\12______string.t t\13___increment.t t\14_______empty.t
-    t\15_________add.t t\16____subtract.t t\17_________gcd.t
-    t\28___chunklist.t t\30__overloaded.t t\40___auxiliary.t
-    t\50_freeze_thaw.t
-    t\00_____version....ok
-    t\01_________new....ok
-    t\02_____destroy....ok
-    t\03__operations....ok
-    t\04___functions....ok
-    t\05______primes....ok
-    t\06______subset....ok
-    t\07_____compare....ok
-    t\08______resize....ok
-    t\09__parameters....ok
-    t\10___intervals....ok
-    t\11_______shift....ok
-    t\12______string....ok
-    t\13___increment....ok
-    t\14_______empty....ok
-    t\15_________add....ok
-    t\16____subtract....ok
-    t\17_________gcd....ok
-    t\28___chunklist....ok
-    t\30__overloaded....ok
-    t\40___auxiliary....ok
-    t\50_freeze_thaw....ok
+    PERL_DL_NONLAZY=1 /v/guest/sw/bin/perl "-MExtUtils::Command::MM"
+    "-e" "test_harness(0, 'blib/lib', 'blib/arch')" t/*.t
+    t/00_____version.t .. ok
+    t/01_________new.t .. ok
+    t/02_____destroy.t .. ok
+    t/03__operations.t .. ok
+    t/04___functions.t .. ok
+    t/05______primes.t .. ok
+    t/06______subset.t .. ok
+    t/07_____compare.t .. ok
+    t/08______resize.t .. ok
+    t/09__parameters.t .. ok
+    t/10___intervals.t .. ok
+    t/11_______shift.t .. ok
+    t/12______string.t .. ok
+    t/13___increment.t .. ok
+    t/14_______empty.t .. ok
+    t/15_________add.t .. ok
+    t/16____subtract.t .. ok
+    t/17_________gcd.t .. ok
+    t/28___chunklist.t .. ok
+    t/30__overloaded.t .. ok
+    t/40___auxiliary.t .. ok
+    t/50_freeze_thaw.t .. ok
+    t/51_file_nstore.t .. ok
     All tests successful.
-    Files=22, Tests=79939, 10 wallclock secs ( 0.00 cusr +  0.00 csys =  0.00 CPU)
+    Files=23, Tests=90856, 15 wallclock secs (13.40 usr  0.30 sys +  2.83 cusr  0.57 csys = 17.10 CPU)
+    Result: PASS
 
     (Note that the exact number of tests will depend on the number of bits
      of a machine word/an unsigned long on your system!)

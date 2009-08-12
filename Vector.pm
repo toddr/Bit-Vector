@@ -23,26 +23,32 @@ require DynaLoader;
 
 @EXPORT_OK = qw();
 
-$VERSION = '6.6';
+$VERSION = '6.9';
 
 bootstrap Bit::Vector $VERSION;
 
 sub STORABLE_freeze
 {
-    my($self, $cloning) = @_;
-    return( Storable::freeze( [ $self->Size(), $self->Block_Read() ] ) );
+    my($self, $clone) = @_;
+    return( Storable::nfreeze( [ $self->Size(), $self->Block_Read() ] ) );
 }
 
 sub STORABLE_thaw
 {
-    my($self, $cloning, $string) = @_;
+    my($self, $clone, $string) = @_;
     my($size,$buffer) = @{ Storable::thaw($string) };
-    $self->Unfake($size); # Undocumented new feature (slightly dangerous!) only for @%$&*# Storable! (Grrr)
+    $self->Unfake($size); # Undocumented new feature (slightly dangerous!) - for use by Storable only!
     $self->Block_Store($buffer);
 }
 
-# Why can't Storable just use a module's constructor and provides one of its own instead?!?!
-# This breaks the encapsulation of other modules which have their own constructor for a good reason!
+#sub STORABLE_attach # Does not work properly in nested data structures (see test cases)
+#{
+#    my($class, $clone, $string) = @_;
+#    my($size,$buffer) = @{ Storable::thaw($string) };
+#    my $self = Bit::Vector->new($size);
+#    $self->Block_Store($buffer);
+#    return $self;
+#}
 
 1;
 

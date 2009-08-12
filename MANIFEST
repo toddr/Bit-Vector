@@ -13,6 +13,8 @@ ToolBox.h
 Vector.pm
 Vector.pod
 Vector.xs
+examples/DataDumperFreeze.pl
+examples/DataDumperFreezeOO.pl
 examples/SetObject.pl
 examples/benchmk1.pl
 examples/benchmk2.pl
@@ -45,5 +47,6 @@ t/28___chunklist.t
 t/30__overloaded.t
 t/40___auxiliary.t
 t/50_freeze_thaw.t
+t/51_file_nstore.t
 typemap
 META.yml                                 Module meta-data (added by MakeMaker)

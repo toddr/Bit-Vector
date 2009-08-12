@@ -34,30 +34,29 @@
 #include "BitVector.h"
 
 
-static    char *BitVector_Class = "Bit::Vector";
-
-
 typedef     SV *BitVector_Object;
 typedef     SV *BitVector_Handle;
 typedef N_word *BitVector_Address;
 typedef     SV *BitVector_Scalar;
 
 
-const char *BitVector_OBJECT_ERROR = "item is not a \"Bit::Vector\" object";
-const char *BitVector_SCALAR_ERROR = "item is not a scalar";
-const char *BitVector_STRING_ERROR = "item is not a string";
-const char *BitVector_MIN_ERROR    = "minimum index out of range";
-const char *BitVector_MAX_ERROR    = "maximum index out of range";
-const char *BitVector_START_ERROR  = "start index out of range";
-const char *BitVector_OFFSET_ERROR = "offset out of range";
-const char *BitVector_CHUNK_ERROR  = "chunk size out of range";
-const char *BitVector_SET_ERROR    = "set size mismatch";
-const char *BitVector_MATRIX_ERROR = "matrix size mismatch";
-const char *BitVector_SHAPE_ERROR  = "not a square matrix";
-const char *BitVector_MEMORY_ERROR = ERRCODE_NULL;
-const char *BitVector_INDEX_ERROR  = ERRCODE_INDX;
-const char *BitVector_ORDER_ERROR  = ERRCODE_ORDR;
-const char *BitVector_SIZE_ERROR   = ERRCODE_SIZE;
+static char *BitVector_Class        = "Bit::Vector"; /* NOT "const" for older Perl versions */
+
+const  char *BitVector_OBJECT_ERROR = "item is not a \"Bit::Vector\" object";
+const  char *BitVector_SCALAR_ERROR = "item is not a scalar";
+const  char *BitVector_STRING_ERROR = "item is not a string";
+const  char *BitVector_MIN_ERROR    = "minimum index out of range";
+const  char *BitVector_MAX_ERROR    = "maximum index out of range";
+const  char *BitVector_START_ERROR  = "start index out of range";
+const  char *BitVector_OFFSET_ERROR = "offset out of range";
+const  char *BitVector_CHUNK_ERROR  = "chunk size out of range";
+const  char *BitVector_SET_ERROR    = "set size mismatch";
+const  char *BitVector_MATRIX_ERROR = "matrix size mismatch";
+const  char *BitVector_SHAPE_ERROR  = "not a square matrix";
+const  char *BitVector_MEMORY_ERROR = ERRCODE_NULL;
+const  char *BitVector_INDEX_ERROR  = ERRCODE_INDX;
+const  char *BitVector_ORDER_ERROR  = ERRCODE_ORDR;
+const  char *BitVector_SIZE_ERROR   = ERRCODE_SIZE;
 
 
 #define BIT_VECTOR_STASH gv_stashpv(BitVector_Class,1)

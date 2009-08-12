@@ -16,8 +16,11 @@
 /*  (Just for playing around; also shows how one can  */
 /*   deal with error handling)                        */
 /*                                                    */
-/*  Copy ToolBox.h and BitVector.h to this directory  */
-/*  then compile this file and link with BitVector.o  */
+/*  Copy ToolBox.h, BitVector.h and BitVector.o to    */
+/*  this directory, then compile this file and link   */
+/*  with BitVector.o, e.g. with                       */
+/*                                                    */
+/*           gcc -o test test.c BitVector.o           */
 /*                                                    */
 /******************************************************/
 
@@ -99,17 +102,17 @@ int main(void)
     ovrflw = BitVector_add(Z, X, Y, &carry);
 
     printf("result of %s + %s is %s (carry = %d, overflow = %d)\n",
-        BitVector_to_Dec(X),
-        BitVector_to_Dec(Y),  /* Beware the memory leaks here! */
-        BitVector_to_Dec(Z),  /* (Call "BitVector_Dispose()"!) */
+        BitVector_to_Dec(X),  /* Beware of the memory leaks here!  */
+        BitVector_to_Dec(Y),  /* Should call "BitVector_Dispose()" */
+        BitVector_to_Dec(Z),  /* on these strings after use!       */
         carry, ovrflw);
 
     err = BitVector_Multiply(Z, X, Y);
 
     printf("result of %s * %s is %s\n",
-        BitVector_to_Dec(X),
-        BitVector_to_Dec(Y),  /* Beware the memory leaks here! */
-        BitVector_to_Dec(Z)); /* (Call "BitVector_Dispose()"!) */
+        BitVector_to_Dec(X),  /* Beware of the memory leaks here!  */
+        BitVector_to_Dec(Y),  /* Should call "BitVector_Dispose()" */
+        BitVector_to_Dec(Z)); /* on these strings after use!       */
 
     PrintErrorMessage(err,"Multiply");
 

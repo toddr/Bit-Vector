@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 6.6
+                      Package "Bit::Vector" Version 6.9
                     =====================================
 
 
@@ -10,9 +10,30 @@
 Version history:
 ----------------
 
+Version 6.9   12.08.2009
+
+ +  Replaced Storable::freeze by Storable::nfreeze
+ +  Added more test cases for Storable
+ +  Added two example files showing how to freeze/thaw
+    using Data::Dumper
+
+Version 6.8   10.08.2009
+
+ +  Fixed the bug of Storable not reconstructing nested data
+    structures properly which contain several references to
+    the same Bit::Vector object
+ +  Fixed hard-coded table size MASKTABSIZE in BitVector.c
+ +  Small cosmetic fixes to the documentation
+
+Version 6.7   08.08.2009
+
+ +  Replaced STORABLE_thaw by STORABLE_attach
+
 Version 6.6   27.07.2009
 
  +  Made the module thread-safe and MacOS X compatible
+ +  Prevented BitVector_Boot() in BitVector.c to leak
+    memory when called repeatedly
 
 Version 6.5   27.07.2009
 

@@ -38,7 +38,8 @@ typedef enum
         ErrCode_Ovfl,      /* numeric overflow error                         */
         ErrCode_Same,      /* operands must be distinct                      */
         ErrCode_Expo,      /* exponent must be positive                      */
-        ErrCode_Zero       /* division by zero error                         */
+        ErrCode_Zero,      /* division by zero error                         */
+        ErrCode_Oops       /* unexpected error (contact author)              */
     } ErrCode;
 
 typedef wordptr *listptr;
@@ -47,7 +48,7 @@ typedef wordptr *listptr;
 
 charptr BitVector_Error      (ErrCode error);  /* return string for err code */
 
-ErrCode BitVector_Boot       (void);                 /* 0 = ok, 1..7 = error */
+ErrCode BitVector_Boot       (void);                /* 0 = ok, 1..16 = error */
 
 N_word  BitVector_Size       (N_int bits);  /* bit vector size (# of words)  */
 N_word  BitVector_Mask       (N_int bits);  /* bit vector mask (unused bits) */
@@ -314,11 +315,14 @@ extern const N_int BitVector_BYTENORM[256];
 /*****************************************************************************/
 
 /*****************************************************************************/
-/*  VERSION:  6.6                                                            */
+/*  VERSION:  6.9                                                            */
 /*****************************************************************************/
 /*  VERSION HISTORY:                                                         */
 /*****************************************************************************/
 /*                                                                           */
+/*    Version 6.9  12.08.09  Removed an obsolete warning (memory leak).      */
+/*    Version 6.8  10.08.09  Fixed hard-coded table size MASKTABSIZE.        */
+/*    Version 6.7  08.08.09  No changes.                                     */
 /*    Version 6.6  27.07.09  Made it thread-safe and MacOS X compatible.     */
 /*    Version 6.5  27.07.09  Added automatic support for module "Storable".  */
 /*    Version 6.4  03.10.04  Added C++ comp. directives. Improved "Norm()".  */
