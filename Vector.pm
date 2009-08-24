@@ -23,7 +23,7 @@ require DynaLoader;
 
 @EXPORT_OK = qw();
 
-$VERSION = '6.9';
+$VERSION = '7.0';
 
 bootstrap Bit::Vector $VERSION;
 
@@ -37,7 +37,7 @@ sub STORABLE_thaw
 {
     my($self, $clone, $string) = @_;
     my($size,$buffer) = @{ Storable::thaw($string) };
-    $self->Unfake($size); # Undocumented new feature (slightly dangerous!) - for use by Storable only!
+    $self->Unfake($size);          # Undocumented feature, only for use by "Storable"!
     $self->Block_Store($buffer);
 }
 

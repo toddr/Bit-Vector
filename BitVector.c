@@ -21,9 +21,10 @@ typedef enum
         ErrCode_Type,      /* types word and size_t have incompatible sizes  */
         ErrCode_Bits,      /* bits of word and sizeof(word) are inconsistent */
         ErrCode_Word,      /* size of word is less than 16 bits              */
-        ErrCode_Long,      /* size of word is greater than size of long      */
         ErrCode_Powr,      /* number of bits of word is not a power of two   */
         ErrCode_Loga,      /* error in calculation of logarithm              */
+        ErrCode_Lpwr,      /* number of bits of long is not a power of two   */
+        ErrCode_WgtL,      /* size of word is greater than size of long      */
 
         ErrCode_Null,      /* unable to allocate memory                      */
 
@@ -44,7 +45,7 @@ typedef wordptr *listptr;
 
 charptr BitVector_Error      (ErrCode error);  /* return string for err code */
 
-ErrCode BitVector_Boot       (void);                /* 0 = ok, 1..16 = error */
+ErrCode BitVector_Boot       (void);                /* 0 = ok, 1..17 = error */
 
 N_word  BitVector_Size       (N_int bits);  /* bit vector size (# of words)  */
 N_word  BitVector_Mask       (N_int bits);  /* bit vector mask (unused bits) */
@@ -254,9 +255,10 @@ void    Matrix_Transpose     (wordptr X, N_int rowsX, N_int colsX,
 #define  ERRCODE_TYPE  "sizeof(word) > sizeof(size_t)"
 #define  ERRCODE_BITS  "bits(word) != sizeof(word)*8"
 #define  ERRCODE_WORD  "bits(word) < 16"
-#define  ERRCODE_LONG  "bits(word) > bits(long)"
-#define  ERRCODE_POWR  "bits(word) != 2^x"
+#define  ERRCODE_POWR  "bits(word) is not a power of two"
 #define  ERRCODE_LOGA  "bits(word) != 2^ld(bits(word))"
+#define  ERRCODE_LPWR  "bits(long) is not a power of two"
+#define  ERRCODE_WGTL  "bits(word) > bits(long)"
 #define  ERRCODE_NULL  "unable to allocate memory"
 #define  ERRCODE_INDX  "index out of range"
 #define  ERRCODE_ORDR  "minimum > maximum index"
@@ -512,9 +514,10 @@ charptr BitVector_Error(ErrCode error)
         case ErrCode_Type: return( (charptr) ERRCODE_TYPE ); break;
         case ErrCode_Bits: return( (charptr) ERRCODE_BITS ); break;
         case ErrCode_Word: return( (charptr) ERRCODE_WORD ); break;
-        case ErrCode_Long: return( (charptr) ERRCODE_LONG ); break;
         case ErrCode_Powr: return( (charptr) ERRCODE_POWR ); break;
         case ErrCode_Loga: return( (charptr) ERRCODE_LOGA ); break;
+        case ErrCode_Lpwr: return( (charptr) ERRCODE_LPWR ); break;
+        case ErrCode_WgtL: return( (charptr) ERRCODE_WGTL ); break;
         case ErrCode_Null: return( (charptr) ERRCODE_NULL ); break;
         case ErrCode_Indx: return( (charptr) ERRCODE_INDX ); break;
         case ErrCode_Ordr: return( (charptr) ERRCODE_ORDR ); break;
@@ -542,40 +545,56 @@ charptr BitVector_Error(ErrCode error)
 
 ErrCode BitVector_Boot(void)
 {
-    N_long longsample = 1L;
-    N_word sample = LSB;
-    N_word lsb;
+    N_word sample;
+    N_long longsample;
 
     if (sizeof(N_word) > sizeof(size_t)) return(ErrCode_Type);
 
-    BITS = 1;
-    while (sample <<= 1) BITS++;    /* determine # of bits in a machine word */
+    BITS = 0;
+    sample = ~0;
+    while (sample)                  /* determine # of bits in a machine word */
+    {
+        sample &= sample - 1;
+        BITS++;
+    }
 
     if (BITS != (sizeof(N_word) << 3)) return(ErrCode_Bits);
 
     if (BITS < 16) return(ErrCode_Word);
 
-    LONGBITS = 1;
-    while (longsample <<= 1) LONGBITS++;  /* = # of bits in an unsigned long */
-
-    if (BITS > LONGBITS) return(ErrCode_Long);
-
-    LOGBITS = 0;
-    sample = BITS;
-    lsb = (sample AND LSB);
-    while ((sample >>= 1) and (not lsb))
+    LONGBITS = 0;
+    longsample = ~0L;
+    while (longsample)            /* determine # of bits in an unsigned long */
     {
-        LOGBITS++;
-        lsb = (sample AND LSB);
+        longsample &= longsample - 1L;
+        LONGBITS++;
     }
 
-    if (sample) return(ErrCode_Powr);      /* # of bits is not a power of 2! */
+    LOGBITS = 0;
+    sample = MODMASK = BITS - 1;
+    if (sample AND BITS) return(ErrCode_Powr);        /* # not a power of 2! */
+    while (sample)
+    {
+        sample &= sample - 1;
+        LOGBITS++;
+    }
+    if (BITS != (LSB << LOGBITS)) return(ErrCode_Loga);   /* ld(bits) wrong! */
 
-    if (BITS != (LSB << LOGBITS)) return(ErrCode_Loga);
+    /*
+     *    MacOS X (PERL_DARWIN) is known to give LONGBITS == 33
+     *    when counting bits using shift-left or shift-right!
+     *
+     */
 
-    MODMASK = BITS - 1;
-    FACTOR = LOGBITS - 3;  /* ld(BITS / 8) = ld(BITS) - ld(8) = ld(BITS) - 3 */
-    MSB = (LSB << MODMASK);
+    longsample = LONGBITS - 1;
+    if ((longsample AND LONGBITS) or (LONGBITS != (sizeof(N_long) << 3)))
+    {
+        LONGBITS = (sizeof(N_long) << 3);
+        longsample = LONGBITS - 1;
+        if (longsample AND LONGBITS) return(ErrCode_Lpwr);
+    }
+
+    if (BITS > LONGBITS) return(ErrCode_WgtL);
 
     if (BITS > MASKTABSIZE) return(ErrCode_Oops);
 
@@ -583,12 +602,10 @@ ErrCode BitVector_Boot(void)
     {
         BITMASKTAB[sample] = (LSB << sample);
     }
-/*
-    for ( sample = BITS; sample < MASKTABSIZE; sample++ )
-    {
-        BITMASKTAB[sample] = 0;
-    }
-*/
+
+    FACTOR = LOGBITS - 3;  /* ld(BITS / 8) = ld(BITS) - ld(8) = ld(BITS) - 3 */
+
+    MSB = (LSB << MODMASK);
 
     LOG10 = (N_word) (MODMASK * 0.30103); /* = (BITS - 1) * ( ln 2 / ln 10 ) */
     EXP10 = power10(LOG10);
@@ -616,7 +633,7 @@ N_word BitVector_Mask(N_int bits)           /* bit vector mask (unused bits) */
 
 charptr BitVector_Version(void)
 {
-    return((charptr)"6.9");
+    return((charptr)"7.0");
 }
 
 N_int BitVector_Word_Bits(void)
@@ -3081,12 +3098,16 @@ ErrCode BitVector_GCD2(wordptr U, wordptr V, wordptr W, wordptr X, wordptr Y)
     {
         return(ErrCode_Same);
     }
+    if ((bits == 0) or (size == 0))
+    {
+        return(ErrCode_Ok);
+    }
     if (BitVector_is_empty(X))
     {
         if (U != Y) BitVector_Copy(U,Y);
         BitVector_Empty(V);
         BitVector_Empty(W);
-        *W = 1;
+        if (size_(W)) *W = 1;
         return(ErrCode_Ok);
     }
     if (BitVector_is_empty(Y))
@@ -3094,7 +3115,7 @@ ErrCode BitVector_GCD2(wordptr U, wordptr V, wordptr W, wordptr X, wordptr Y)
         if (U != X) BitVector_Copy(U,X);
         BitVector_Empty(V);
         BitVector_Empty(W);
-        *V = 1;
+        if (size_(V)) *V = 1;
         return(ErrCode_Ok);
     }
     if ((L = BitVector_Create_List(bits,false,11)) == NULL)
@@ -3821,11 +3842,12 @@ void Matrix_Transpose(wordptr X, N_int rowsX, N_int colsX,
 }
 
 /*****************************************************************************/
-/*  VERSION:  6.9                                                            */
+/*  VERSION:  7.0                                                            */
 /*****************************************************************************/
 /*  VERSION HISTORY:                                                         */
 /*****************************************************************************/
 /*                                                                           */
+/*    Version 7.0  22.08.09  Fixed bugs in "GCD2()" and "Boot()".            */
 /*    Version 6.9  12.08.09  Removed an obsolete warning (memory leak).      */
 /*    Version 6.8  10.08.09  Fixed hard-coded table size MASKTABSIZE.        */
 /*    Version 6.7  08.08.09  No changes.                                     */

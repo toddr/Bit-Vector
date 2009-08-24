@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 6.9
+                      Package "Bit::Vector" Version 7.0
                     =====================================
 
 
@@ -30,13 +30,21 @@ overloaded operators for maximum ease of use.
 The C library can nevertheless be used stand-alone, without Perl.
 
 
-What's new in version 6.9:
+What's new in version 7.0:
 --------------------------
 
- +  Replaced Storable::freeze by Storable::nfreeze
- +  Added more test cases for Storable
- +  Added two example files showing how to freeze/thaw
-    using Data::Dumper
+ +  Fixed a bug in "GCD2()" in "BitVector.c" with null-size vectors
+ +  Added more test cases for "GCD()" in "t/17_________gcd.t"
+ +  Almost completely rewrote "BitVector_Boot()" in "BitVector.c"
+    in order to fix the problem that it calculated an unsigned
+    long to have 33 bits under MacOS X (Darwin), leading to
+    failing tests in "t/28___chunklist.t"
+ +  BEWARE that the type "ErrCode", which is part of the inter-
+    face of the C library "BitVector.c", has been changed!
+ +  Added more tests and a debugging aid to "t/28___chunklist.t"
+ +  Removed the two example files showing how to freeze/thaw
+    "Bit::Vector" objects using "Data::Dumper", because after
+    closer inspection this proved to be a can of worms
 
 
 What's new since version 6.5:
@@ -80,7 +88,7 @@ Perl version 5.000 or higher, and an ANSI C compiler. (!)
                                      ^^^^^^
 Module "Carp::Clan" version 5.3 or higher.
 
-Optionally, module "Storable" version 2.20 or newer.
+Optionally, module "Storable" version 2.21 or newer.
 
 Note that in order to compile Perl modules which contain
 C (and/or XS) code (such as this one), you always HAVE
@@ -132,7 +140,7 @@ the "zip" archive.
 Note to CPAN Testers:
 ---------------------
 
-After completion, version 6.9 of this module has already
+After completion, version 7.0 of this module has already
 been tested successfully with the following configurations:
 
   Perl 5.005_03  -  Windows XP SP3 & MS VC++ 6.0 (native Perl build)
@@ -350,22 +358,6 @@ of boolean matrices and boolean matrix operations.
 
 (Both modules are also available from my web site at
 http://www.engelschall.com/u/sb/download/ or any CPAN server.)
-
-See the two files "DataDumperFreeze.pl" and "DataDumperFreezeOO.pl"
-in the "examples" subdirectory of this distribution for an example
-of how to freeze and thaw "Bit::Vector" objects using "Data::Dumper".
-
-On my machines, however, these examples do only work with older
-versions of "Data::Dumper", e.g. version 2.121. The current version
-1.125 does not work (this latter version doesn't even compile on my
-Windows XP machine with a native build of Perl 5.8.0 and Microsoft
-Visual C++ compiler 6.0).
-
-You will probably find "Storable" to be much easier to use and to be
-more efficient, anyway. The advantage of "Data::Dumper" is that its
-output is human-readable, which may be an advantage while debugging.
-However, whereas "Storable" is supported out-of-the-box, "Data::Dumper"
-requires some extra handling in your code.
 
 See the file "SetObject.pl" in the "examples" subdirectory of this
 distribution for a way to emulate the "Set::Object" module from CPAN

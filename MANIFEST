@@ -13,8 +13,6 @@ ToolBox.h
 Vector.pm
 Vector.pod
 Vector.xs
-examples/DataDumperFreeze.pl
-examples/DataDumperFreezeOO.pl
 examples/SetObject.pl
 examples/benchmk1.pl
 examples/benchmk2.pl

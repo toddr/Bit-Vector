@@ -25,9 +25,10 @@ typedef enum
         ErrCode_Type,      /* types word and size_t have incompatible sizes  */
         ErrCode_Bits,      /* bits of word and sizeof(word) are inconsistent */
         ErrCode_Word,      /* size of word is less than 16 bits              */
-        ErrCode_Long,      /* size of word is greater than size of long      */
         ErrCode_Powr,      /* number of bits of word is not a power of two   */
         ErrCode_Loga,      /* error in calculation of logarithm              */
+        ErrCode_Lpwr,      /* number of bits of long is not a power of two   */
+        ErrCode_WgtL,      /* size of word is greater than size of long      */
 
         ErrCode_Null,      /* unable to allocate memory                      */
 
@@ -48,7 +49,7 @@ typedef wordptr *listptr;
 
 charptr BitVector_Error      (ErrCode error);  /* return string for err code */
 
-ErrCode BitVector_Boot       (void);                /* 0 = ok, 1..16 = error */
+ErrCode BitVector_Boot       (void);                /* 0 = ok, 1..17 = error */
 
 N_word  BitVector_Size       (N_int bits);  /* bit vector size (# of words)  */
 N_word  BitVector_Mask       (N_int bits);  /* bit vector mask (unused bits) */
@@ -258,9 +259,10 @@ void    Matrix_Transpose     (wordptr X, N_int rowsX, N_int colsX,
 #define  ERRCODE_TYPE  "sizeof(word) > sizeof(size_t)"
 #define  ERRCODE_BITS  "bits(word) != sizeof(word)*8"
 #define  ERRCODE_WORD  "bits(word) < 16"
-#define  ERRCODE_LONG  "bits(word) > bits(long)"
-#define  ERRCODE_POWR  "bits(word) != 2^x"
+#define  ERRCODE_POWR  "bits(word) is not a power of two"
 #define  ERRCODE_LOGA  "bits(word) != 2^ld(bits(word))"
+#define  ERRCODE_LPWR  "bits(long) is not a power of two"
+#define  ERRCODE_WGTL  "bits(word) > bits(long)"
 #define  ERRCODE_NULL  "unable to allocate memory"
 #define  ERRCODE_INDX  "index out of range"
 #define  ERRCODE_ORDR  "minimum > maximum index"
@@ -315,11 +317,12 @@ extern const N_int BitVector_BYTENORM[256];
 /*****************************************************************************/
 
 /*****************************************************************************/
-/*  VERSION:  6.9                                                            */
+/*  VERSION:  7.0                                                            */
 /*****************************************************************************/
 /*  VERSION HISTORY:                                                         */
 /*****************************************************************************/
 /*                                                                           */
+/*    Version 7.0  22.08.09  Fixed bugs in "GCD2()" and "Boot()".            */
 /*    Version 6.9  12.08.09  Removed an obsolete warning (memory leak).      */
 /*    Version 6.8  10.08.09  Fixed hard-coded table size MASKTABSIZE.        */
 /*    Version 6.7  08.08.09  No changes.                                     */

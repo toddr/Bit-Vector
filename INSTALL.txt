@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 6.9
+                      Package "Bit::Vector" Version 7.0
                     =====================================
 
 
@@ -23,7 +23,7 @@ Perl version 5.000 or higher, and an ANSI C compiler. (!)
                                      ^^^^^^
 Module "Carp::Clan" version 5.3 or higher.
 
-Optionally, module "Storable" version 2.20 or newer.
+Optionally, module "Storable" version 2.21 or newer.
 
 Note that in order to compile Perl modules which contain
 C (and/or XS) code (such as this one), you always HAVE
@@ -79,7 +79,7 @@ Edit the file "Makefile.PL" and change the line
 
     'VERSION_FROM'      => 'Vector.pm',
 to
-    'VERSION'           => '6.9',
+    'VERSION'           => '7.0',
 
 Then edit the file "Vector.pm" and change the line
 
@@ -89,7 +89,7 @@ to
 
 Also edit the file "t/00____version.t" and change the line
 
-    use Bit::Vector 6.9;
+    use Bit::Vector 7.0;
 
 to
 
@@ -133,7 +133,7 @@ Detailed installation guide:
 ----------------------------
 
  1) Change directory to the directory that has been created by unpacking this
-    package ("cd Bit-Vector-6.9").
+    package ("cd Bit-Vector-7.0").
 
  2) Type "perl Makefile.PL" (or whatever the name and path of your Perl 5
     binary is).
@@ -220,7 +220,7 @@ Detailed installation guide:
     t/50_freeze_thaw.t .. ok
     t/51_file_nstore.t .. ok
     All tests successful.
-    Files=23, Tests=90856, 15 wallclock secs (13.40 usr  0.30 sys +  2.83 cusr  0.57 csys = 17.10 CPU)
+    Files=23, Tests=91963, 16 wallclock secs (13.63 usr  0.23 sys +  2.91 cusr  0.56 csys = 17.34 CPU)
     Result: PASS
 
     (Note that the exact number of tests will depend on the number of bits

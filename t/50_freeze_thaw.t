@@ -12,9 +12,9 @@ eval
     *dclone  = \&Storable::dclone;
 };
 
-if ($@ or $Storable::VERSION < 2.2)
+if ($@ or $Storable::VERSION < 2.21)
 {
-    print "1..0 # skip module Storable 2.20 or newer not found\n";
+    print "1..0 # skip module Storable 2.21 or newer not found (we have $Storable::VERSION)\n";
     exit 0;
 }
 

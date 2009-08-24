@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 6.9
+                      Package "Bit::Vector" Version 7.0
                     =====================================
 
 
@@ -10,29 +10,44 @@
 Version history:
 ----------------
 
+Version 7.0   22.08.2009
+
+ +  Fixed a bug in "GCD2()" in "BitVector.c" with null-size vectors
+ +  Added more test cases for "GCD()" in "t/17_________gcd.t"
+ +  Almost completely rewrote "BitVector_Boot()" in "BitVector.c"
+    in order to fix the problem that it calculated an unsigned
+    long to have 33 bits under MacOS X (Darwin), leading to
+    failing tests in "t/28___chunklist.t"
+ +  BEWARE that the type "ErrCode", which is part of the inter-
+    face of the C library "BitVector.c", has been changed!
+ +  Added more tests and a debugging aid to "t/28___chunklist.t"
+ +  Removed the two example files showing how to freeze/thaw
+    "Bit::Vector" objects using "Data::Dumper", because after
+    closer inspection this proved to be a can of worms
+
 Version 6.9   12.08.2009
 
- +  Replaced Storable::freeze by Storable::nfreeze
- +  Added more test cases for Storable
+ +  Replaced "Storable::freeze()" by "Storable::nfreeze()"
+ +  Added more test cases for "Storable"
  +  Added two example files showing how to freeze/thaw
-    using Data::Dumper
+    using "Data::Dumper"
 
 Version 6.8   10.08.2009
 
- +  Fixed the bug of Storable not reconstructing nested data
+ +  Fixed the bug of "Storable" not reconstructing nested data
     structures properly which contain several references to
-    the same Bit::Vector object
- +  Fixed hard-coded table size MASKTABSIZE in BitVector.c
+    the same "Bit::Vector" object
+ +  Fixed hard-coded table size "MASKTABSIZE" in "BitVector.c"
  +  Small cosmetic fixes to the documentation
 
 Version 6.7   08.08.2009
 
- +  Replaced STORABLE_thaw by STORABLE_attach
+ +  Replaced "STORABLE_thaw()" by "STORABLE_attach()"
 
 Version 6.6   27.07.2009
 
  +  Made the module thread-safe and MacOS X compatible
- +  Prevented BitVector_Boot() in BitVector.c to leak
+ +  Prevented "BitVector_Boot()" in "BitVector.c" to leak
     memory when called repeatedly
 
 Version 6.5   27.07.2009

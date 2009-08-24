@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 6.9
+                      Package "Bit::Vector" Version 7.0
                     =====================================
 
 
@@ -209,5 +209,9 @@ about the fact that the function "BitVector_Boot()" in BitVector.c leaks
 memory if called more than once, because of the dynamic allocation of
 the BITMASKTAB. This has been fixed in version 6.6 and improved in
 version 6.8.
+
+Thanks a lot to Christopher Jones <c.jones@ucl.ac.uk> for notifying me
+about the failing tests in "t/28___chunklist.t" under MacOs X / Darwin
+and for running some test scripts on his machine for me.
 
 
