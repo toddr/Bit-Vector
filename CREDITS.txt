@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 7.0
+                      Package "Bit::Vector" Version 7.1
                     =====================================
 
 

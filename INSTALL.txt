@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 7.0
+                      Package "Bit::Vector" Version 7.1
                     =====================================
 
 
@@ -79,7 +79,7 @@ Edit the file "Makefile.PL" and change the line
 
     'VERSION_FROM'      => 'Vector.pm',
 to
-    'VERSION'           => '7.0',
+    'VERSION'           => '7.1',
 
 Then edit the file "Vector.pm" and change the line
 
@@ -89,7 +89,7 @@ to
 
 Also edit the file "t/00____version.t" and change the line
 
-    use Bit::Vector 7.0;
+    use Bit::Vector 7.1;
 
 to
 
@@ -133,7 +133,7 @@ Detailed installation guide:
 ----------------------------
 
  1) Change directory to the directory that has been created by unpacking this
-    package ("cd Bit-Vector-7.0").
+    package ("cd Bit-Vector-7.1").
 
  2) Type "perl Makefile.PL" (or whatever the name and path of your Perl 5
     binary is).
@@ -160,7 +160,7 @@ Detailed installation guide:
 
     Should you encounter any compiler warnings or errors (like the redefi-
     nition of certain types already defined by your system), please contact
-    me via e-mail at <sb@engelschall.com>, sending me your compiler output
+    me via e-mail at <STBEY@cpan.org>, sending me your compiler output
     (both STDOUT and STDERR). Thank you!
 
     ======================================================================

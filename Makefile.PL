@@ -27,7 +27,7 @@ WriteMakefile(
     'OBJECT'            => '$(O_FILES)',
 #   ($] >= 5.005 ?
 #       ('ABSTRACT'     => 'Efficient base class implementing bit vectors',
-#        'AUTHOR'       => 'Steffen Beyer (sb@engelschall.com)') : ()),
+#        'AUTHOR'       => 'Steffen Beyer (STBEY@cpan.org)') : ()),
 #   ($] >= 5.005 && $^O eq 'MSWin32' && $Config{archname} =~ /-object\b/i ?
 #       ('CAPI'         => 'TRUE') : ()),
     'dist'              => { COMPRESS => "gzip -9", SUFFIX => "gz" }

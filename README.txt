@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 7.0
+                      Package "Bit::Vector" Version 7.1
                     =====================================
 
 
@@ -30,21 +30,11 @@ overloaded operators for maximum ease of use.
 The C library can nevertheless be used stand-alone, without Perl.
 
 
-What's new in version 7.0:
+What's new in version 7.1:
 --------------------------
 
- +  Fixed a bug in "GCD2()" in "BitVector.c" with null-size vectors
- +  Added more test cases for "GCD()" in "t/17_________gcd.t"
- +  Almost completely rewrote "BitVector_Boot()" in "BitVector.c"
-    in order to fix the problem that it calculated an unsigned
-    long to have 33 bits under MacOS X (Darwin), leading to
-    failing tests in "t/28___chunklist.t"
- +  BEWARE that the type "ErrCode", which is part of the inter-
-    face of the C library "BitVector.c", has been changed!
- +  Added more tests and a debugging aid to "t/28___chunklist.t"
- +  Removed the two example files showing how to freeze/thaw
-    "Bit::Vector" objects using "Data::Dumper", because after
-    closer inspection this proved to be a can of worms
+ +  Added prefix "BV_" to all global identifiers in "BitVector.c",
+    "BitVector.h" and "Vector.xs"
 
 
 What's new since version 6.5:
@@ -140,12 +130,12 @@ the "zip" archive.
 Note to CPAN Testers:
 ---------------------
 
-After completion, version 7.0 of this module has already
+After completion, version 7.1 of this module has already
 been tested successfully with the following configurations:
 
   Perl 5.005_03  -  Windows XP SP3 & MS VC++ 6.0 (native Perl build)
   Perl 5.8.0     -  Windows XP SP3 & MS VC++ 6.0 (native Perl build)
-  Perl 5.10.0    -  FreeBSD 7.2-STABLE
+  Perl 5.10.1    -  FreeBSD 7.2-STABLE
 
 
 Installation:
@@ -403,6 +393,6 @@ I hope you will find this module useful. Enjoy!
 
 Yours,
 --
-  Steffen Beyer <sb@engelschall.com> http://www.engelschall.com/u/sb/
+  Steffen Beyer <STBEY@cpan.org> http://www.engelschall.com/u/sb/
   "There is enough for the need of everyone in this world, but not
    for the greed of everyone." - Mohandas Karamchand "Mahatma" Gandhi

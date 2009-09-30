@@ -144,7 +144,7 @@ typedef  Z_longword         *Z_longwordptr;
 /*****************************************************************************/
 /*                                                                           */
 /*    Steffen Beyer                                                          */
-/*    mailto:sb@engelschall.com                                              */
+/*    mailto:STBEY@cpan.org                                                  */
 /*    http://www.engelschall.com/u/sb/download/                              */
 /*                                                                           */
 /*****************************************************************************/

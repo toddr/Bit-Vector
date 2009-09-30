@@ -1,5 +1,5 @@
                     =====================================
-                      Package "Bit::Vector" Version 7.0
+                      Package "Bit::Vector" Version 7.1
                     =====================================
 
 
@@ -9,6 +9,11 @@
 
 Version history:
 ----------------
+
+Version 7.1   29.09.2009
+
+ +  Added prefix "BV_" to all global identifiers in "BitVector.c",
+    "BitVector.h" and "Vector.xs"
 
 Version 7.0   22.08.2009
 

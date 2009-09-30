@@ -1327,12 +1327,12 @@ Bit::Vector(3), Bit::Vector::String(3).
 
 =head1 VERSION
 
-This man page documents "Bit::Vector::Overload" version 7.0.
+This man page documents "Bit::Vector::Overload" version 7.1.
 
 =head1 AUTHOR
 
   Steffen Beyer
-  mailto:sb@engelschall.com
+  mailto:STBEY@cpan.org
   http://www.engelschall.com/u/sb/download/
 
 =head1 COPYRIGHT
